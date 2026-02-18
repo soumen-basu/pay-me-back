@@ -1,6 +1,23 @@
-# Setting Up A Basic WebApp: Stenella
+# Stenella - Foundation for a WebApp
 
-## Using ,,`uv`,, for Project Setup
+## What is Stenella?
+This is a basic foundation for a webapp that has configurations for different environments (development, staging, production) and is dockerized.  It is a starting point for a webapp that can be used to build upon.
+
+In the `dev` and `staging` modes, the changes made to the main Python code are automatically picked up.  Authentication is not done using mails, but by logging the secret url for the user in the DB.  The admin can view the list of users and their secret urls, and can also add new users directly.
+
+In `prod` mode, authentication is done using magic urls, or by using their password, if they have set it up.  Mails will be sent using the Resend API. 
+
+The app is dockerized and can be run using `docker-compose up --build`. 
+
+Stopping the app can be done using `docker-compose down`.
+
+The basic app has a `/` endpoint that checks the connection to the database and returns the version of the database. 
+It has a `/me` page which is only shown to authenticated users. It returns the user's email, name (if set, else an option to set it), and an option to set/reset their password. 
+The `/admin` page lists all users and their secret urls.  
+
+## How We Got Here: Setting Up A Basic WebApp: Stenella
+
+### Using `uv` for Project Setup
 
 ```bash
 # Install uv if you haven't
@@ -14,11 +31,11 @@ uv init --python 3.12
 uv add fastapi uvicorn "psycopg[binary]"
 ```
 
-## Initialize Git
+### Initialize Git
 
 Git is already initialized when initializing `uv`
 
-## Application Code
+### Application Code
 
 This code connects to a Postres instance and conducts a basic version check. This is `main.py`
 
@@ -31,7 +48,7 @@ from psycopg.rows import dict_row
 
 app = FastAPI()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://:spinner:longirostris@localhost:5432/stenella")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://spinner:longirostris@localhost:5432/stenella")
 
 def get_db_connection():
     """Retries connection until the database is ready."""
@@ -73,7 +90,7 @@ def check_db_connection():
         }
 ```
 
-## Dockerfile for the Python app
+### Dockerfile for the Python app
 
 Create this `Dockerfile`.
 
@@ -89,8 +106,7 @@ RUN uv sync --frozen
 ENV PATH="/app/.venv/bin:$PATH"
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
-
-## Orchestration with ,,`docker-compose.yml`
+### Orchestration with ,,`docker-compose.yml`
 
 ```docker
 services:
@@ -115,15 +131,42 @@ services:
       - db
     volumes:
       - .:/app  # Hot-reloading: changes in code reflect in the container
+      - /app/.venv
 
 volumes:
   postgres_data:
 ```
 
-## Bringing It All Together
+### Bringing It All Together
 
-How to run:
+### Startup
 
-1. Run `docker-compose up --build`
-2. Verify by visting `[http://localhost:8000](http://localhost:8000) The json response with the Postgres version string should be seen.
-3. Iterate: Since we used a volume (`.:/app`) in the `web` service, changes in `main.py` will be picked up immediately using `uvicorn`.
+To start the system with hot reloading enabled:
+
+1.  Run the following command:
+    ```bash
+    docker compose up --build
+    ```
+    The `--build` flag ensures that the image is rebuilt if the Dockerfile has changed.
+
+2.  Verify the application is running by visiting [http://localhost:8000](http://localhost:8000). You should see a JSON response with the Postgres version.
+
+### Hot Reloading
+
+Since we mounted the current directory to `/app` in the container and enabled `--reload` in the start command, any changes to `main.py` will automatically trigger a reload of the application.
+
+**Try it out:**
+1.  Open `main.py`.
+2.  Change the message in the return dictionary.
+3.  Save the file.
+4.  Refresh [http://localhost:8000](http://localhost:8000) to see the changes immediately.
+
+### Shutdown
+
+To stop the services:
+
+-   Press `Ctrl+C` in the terminal where `docker compose up` is running.
+-   To remove the containers and network, run:
+    ```bash
+    docker compose down
+    ```

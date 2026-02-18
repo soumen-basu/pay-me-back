@@ -6,7 +6,7 @@ from psycopg.rows import dict_row
 
 app = FastAPI()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://:spinner:longirostris@localhost:5432/stenella")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://spinner:longirostris@localhost:5432/stenella")
 
 def get_db_connection():
     """Retries connection until the database is ready."""
@@ -34,12 +34,20 @@ def check_db_connection():
                 
                 cur.execute("SELECT 1 AS status;")
                 validation = cur.fetchone()
+                
+                cur.execute("SELECT current_timestamp;")
+                timestamp = cur.fetchone()
+
+                cur.execute("SELECT to_char(current_timestamp - pg_postmaster_start_time(), 'DD \"days\" HH24 \"hours\" MI \"minutes\" SS \"seconds\"') AS formatted_duration;")
+                uptime = cur.fetchone()
 
         return {
             "status": "Success",
             "message": "Connected to Postgres successfully!",
             "database_version": result["version"],
-            "query_validation": validation["status"]
+            "query_validation": validation["status"],
+            "timestamp": timestamp["current_timestamp"],
+            "uptime": uptime["formatted_duration"]
         }
     except Exception as e:
         return {
