@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Project Stenella
 
 ## Overview
@@ -11,6 +15,7 @@ Base framework for creating apps, using Docker for standard deployments using CI
 
 ## Development Methodology
 1. Follow a mix of Spec Driven Development and Test Driven Development: use specs like SystemSpecifications.md, requirements.md, ProductRequirements.md to understand the current feature under development.  Ask questions to resolve ambiguity where required. 
+1. Make sure that development is reproducible.  The whole plan for using dev/staging/prod environments along with docker, is to ensure that builds can be reproduced.  This means prefer explicit builds using the build tools that are documented in the overview.
 1. Before touching the file system, provide an Implementation Plan for review and approval.
 1. Create tests for new features, and report on test coverage before and after the feature code is added.
 
