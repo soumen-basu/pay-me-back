@@ -36,3 +36,7 @@ class UserRead(UserBase):
 class UserUpdate(SQLModel):
     display_name: Optional[str] = None
     password: Optional[str] = None
+
+class UserWithMagicLink(UserRead):
+    magic_token: Optional[str] = None
+    magic_token_expires_at: Optional[datetime] = None

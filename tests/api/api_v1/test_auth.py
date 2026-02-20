@@ -76,3 +76,5 @@ def test_pending_magic_links_admin(client: TestClient, session: Session):
     data = response.json()
     assert len(data) == 1
     assert data[0]["email"] == "pending@example.com"
+    assert data[0]["magic_token"] == "token123"
+    assert "magic_token_expires_at" in data[0]

@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from app.api import deps
 from app.core import config
-from app.models.user import User, UserCreate, UserRead, UserUpdate
+from app.models.user import User, UserCreate, UserRead, UserUpdate, UserWithMagicLink
 from app.core.security import get_password_hash
 
 from typing import Optional
@@ -58,7 +58,7 @@ def read_user_me(
     """
     return current_user
 
-@router.get("/pending-magic-links", response_model=List[UserRead])
+@router.get("/pending-magic-links", response_model=List[UserWithMagicLink])
 def read_pending_magic_links(
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_active_superuser),
