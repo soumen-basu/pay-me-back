@@ -33,11 +33,15 @@ When a user succesfully logs in, create a JWT, and use that for authentication. 
 ### Home page on the webapp ('/')
 A simple dummy page showing a picture of a spinner dolphin, and showing basic stats from the database (uptime, current time, some validation). If the user is logged in, welcome the user, using their display name if available, else email.  If not logged in, provide buttons for the user to log in using email, with either a password, or a magic link. 
 
-#### Magic Link Functionality
-Upsert the users email in the user table, and create a magic token that is stored against their record.  Construct the magic link to be sent to the user and send the mail (in development, this will log to console).
+#### API: Request Magic Link
+The backend exposes `POST /api/v1/auth/magic-link`. Upsert the users email in the user table, and create a magic token that is stored against their record. Construct the magic link to be sent to the user and send the mail (in development, this will log to console).
 
-### Magic link page ('/validate?....)
-The user receives an email which asks them to click on the included link to login.  The link has their email and a token encoded in the URL.  The GET handler on '/verify' extracts the email and token, and validates that they match.  Report failure and keep them on the login page if they fail.  On success, redirect the user to their profile at `/me`. Create a session for the user.
+### Web: Magic link validation page ('/verify?email=...&token=...')
+The user receives an email which asks them to click on the included link to login. The web app serves a route like `/verify` that extracts the email and token, and calls the backend API `GET /api/v1/auth/verify`.
+If the API returns failure, report the error and keep them on the login page. On success, use the returned JWT for authentication and redirect the user to their profile at `/me`.
+
+#### API: Verify Magic Link
+The backend `GET /api/v1/auth/verify` endpoint validates the email and token. It reports failure using standard API error codes if invalid or expired. On success, it creates a session for the user (if DB sessions are enabled in config) and returns the JWT as a JSON response.
 
 ### Profile ('/me')
 Display the user's profile page.  Display their email ID.  Show the display name if set, or allow the user to set their display name.  Show a checked box if their password is set.  Provide a mechanism to update their password if they wish.  Use standard password checking constraints (8-32 chars, lower and upper alpha, numeric, special character required.).

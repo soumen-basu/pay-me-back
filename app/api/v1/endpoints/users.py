@@ -1,4 +1,5 @@
-from typing import Any, List
+from typing import Any, List, Optional
+from datetime import datetime
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -56,3 +57,14 @@ def read_user_me(
     Get current user.
     """
     return current_user
+
+@router.get("/pending-magic-links", response_model=List[UserRead])
+def read_pending_magic_links(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    """
+    Retrieve users with pending magic links.
+    """
+    users = db.query(User).filter(User.magic_token.isnot(None)).filter(User.magic_token_expires_at > datetime.utcnow()).all()
+    return users

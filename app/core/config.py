@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     # Security
     SECRET_KEY: str = "CHANGE_THIS_TO_A_SECURE_SECRET_KEY"  # In prod, get from env
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 1 week
+    MAGIC_LINK_EXPIRE_MINUTES: int = 15
+    USE_DB_SESSIONS: bool = True
 
     # CORS
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
