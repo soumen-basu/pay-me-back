@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 1 week
     MAGIC_LINK_EXPIRE_MINUTES: int = 15
     USE_DB_SESSIONS: bool = True
+    ENFORCE_PASSWORD_COMPLEXITY: bool = False
 
     # CORS
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []

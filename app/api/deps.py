@@ -1,3 +1,4 @@
+import uuid
 from typing import Generator, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -20,6 +21,9 @@ def get_db() -> Generator:
     finally:
         db.close()
 
+from sqlalchemy import text
+from datetime import datetime
+
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> User:
@@ -36,6 +40,24 @@ def get_current_user(
     user = db.get(User, token_data)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+        
+    # Track daily active user on every successful auth
+    today = datetime.utcnow().date()
+    db.exec(
+        text(
+            "INSERT INTO useractivity (id, user_id, date, request_count) "
+            "VALUES (:uuid, :user_id, :date, 1) "
+            "ON CONFLICT (user_id, date) DO UPDATE "
+            "SET request_count = useractivity.request_count + 1"
+        ),
+        params={
+            "uuid": str(uuid.uuid4()),
+            "user_id": user.id,
+            "date": today
+        }
+    )
+    db.commit()
+    
     return user
 
 def get_current_active_user(

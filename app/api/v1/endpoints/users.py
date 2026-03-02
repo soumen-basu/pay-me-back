@@ -7,8 +7,8 @@ from sqlmodel import Session
 
 from app.api import deps
 from app.core import config
-from app.models.user import User, UserCreate, UserRead, UserUpdate, UserWithMagicLink
-from app.core.security import get_password_hash
+from app.models.user import User, UserCreate, UserRead, UserUpdate, UserWithMagicLink, UserUpdateAdmin
+from app.core.security import get_password_hash, validate_password_complexity
 
 from typing import Optional
 
@@ -42,6 +42,11 @@ def create_user(
             status_code=400,
             detail="The user with this username already exists in the system.",
         )
+    if config.settings.ENFORCE_PASSWORD_COMPLEXITY and not validate_password_complexity(user_in.password):
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be 8-32 characters, with at least one uppercase, lowercase, number, and special character.",
+        )
     user = User.model_validate(user_in, update={"password_hash": get_password_hash(user_in.password)})
     db.add(user)
     db.commit()
@@ -57,6 +62,70 @@ def read_user_me(
     Get current user.
     """
     return current_user
+
+@router.patch("/me", response_model=UserRead)
+def update_user_me(
+    *,
+    db: Session = Depends(deps.get_db),
+    user_in: UserUpdate,
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Update own user.
+    """
+    if user_in.password:
+        if config.settings.ENFORCE_PASSWORD_COMPLEXITY and not validate_password_complexity(user_in.password):
+            raise HTTPException(
+                status_code=400,
+                detail="Password must be 8-32 characters, with at least one uppercase, lowercase, number, and special character.",
+            )
+        current_user.password_hash = get_password_hash(user_in.password)
+        
+    if user_in.display_name is not None:
+        current_user.display_name = user_in.display_name
+        
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+@router.patch("/{user_id}", response_model=UserRead)
+def update_user(
+    *,
+    db: Session = Depends(deps.get_db),
+    user_id: int,
+    user_in: UserUpdateAdmin,
+    current_user: User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    """
+    Update a user (admin only).
+    """
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+        
+    if user_in.password:
+        if config.settings.ENFORCE_PASSWORD_COMPLEXITY and not validate_password_complexity(user_in.password):
+            raise HTTPException(
+                status_code=400,
+                detail="Password must be 8-32 characters, with at least one uppercase, lowercase, number, and special character.",
+            )
+        user.password_hash = get_password_hash(user_in.password)
+        
+    if user_in.display_name is not None:
+        user.display_name = user_in.display_name
+    if user_in.role is not None:
+        user.role = user_in.role
+    if user_in.is_active is not None:
+        user.is_active = user_in.is_active
+        
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 @router.get("/pending-magic-links", response_model=List[UserWithMagicLink])
 def read_pending_magic_links(

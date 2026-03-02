@@ -1,1 +1,1 @@
-from .user import User, Session
+from .user import User, Session, UserActivity
