@@ -6,14 +6,28 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Stenella"
     
-    # Database
-    DATABASE_URL: str = "postgresql+psycopg://spinner:longirostris@localhost:5432/stenella"
+    # Database Config
+    DB_HOST: str = "localhost"
+    DB_PORT: str = "5432"
+    DB_USER: str = "spinner"
+    DB_PASSWORD: str = ""
+    DB_NAME: str = "stenella"
+    DATABASE_URL: str | None = None
 
-    @validator("DATABASE_URL", pre=True)
-    def assemble_db_connection(cls, v: str) -> str:
+    @validator("DATABASE_URL", pre=True, always=True)
+    def assemble_db_connection(cls, v: str | None, values: dict) -> str:
         if isinstance(v, str) and v.startswith("postgresql://"):
             return v.replace("postgresql://", "postgresql+psycopg://")
-        return v
+        elif isinstance(v, str):
+            return v
+        
+        # Construct the URL from individual DB components
+        user = values.get("DB_USER")
+        password = values.get("DB_PASSWORD")
+        host = values.get("DB_HOST")
+        port = values.get("DB_PORT")
+        db = values.get("DB_NAME")
+        return f"postgresql+psycopg://{user}:{password}@{host}:{port}/{db}"
 
     # Security
     SECRET_KEY: str = "CHANGE_THIS_TO_A_SECURE_SECRET_KEY"  # In prod, get from env
