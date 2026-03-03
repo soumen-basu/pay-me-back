@@ -15,158 +15,43 @@ The basic app has a `/` endpoint that checks the connection to the database and 
 It has a `/me` page which is only shown to authenticated users. It returns the user's email, name (if set, else an option to set it), and an option to set/reset their password. 
 The `/admin` page lists all users and their secret urls.  
 
-## How We Got Here: Setting Up A Basic WebApp: Stenella
+# Stenella - Foundation for a WebApp
 
-### Using `uv` for Project Setup
+## What is Stenella?
+Stenella is a highly responsive, high-performance base web framework designed for rapid web application development. It comes properly dockerized right off the shelf, with distinct separations of concern.
 
-```bash
-# Install uv if you haven't
-curl -LsSf https://astral.sh/uv/install.sh | sh
+In its current state, Stenella consists of:
+- **FastAPI Backend (`/app`)**: Provides high-performance, asynchronous endpoints connecting securely to PostgreSQL. 
+- **Vite + React Frontend (`/frontend`)**: A decoupled, modern web user interface, employing glassmorphism aesthetics.
+- **PostgreSQL (`/db`)**: Containerized local database. 
 
-# Initialize the project
-mkdir stenella && cd stenella
-uv init --python 3.12
+## High Level Architecture
+Stenella takes a clean, decoupled approach by strictly physicalizing the split between backend and frontend. 
+- API service runs natively on port `8000`. 
+- The React application is built through Vite and served to port `3000`.
+- CORS (Cross-Origin Resource Sharing) is configured via standard `.env` configuration allowing native connectivity between the frontend interface and the API models inside the development docker environment.
 
-# Add dependencies
-uv add fastapi uvicorn "psycopg[binary]"
-```
+## Getting Started
 
-### Initialize Git
+### Prerequisites
+Stenella uses Docker-Compose for unified system orchestration. 
 
-Git is already initialized when initializing `uv`
+### Bootstrapping your Environment
 
-### Application Code
+1. Setup development environment variables:
+   Copy or configure a `.env` in your root tree, containing your `DATABASE_URL` and `BACKEND_CORS_ORIGINS`. And an environment variable `VITE_API_BASE_URL` in the `frontend/.env` file.
 
-This code connects to a Postres instance and conducts a basic version check. This is `main.py`
+2. Start the orchestrated containers using docker compose:
+   ```bash
+   docker compose up -d --build
+   ```
 
-```python
-import os
-import time
-import psycopg
-from fastapi import FastAPI
-from psycopg.rows import dict_row
-
-app = FastAPI()
-
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://spinner:longirostris@localhost:5432/stenella")
-
-def get_db_connection():
-    """Retries connection until the database is ready."""
-    retries = 5
-    while retries > 0:
-        try:
-            conn = psycopg.connect(DATABASE_URL, row_factory=dict_row)
-            print("Successfully connected to the database!")
-            return conn
-        except psycopg.OperationalError as e:
-            retries -= 1
-            print(f"Database not ready... (Retries left: {retries}). Error: {e}")
-            time.sleep(2)  # Wait 2 seconds before trying again
-    
-    raise Exception("Could not connect to the database after several attempts.")
-
-@app.get("/")
-def check_db_connection():
-    try:
-        # We call our retry logic here
-        with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT version();")
-                result = cur.fetchone()
-                
-                cur.execute("SELECT 1 AS status;")
-                validation = cur.fetchone()
-
-        return {
-            "status": "Success",
-            "message": "Connected to Postgres successfully!",
-            "database_version": result["version"],
-            "query_validation": validation["status"]
-        }
-    except Exception as e:
-        return {
-            "status": "Error",
-            "message": str(e)
-        }
-```
-
-### Dockerfile for the Python app
-
-Create this `Dockerfile`.
-
-```docker
-FROM python:3.12-slim
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
-WORKDIR /app
-COPY . .
-RUN uv sync --frozen
-
-# Use the virtualenv created by uv
-ENV PATH="/app/.venv/bin:$PATH"
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-### Orchestration with ,,`docker-compose.yml`
-
-```docker
-services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: spinner
-      POSTGRES_PASSWORD: longirostris
-      POSTGRES_DB: stenella
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  web:
-    build: .
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://spinner:longirostris@db:5432/stenella
-    depends_on:
-      - db
-    volumes:
-      - .:/app  # Hot-reloading: changes in code reflect in the container
-      - /app/.venv
-
-volumes:
-  postgres_data:
-```
-
-### Bringing It All Together
-
-### Startup
-
-To start the system with hot reloading enabled:
-
-1.  Run the following command:
-    ```bash
-    docker compose up --build
-    ```
-    The `--build` flag ensures that the image is rebuilt if the Dockerfile has changed.
-
-2.  Verify the application is running by visiting [http://localhost:8000](http://localhost:8000). You should see a JSON response with the Postgres version.
-
-### Hot Reloading
-
-Since we mounted the current directory to `/app` in the container and enabled `--reload` in the start command, any changes to `main.py` will automatically trigger a reload of the application.
-
-**Try it out:**
-1.  Open `main.py`.
-2.  Change the message in the return dictionary.
-3.  Save the file.
-4.  Refresh [http://localhost:8000](http://localhost:8000) to see the changes immediately.
+3. Open your browser:
+   * View the React frontend: [http://localhost:3000](http://localhost:3000)
+   * View the API docs (Swagger UI): [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### Shutdown
-
-To stop the services:
-
--   Press `Ctrl+C` in the terminal where `docker compose up` is running.
--   To remove the containers and network, run:
-    ```bash
-    docker compose down
-    ```
+To stop all Stenella services, run:
+```bash
+docker compose down
+```
