@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+env/local.bak.env
 
 # Virtual environments
 .venv
@@ -12,3 +13,6 @@ wheels/
 # VSCode
 .vscode/
 
+# Policy for creating AWS User for sending mail
+ses-policy.json
+track.delme.txt

@@ -36,6 +36,17 @@ class Settings(BaseSettings):
     USE_DB_SESSIONS: bool = True
     ENFORCE_PASSWORD_COMPLEXITY: bool = False
 
+    # Email Settings
+    ENABLE_EMAILS: bool = False
+    MAX_EMAILS_PER_USER_PER_DAY: int = 5
+    MAX_GLOBAL_EMAILS_PER_DAY: int = 5000
+    
+    # AWS SES Settings
+    AWS_SES_REGION: str = "us-east-1"
+    AWS_ACCESS_KEY_ID: str | None = None
+    AWS_SECRET_ACCESS_KEY: str | None = None
+    AWS_SES_SENDER_EMAIL: str | None = None
+
     # CORS
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 

@@ -11,6 +11,7 @@ from app.api import deps
 from app.core import config
 from app.core.security import create_access_token, verify_password
 from app.models.user import User, Session as UserSession
+from app.services.email import send_email
 
 router = APIRouter()
 
@@ -73,8 +74,12 @@ def request_magic_link(
     user.magic_token_expires_at = datetime.utcnow() + timedelta(minutes=config.settings.MAGIC_LINK_EXPIRE_MINUTES)
     db.commit()
     
-    # In a real app, send an email here. For now, log it.
-    print(f"MAGIC LINK for {user.email}: http://localhost:8000/verify?email={user.email}&token={token}")
+    magic_link = f"http://localhost:8000/verify?email={user.email}&token={token}"
+    subject = f"Your Magic Link to log in to {config.settings.PROJECT_NAME}"
+    body_text = f"Login here: {magic_link}\nThis link expires in {config.settings.MAGIC_LINK_EXPIRE_MINUTES} minutes."
+    body_html = f"<p>Login to {config.settings.PROJECT_NAME} by clicking <a href='{magic_link}'>here</a>.</p><p>This link expires in {config.settings.MAGIC_LINK_EXPIRE_MINUTES} minutes.</p>"
+    
+    send_email(db, user.email, subject, body_text, body_html)
     
     return {"msg": "If the email is valid, a magic link has been sent."}
 
