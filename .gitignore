@@ -6,6 +6,7 @@ dist/
 wheels/
 *.egg-info
 env/local.bak.env
+env/credentials.env
 
 # Virtual environments
 .venv

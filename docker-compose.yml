@@ -14,6 +14,7 @@ services:
     build: .
     env_file:
       - env/local.env
+      - env/credentials.env
     ports:
       - "${API_PORT}:8000"
     depends_on:
@@ -27,6 +28,7 @@ services:
     build: ./frontend
     env_file:
       - env/local.env
+      - env/credentials.env
     ports:
       - "${FRONTEND_PORT}:3000"
     depends_on:

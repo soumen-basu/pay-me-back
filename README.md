@@ -40,6 +40,15 @@ Stenella uses Docker-Compose for unified system orchestration.
 
 1. Setup development environment variables:
    Copy or configure a `.env` in your root tree, containing your `DATABASE_URL` and `BACKEND_CORS_ORIGINS`. And an environment variable `VITE_API_BASE_URL` in the `frontend/.env` file.
+   
+   **Secret Credentials:**
+   If you have private credentials (like AWS SES keys), you should structure them in `env/credentials.env` which is ignored by Git by default securely.
+   ```bash
+   ENABLE_EMAILS=True
+   AWS_ACCESS_KEY_ID=your_real_access_key
+   AWS_SECRET_ACCESS_KEY=your_real_secret_key
+   AWS_SES_SENDER_EMAIL=verified_sender@example.com
+   ```
 
 2. Start the orchestrated containers using docker compose:
    ```bash
