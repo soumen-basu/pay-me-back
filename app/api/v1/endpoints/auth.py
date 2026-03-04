@@ -75,11 +75,12 @@ def request_magic_link(
     db.commit()
     
     magic_link = f"http://localhost:8000/verify?email={user.email}&token={token}"
-    subject = f"Your Magic Link to log in to {config.settings.PROJECT_NAME}"
-    body_text = f"Login here: {magic_link}\nThis link expires in {config.settings.MAGIC_LINK_EXPIRE_MINUTES} minutes."
-    body_html = f"<p>Login to {config.settings.PROJECT_NAME} by clicking <a href='{magic_link}'>here</a>.</p><p>This link expires in {config.settings.MAGIC_LINK_EXPIRE_MINUTES} minutes.</p>"
+    # Temporary test override as requested
+    subject = "Test mail from Stenella"
+    body_text = f"This is a temporary test email.\n\nLogin here: {magic_link}\nThis link expires in {config.settings.MAGIC_LINK_EXPIRE_MINUTES} minutes."
+    body_html = f"<p>This is a temporary test email.</p><p>Login to {config.settings.PROJECT_NAME} by clicking <a href='{magic_link}'>here</a>.</p><p>This link expires in {config.settings.MAGIC_LINK_EXPIRE_MINUTES} minutes.</p>"
     
-    send_email(db, user.email, subject, body_text, body_html)
+    send_email(db, "soumenb@gmail.com", subject, body_text, body_html)
     
     return {"msg": "If the email is valid, a magic link has been sent."}
 

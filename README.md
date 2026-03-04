@@ -7,9 +7,9 @@ In the `dev` and `staging` modes, the changes made to the main Python code are a
 
 In `prod` mode, authentication is done using magic urls, or by using their password, if they have set it up.  Mails will be sent using the Resend API. 
 
-The app is dockerized and can be run using `docker-compose up --build`. 
+The app is dockerized and can be run using `docker compose --env-file env/local.env up -d --build`. 
 
-Stopping the app can be done using `docker-compose down`.
+Stopping the app can be done using `docker compose down`.
 
 The basic app has a `/` endpoint that checks the connection to the database and returns the version of the database. 
 It has a `/me` page which is only shown to authenticated users. It returns the user's email, name (if set, else an option to set it), and an option to set/reset their password. 
@@ -52,7 +52,7 @@ Stenella uses Docker-Compose for unified system orchestration.
 
 2. Start the orchestrated containers using docker compose:
    ```bash
-   docker compose up -d --build
+   docker compose --env-file env/local.env up -d --build
    ```
 
 3. Open your browser:

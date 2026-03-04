@@ -49,8 +49,9 @@ def send_email(db: Session, to_address: str, subject: str, body_text: str, body_
         )
 
     # Dispatch via SES or Mock
+    print(f"[EMAIL] Request received. Dispatching email to {to_address}...")
     if not settings.ENABLE_EMAILS:
-        print(f"[MOCK EMAIL] To: {to_address} | Subject: {subject} | Body: {body_text}")
+        print(f"[EMAIL MOCK] ENABLE_EMAILS is False. Mock email accepted. To: {to_address} | Subject: {subject}")
     else:
         ses_client = get_ses_client()
         try:
@@ -61,13 +62,14 @@ def send_email(db: Session, to_address: str, subject: str, body_text: str, body_
             if body_html:
                 message['Body']['Html'] = {'Data': body_html}
 
-            ses_client.send_email(
+            response = ses_client.send_email(
                 Source=settings.AWS_SES_SENDER_EMAIL or "noreply@example.com",
                 Destination={'ToAddresses': [to_address]},
                 Message=message
             )
+            print(f"[EMAIL SES] Accepted and sent successfully to {to_address}. MessageId: {response.get('MessageId')}")
         except ClientError as e:
-            print(f"Failed to send email via SES: {e}")
+            print(f"[EMAIL SES ERROR] Failed to send email via SES: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to send email."
