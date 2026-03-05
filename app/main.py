@@ -37,8 +37,17 @@ def root():
 def health_check(db: Session = Depends(deps.get_db)) -> dict[str, str]:
     try:
         # Check database connection and get uptime
-        result = db.exec(text("SELECT to_char(current_timestamp - pg_postmaster_start_time(), 'DD HH24:MI:SS')")).one()
-        uptime = result[0]
+        result = db.exec(text("SELECT EXTRACT(EPOCH FROM (current_timestamp - pg_postmaster_start_time()))")).one()
+        uptime_seconds = int(result[0])
+        days, remainder = divmod(uptime_seconds, 86400)
+        hours, remainder = divmod(remainder, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        
+        if days > 0:
+            uptime = f"{days}d {hours:02d}:{minutes:02d}:{seconds:02d}"
+        else:
+            uptime = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+            
         return {"status": "ok", "db_uptime": uptime}
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Database connectivity failed: {str(e)}")

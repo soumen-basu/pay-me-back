@@ -3,7 +3,7 @@ import { Database, Activity, LogIn, Mail } from 'lucide-react';
 import './index.css';
 
 function App() {
-  const [dbStatus, setDbStatus] = useState<{ status: string; uptime?: string }>({ status: 'Connecting...' });
+  const [dbStatus, setDbStatus] = useState<{ status: string; uptime?: string; checkedAt?: string }>({ status: 'Connecting...' });
   const [error, setError] = useState<string | null>(null);
   const [magicLinkMessage, setMagicLinkMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [isSending, setIsSending] = useState(false);
@@ -41,16 +41,18 @@ function App() {
         const response = await fetch(`${apiUrl}/health`);
         if (!response.ok) throw new Error('API Unavailable');
         const data = await response.json();
-        setDbStatus({ status: 'Connected', uptime: data.db_uptime });
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setDbStatus({ status: 'Connected', uptime: data.db_uptime, checkedAt: timeStr });
       } catch (err: any) {
         setError(err.message);
-        setDbStatus({ status: 'Disconnected' });
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setDbStatus({ status: 'Disconnected', checkedAt: timeStr });
       }
     };
 
     fetchStatus();
-    const interval = setInterval(fetchStatus, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -73,11 +75,16 @@ function App() {
             <div className="stat-label">Database Status</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">
-              <Database size={20} className="text-primary" />
-              {dbStatus.uptime || '--:--:--'}
+            <div className="stat-value" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.2rem' }}>
+                <Database size={20} className="text-primary" />
+                <span>Uptime: {dbStatus.uptime || '--:--:--'}</span>
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '4px', marginLeft: '28px' }}>
+                At: {dbStatus.checkedAt || '--:--:--'}
+              </div>
             </div>
-            <div className="stat-label">System Uptime</div>
+            <div className="stat-label" style={{ marginTop: '10px' }}>System Uptime</div>
           </div>
         </div>
 
