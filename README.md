@@ -59,6 +59,12 @@ Stenella uses Docker-Compose for unified system orchestration.
    * View the React frontend: [http://localhost:3000](http://localhost:3000)
    * View the API docs (Swagger UI): [http://localhost:8000/docs](http://localhost:8000/docs)
 
+### Viewing Logs
+To view the real-time logs for the API service, run:
+```bash
+docker compose --env-file env/local.env logs -f api
+```
+
 ### Shutdown
 To stop all Stenella services, run:
 ```bash

@@ -1,37 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Database, Activity, LogIn, Mail } from 'lucide-react';
+import { Database, Activity, LogIn, UserCircle, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './components/AuthProvider';
 import './index.css';
 
 function App() {
   const [dbStatus, setDbStatus] = useState<{ status: string; uptime?: string; checkedAt?: string }>({ status: 'Connecting...' });
   const [error, setError] = useState<string | null>(null);
-  const [magicLinkMessage, setMagicLinkMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-  const [isSending, setIsSending] = useState(false);
-
-  const handleSendMagicLink = async () => {
-    setIsSending(true);
-    setMagicLinkMessage(null);
-    try {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const response = await fetch(`${apiUrl}/api/v1/auth/magic-link`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: "soumenb@gmail.com" })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to send magic link');
-      }
-
-      setMagicLinkMessage({ text: data.msg || 'Magic link sent successfully!', type: 'success' });
-    } catch (err: any) {
-      setMagicLinkMessage({ text: err.message, type: 'error' });
-    } finally {
-      setIsSending(false);
-    }
-  };
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -54,6 +31,11 @@ function App() {
 
     fetchStatus();
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <div className="auth-container">
@@ -88,18 +70,29 @@ function App() {
           </div>
         </div>
 
-        <button className="btn btn-primary">
-          <LogIn size={20} />
-          Login with Password
-        </button>
-        <button className="btn btn-secondary" onClick={handleSendMagicLink} disabled={isSending}>
-          <Mail size={20} />
-          {isSending ? 'Sending...' : 'Send Magic Link'}
-        </button>
+        {user ? (
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+            <h3 style={{ marginBottom: '1rem', color: '#111827' }}>
+              Welcome, {user.display_name || user.email}!
+            </h3>
 
-        {magicLinkMessage && (
-          <div className={`message-box ${magicLinkMessage.type === 'error' ? 'error-text' : 'success-text'}`} style={{ marginTop: '1rem', padding: '10px', borderRadius: '5px', backgroundColor: magicLinkMessage.type === 'error' ? '#ffebee' : '#e8f5e9', color: magicLinkMessage.type === 'error' ? '#c62828' : '#2e7d32', textAlign: 'center', fontSize: '0.9rem' }}>
-            {magicLinkMessage.text}
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button className="btn btn-primary" onClick={() => navigate('/me')} style={{ flex: 1 }}>
+                <UserCircle size={20} />
+                Profile
+              </button>
+              <button className="btn btn-secondary" onClick={handleLogout} style={{ flex: 1, backgroundColor: '#fef2f2', color: '#ef4444', borderColor: '#fecaca' }}>
+                <LogOut size={20} />
+                Logout
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ marginTop: '2rem' }}>
+            <button className="btn btn-primary" onClick={() => navigate('/login')}>
+              <LogIn size={20} />
+              Login / Sign Up
+            </button>
           </div>
         )}
       </div>

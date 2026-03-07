@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from app.api import deps
 from app.core import config
-from app.models.user import User, UserCreate, UserRead, UserUpdate, UserWithMagicLink, UserUpdateAdmin
+from app.models.user import User, UserCreate, UserRead, UserUpdate, UserWithMagicLink, UserUpdateAdmin, UserProfileOut
 from app.core.security import get_password_hash, validate_password_complexity
 
 from typing import Optional
@@ -53,7 +53,7 @@ def create_user(
     db.refresh(user)
     return user
 
-@router.get("/me", response_model=UserRead)
+@router.get("/me", response_model=UserProfileOut)
 def read_user_me(
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_user),
@@ -61,9 +61,17 @@ def read_user_me(
     """
     Get current user.
     """
-    return current_user
+    return UserProfileOut(
+        email=current_user.email,
+        display_name=current_user.display_name,
+        role=current_user.role,
+        is_active=current_user.is_active,
+        id=current_user.id,
+        created_at=current_user.created_at,
+        has_password=bool(current_user.password_hash)
+    )
 
-@router.patch("/me", response_model=UserRead)
+@router.patch("/me", response_model=UserProfileOut)
 def update_user_me(
     *,
     db: Session = Depends(deps.get_db),
@@ -87,7 +95,15 @@ def update_user_me(
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
-    return current_user
+    return UserProfileOut(
+        email=current_user.email,
+        display_name=current_user.display_name,
+        role=current_user.role,
+        is_active=current_user.is_active,
+        id=current_user.id,
+        created_at=current_user.created_at,
+        has_password=bool(current_user.password_hash)
+    )
 
 @router.patch("/{user_id}", response_model=UserRead)
 def update_user(

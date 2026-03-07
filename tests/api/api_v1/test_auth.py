@@ -91,3 +91,22 @@ def test_request_magic_link_rate_limit(client: TestClient, session: Session):
     assert response.status_code == 429
     assert response.json()["detail"] == "User daily email limit reached."
 
+def test_password_login_random_user(client: TestClient, session: Session):
+    random_email = "randomuser@example.com"
+    password = "RandomTestPassword1!"
+    user = User(
+        email=random_email, 
+        password_hash=get_password_hash(password), 
+        is_active=True
+    )
+    session.add(user)
+    session.commit()
+    
+    response = client.post(
+        "/api/v1/auth/access-token",
+        data={"username": random_email, "password": password}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"

@@ -53,3 +53,7 @@ class UserUpdateAdmin(UserUpdate):
 class UserWithMagicLink(UserRead):
     magic_token: Optional[str] = None
     magic_token_expires_at: Optional[datetime] = None
+
+class UserProfileOut(UserRead):
+    has_password: bool
+

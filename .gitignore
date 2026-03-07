@@ -17,3 +17,4 @@ env/credentials.env
 # Policy for creating AWS User for sending mail
 ses-policy.json
 track.delme.txt
+api.json

@@ -27,6 +27,7 @@ def test_update_user_me(client: TestClient, session: Session):
     )
     assert update_response.status_code == 200
     assert update_response.json()["display_name"] == "New Name"
+    assert update_response.json()["has_password"] is True
     
     # Test logging in with new password
     login_response2 = client.post(
@@ -34,6 +35,29 @@ def test_update_user_me(client: TestClient, session: Session):
         data={"username": "test_me@example.com", "password": "newPassword1!"}
     )
     assert login_response2.status_code == 200
+    
+def test_read_user_me(client: TestClient, session: Session):
+    password_hash = get_password_hash("testPass1!")
+    user = User(email="read_me@example.com", password_hash=password_hash, is_active=True, display_name="Read Me")
+    session.add(user)
+    session.commit()
+    
+    login_response = client.post(
+        "/api/v1/auth/access-token",
+        data={"username": "read_me@example.com", "password": "testPass1!"}
+    )
+    token = login_response.json()["access_token"]
+    
+    response = client.get(
+        "/api/v1/users/me",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["email"] == "read_me@example.com"
+    assert data["display_name"] == "Read Me"
+    assert data["has_password"] is True
 
 def test_update_user_me_complexity_enforced(client: TestClient, session: Session):
     password_hash = get_password_hash("oldPassword1!")
