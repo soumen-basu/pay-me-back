@@ -51,7 +51,7 @@ def send_email(db: Session, to_address: str, subject: str, body_text: str, body_
     # Dispatch via SES or Mock
     print(f"[EMAIL] Request received. Dispatching email to {to_address}...")
     if not settings.ENABLE_EMAILS:
-        print(f"[EMAIL MOCK] ENABLE_EMAILS is False. Mock email accepted. To: {to_address} | Subject: {subject}")
+        print(f"[EMAIL MOCK] ENABLE_EMAILS is False. Mock email accepted. To: {to_address} | Subject: {subject}\n[EMAIL MOCK CONTENT]\n{body_text}\n[/EMAIL MOCK CONTENT]")
     else:
         ses_client = get_ses_client()
         try:
