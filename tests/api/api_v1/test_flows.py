@@ -41,6 +41,16 @@ def flow_state():
     return {}
 
 def test_01_admin_login_count_users(module_client: TestClient, module_session: Session, flow_state: dict):
+    # Cleanup possible existing test users from previous runs
+    from app.models.user import Session as UserSession, UserActivity
+    for email in ["test1@example.com", "test2@example.com", "test3@example.com"]:
+        user = module_session.query(User).filter(User.email == email).first()
+        if user:
+            module_session.query(UserActivity).filter(UserActivity.user_id == user.id).delete()
+            module_session.query(UserSession).filter(UserSession.user_id == user.id).delete()
+            module_session.delete(user)
+    module_session.commit()
+
     # Ensure default admin exists
     admin = module_session.query(User).filter(User.email == "admin@example.com").first()
     if not admin:
@@ -127,7 +137,7 @@ def test_04_create_test1_as_admin_with_password(module_client: TestClient, modul
         "display_name": "Test1"
     }
     create_resp = module_client.post(
-        "/api/v1/users",
+        "/api/v1/admin/users",
         headers={"Authorization": f"Bearer {admin_token}"},
         json=new_user_data
     )
@@ -242,3 +252,76 @@ def test_06_create_test3_as_user_via_magic_link(module_client: TestClient, modul
     updated_data = update_resp.json()
     assert updated_data["display_name"] == "Test 3 Validated"
     assert updated_data["has_password"] is True
+
+def test_07_user_self_invalidates_session(module_client: TestClient, module_session: Session, flow_state: dict):
+    # Test3 invalidates own session
+    login_resp = module_client.post(
+        "/api/v1/auth/access-token",
+        data={"username": "test3@example.com", "password": "A$4ptation"}
+    )
+    assert login_resp.status_code == 200
+    test3_token = login_resp.json()["access_token"]
+    
+    inv_resp = module_client.post(
+        "/api/v1/users/me/sessions/invalidate",
+        headers={"Authorization": f"Bearer {test3_token}"}
+    )
+    assert inv_resp.status_code == 200
+
+def test_08_admin_invalidates_user_session_and_views_active(module_client: TestClient, module_session: Session, flow_state: dict):
+    admin_token = flow_state["admin_token"]
+    
+    # Admin views active users
+    active_resp = module_client.get(
+        "/api/v1/admin/users/active",
+        headers={"Authorization": f"Bearer {admin_token}"}
+    )
+    assert active_resp.status_code == 200
+    
+    test2_db = module_session.query(User).filter(User.email == "test2@example.com").first()
+    assert test2_db is not None
+    
+    inv_resp = module_client.post(
+        f"/api/v1/admin/users/{test2_db.id}/sessions/invalidate",
+        headers={"Authorization": f"Bearer {admin_token}"}
+    )
+    assert inv_resp.status_code == 200
+
+def test_09_user_self_deactivates(module_client: TestClient, module_session: Session, flow_state: dict):
+    login_resp = module_client.post(
+        "/api/v1/auth/access-token",
+        data={"username": "test3@example.com", "password": "A$4ptation"}
+    )
+    assert login_resp.status_code == 200
+    test3_token = login_resp.json()["access_token"]
+    
+    del_resp = module_client.delete(
+        "/api/v1/users/me",
+        headers={"Authorization": f"Bearer {test3_token}"}
+    )
+    assert del_resp.status_code == 200
+    
+    login_fail = module_client.post(
+        "/api/v1/auth/access-token",
+        data={"username": "test3@example.com", "password": "A$4ptation"}
+    )
+    assert login_fail.status_code == 400
+
+def test_10_admin_deactivates_user(module_client: TestClient, module_session: Session, flow_state: dict):
+    admin_token = flow_state["admin_token"]
+    test2_db = module_session.query(User).filter(User.email == "test2@example.com").first()
+    
+    del_resp = module_client.delete(
+        f"/api/v1/admin/users/{test2_db.id}",
+        headers={"Authorization": f"Bearer {admin_token}"}
+    )
+    assert del_resp.status_code == 200
+
+def test_11_admin_get_user_by_email(module_client: TestClient, module_session: Session, flow_state: dict):
+    admin_token = flow_state["admin_token"]
+    resp = module_client.get(
+        "/api/v1/admin/users/test2@example.com",
+        headers={"Authorization": f"Bearer {admin_token}"}
+    )
+    assert resp.status_code == 200
+    assert resp.json()["email"] == "test2@example.com"

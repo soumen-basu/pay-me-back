@@ -57,3 +57,6 @@ class UserWithMagicLink(UserRead):
 class UserProfileOut(UserRead):
     has_password: bool
 
+class UserAdminView(UserRead):
+    session_count: int = 0
+    last_active_time: Optional[datetime] = None

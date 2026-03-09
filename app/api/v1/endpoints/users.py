@@ -47,7 +47,11 @@ def create_user(
             status_code=400,
             detail="Password must be 8-32 characters, with at least one uppercase, lowercase, number, and special character.",
         )
-    user = User.model_validate(user_in, update={"password_hash": get_password_hash(user_in.password)})
+    user = User.model_validate(user_in, update={
+        "password_hash": get_password_hash(user_in.password),
+        "role": "user",
+        "is_active": True
+    })
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -81,6 +85,11 @@ def update_user_me(
     """
     Update own user.
     """
+    update_data = user_in.model_dump(exclude_unset=True)
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields provided to update")
+        
+
     if user_in.password:
         if config.settings.ENFORCE_PASSWORD_COMPLEXITY and not validate_password_complexity(user_in.password):
             raise HTTPException(
@@ -105,44 +114,31 @@ def update_user_me(
         has_password=bool(current_user.password_hash)
     )
 
-@router.patch("/{user_id}", response_model=UserRead)
-def update_user(
-    *,
+@router.delete("/me")
+def delete_user_me(
     db: Session = Depends(deps.get_db),
-    user_id: int,
-    user_in: UserUpdateAdmin,
-    current_user: User = Depends(deps.get_current_active_superuser),
+    current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Update a user (admin only).
+    Deactivate own user.
     """
-    user = db.get(User, user_id)
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
-        
-    if user_in.password:
-        if config.settings.ENFORCE_PASSWORD_COMPLEXITY and not validate_password_complexity(user_in.password):
-            raise HTTPException(
-                status_code=400,
-                detail="Password must be 8-32 characters, with at least one uppercase, lowercase, number, and special character.",
-            )
-        user.password_hash = get_password_hash(user_in.password)
-        
-    if user_in.display_name is not None:
-        user.display_name = user_in.display_name
-    if user_in.role is not None:
-        user.role = user_in.role
-    if user_in.is_active is not None:
-        user.is_active = user_in.is_active
-        
-    db.add(user)
+    current_user.is_active = False
+    db.add(current_user)
     db.commit()
-    db.refresh(user)
-    return user
+    return {"msg": "User deactivated successfully"}
 
+@router.post("/me/sessions/invalidate")
+def invalidate_own_sessions(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Invalidate all sessions for the current user (Global Logout).
+    """
+    from app.models.user import Session as UserSession
+    deleted_count = db.query(UserSession).filter(UserSession.user_id == current_user.id).delete()
+    db.commit()
+    return {"msg": f"Successfully invalidated {deleted_count} sessions"}
 @router.get("/pending-magic-links", response_model=List[UserWithMagicLink])
 def read_pending_magic_links(
     db: Session = Depends(deps.get_db),

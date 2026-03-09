@@ -75,6 +75,10 @@ def request_magic_link(
     db.commit()
     
     magic_link = f"http://localhost:8000/verify?email={user.email}&token={token}"
+    # Dump link and token to console for easy testing during dev
+    print(f"\n[DEBUG] Magic Link Generated: {magic_link}")
+    print(f"[DEBUG] Raw Token: {token}\n")
+    
     # Temporary test override as requested
     subject = f"Login to {config.settings.PROJECT_NAME}"
     body_text = f"Hello,\n\nClick the link below to login to {config.settings.PROJECT_NAME}:\n{magic_link}\n\nThis link expires in {config.settings.MAGIC_LINK_EXPIRE_MINUTES} minutes."
