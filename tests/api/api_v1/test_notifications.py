@@ -63,11 +63,10 @@ def test_admin_create_broadcast_notification(
         params=data
     )
     assert r.status_code == 200
-    notifications = r.json()
-    assert len(notifications) > 0
-    assert notifications[0]["title"] == data["title"]
-    assert notifications[0]["content"] == data["content"]
-    assert "id" in notifications[0]
+    response_data = r.json()
+    assert "msg" in response_data
+    assert response_data["count"] > 0
+    assert response_data["msg"] == "Broadcast sent successfully"
 
 def test_admin_create_targeted_notification(
     client: TestClient, superuser_token_headers: dict, session: Session, normal_user_token_headers: dict

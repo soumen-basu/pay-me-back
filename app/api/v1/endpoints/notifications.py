@@ -58,7 +58,7 @@ def delete_notification(
     crud_notification.delete_notification(db, notification_id=id)
     return {"msg": "Notification deleted"}
 
-@router.post("/sys/broadcast", response_model=List[NotificationResponse])
+@router.post("/sys/broadcast")
 def send_system_broadcast(
     *,
     db: Session = Depends(deps.get_db),
@@ -81,7 +81,7 @@ def send_system_broadcast(
         notif = crud_notification.create_notification(db, obj_in=notif_in)
         created_notifications.append(notif)
         
-    return created_notifications
+    return {"msg": "Broadcast sent successfully", "count": len(created_notifications)}
     
 @router.post("/sys/target/{user_id}", response_model=NotificationResponse)
 def send_targeted_notification(
