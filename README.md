@@ -59,6 +59,41 @@ Stenella uses Docker-Compose for unified system orchestration.
    * View the React frontend: [http://localhost:3000](http://localhost:3000)
    * View the API docs (Swagger UI): [http://localhost:8000/docs](http://localhost:8000/docs)
 
+### Forking and Renaming (Template Strategy)
+
+Stenella is designed to be a base template for future projects. Instead of copying the directory, use Git to retain the ability to pull future upstream fixes.
+
+1. **Clone and Setup Remote:**
+   ```bash
+   git clone git@github.com:soumen-basu/stenella.git my-awesome-app
+   cd my-awesome-app
+   
+   # Rename the original reference to "upstream" so you can pull fixes later
+   git remote rename origin upstream
+   
+   # Add your new remote
+   git remote add origin git@github.com:soumen-basu/my-awesome-app.git
+   ```
+
+2. **Initialize the New Project Name:**
+   Run the initialization script to rename all internal references of "Stenella" to your new project name:
+   ```bash
+   ./init_project.sh my-awesome-app
+   ```
+   
+   Carefully review the changes using `git status` and `git diff`, test the build, then commit and push to your new origin.
+
+3. **Pulling Upstream Fixes (Later):**
+   If a bug is fixed in the core Stenella boilerplate, you can pull it into your new project:
+   ```bash
+   git fetch upstream
+   git merge upstream/main
+   ```
+
+### Continuous Integration (CI)
+
+This repository includes a default GitHub Actions workflow (`.github/workflows/test.yml`). When you push to `main` or open a Pull Request, it automatically provisions a secure runner, stands up the Docker containers, and executes the integration test suite (`run_tests.sh`). Ensure this workflow continues passing when you adapt the template.
+
 ### Viewing Logs
 To view the real-time logs for the API service, run:
 ```bash

@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     MAX_EMAILS_PER_USER_PER_DAY: int = 5
     MAX_GLOBAL_EMAILS_PER_DAY: int = 5000
     
+    # Notification Settings
+    NOTIFICATION_AUTO_DELETE_THRESHOLD: int = 100
+    NOTIFICATION_AUTO_DELETE_AMOUNT: int = 20
+    
     # AWS SES Settings
     AWS_SES_REGION: str = "us-east-1"
     AWS_ACCESS_KEY_ID: str | None = None

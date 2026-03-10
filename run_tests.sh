@@ -39,7 +39,7 @@ export DB_HOST=localhost
 export PYTHONPATH=.
 
 echo "Executing tests..."
-uv run pytest tests/api/api_v1/test_flows.py -v
+uv run pytest tests/ -v
 
 echo "Tests completed."
 echo "Leaving the test database running for manual inspection as requested."
