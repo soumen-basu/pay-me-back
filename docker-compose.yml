@@ -13,8 +13,10 @@ services:
   api:
     build: .
     env_file:
-      - env/local.env
+      - ${ENV_FILE:-env/local.env}
       - env/credentials.env
+    environment:
+      - DB_PORT=5432
     ports:
       - "${API_PORT}:8000"
     depends_on:
@@ -27,7 +29,7 @@ services:
   frontend:
     build: ./frontend
     env_file:
-      - env/local.env
+      - ${ENV_FILE:-env/local.env}
       - env/credentials.env
     ports:
       - "${FRONTEND_PORT}:3000"

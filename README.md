@@ -7,7 +7,8 @@ In the `dev` and `staging` modes, the changes made to the main Python code are a
 
 In `prod` mode, authentication is done using magic urls, or by using their password, if they have set it up.  Mails will be sent using the Resend API. 
 
-The app is dockerized and can be run using `docker compose --env-file env/local.env up -d --build`. 
+The app is dockerized and can be run using `ENV_FILE=env/local.env docker compose --env-file env/local.env up -d --build`. 
+You can specify different environment files (like `env/test.env` or `env/staging.env`) by changing the `ENV_FILE` and `--env-file` arguments. 
 
 Stopping the app can be done using `docker compose down`.
 
@@ -50,9 +51,9 @@ Stenella uses Docker-Compose for unified system orchestration.
    AWS_SES_SENDER_EMAIL=verified_sender@example.com
    ```
 
-2. Start the orchestrated containers using docker compose:
+2. Start the orchestrated containers using docker compose for your target environment (e.g., local):
    ```bash
-   docker compose --env-file env/local.env up -d --build
+   ENV_FILE=env/local.env docker compose --env-file env/local.env up -d --build
    ```
 
 3. Open your browser:
@@ -95,9 +96,9 @@ Stenella is designed to be a base template for future projects. Instead of copyi
 This repository includes a default GitHub Actions workflow (`.github/workflows/test.yml`). When you push to `main` or open a Pull Request, it automatically provisions a secure runner, stands up the Docker containers, and executes the integration test suite (`run_tests.sh`). Ensure this workflow continues passing when you adapt the template.
 
 ### Viewing Logs
-To view the real-time logs for the API service, run:
+To view the real-time logs for the API service, ensure you specify the correct environment file:
 ```bash
-docker compose --env-file env/local.env logs -f api
+ENV_FILE=env/local.env docker compose --env-file env/local.env logs -f api
 ```
 
 ### Shutdown
