@@ -4,7 +4,7 @@ set -e
 echo "Starting up the Postgres database for testing (test.env)..."
 # We only want to spin up the 'db' service, passing in test.env
 # We use docker compose with a project name to isolate it from the main app
-docker compose -p stenella_test --env-file env/test.env up -d db
+docker compose -p PayMeBack_test --env-file env/test.env up -d db
 
 echo "Waiting for the database to be ready..."
 sleep 5

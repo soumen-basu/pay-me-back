@@ -8,9 +8,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "stenella-cli",
-	Short: "A CLI tool for interacting with the Stenella API",
-	Long:  `A command line interface for managing Stenella backend services easily.`,
+	Use:   "PayMeBack-cli",
+	Short: "A CLI tool for interacting with the PayMeBack API",
+	Long:  `A command line interface for managing PayMeBack backend services easily.`,
 }
 
 // Execute is called by main.main().

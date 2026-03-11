@@ -44,7 +44,7 @@ function App() {
           <div className="logo-wrapper">
             <Activity />
           </div>
-          <h1>Stenella Webapp</h1>
+          <h1>PayMeBack Webapp</h1>
           <p className="subtitle">High-performance framework foundation</p>
         </div>
 

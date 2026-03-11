@@ -20,7 +20,7 @@ func init() {
 
 var metricsCmd = &cobra.Command{
 	Use:   "metrics",
-	Short: "Retrieve Stenella usage metrics",
+	Short: "Retrieve PayMeBack usage metrics",
 	Long:  `Subcommands for viewing daily active users, monthly active users, and sessions.`,
 }
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/soumen-basu/stenella/internal/cli/client"
+	"github.com/soumen-basu/pay-me-back/internal/cli/client"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +31,7 @@ var authCmd = &cobra.Command{
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "Login to Stenella API",
+	Short: "Login to PayMeBack API",
 	Long:  `Authenticate with the backend to receive a Bearer token.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := client.NewClientWithResponses("http://localhost:8000")

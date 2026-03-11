@@ -1,4 +1,4 @@
-module github.com/soumen-basu/stenella
+module github.com/soumen-basu/PayMeBack
 
 go 1.22.5
 

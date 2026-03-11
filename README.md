@@ -1,6 +1,27 @@
-# Stenella - Foundation for a WebApp
+# PayMeBack - A Simple Expense Manager
 
-## What is Stenella?
+## What is PayMeBack?
+PayMeBack is a webapp that allows users to manage their expenses.  It has a simple admin interface that allows admins to manage users, and a simple user interface that allows users to manage their expenses.
+
+### Tech Stack
+- Backend: FastAPI
+- Frontend: React
+- Database: PostgreSQL
+- Containerization: Docker
+- Orchestration: Docker Compose
+
+## Core Functionality
+
+### Admin Functionality
+Admins can create, modify or delete users, and can also invalidate a users sessions.  Admins have access to dashboards and reports of Daily Active Users, Monthly Active Users, Signups, and other tracking metrics.
+
+### Login Functionality
+Users can be created directly by admins, else users can sign up via magic email link.  Users can view their own profile page, where they can set an optional password, and can set their display name (default is their email ID).  
+
+### Expense Functionality
+Users can add expenses, tagged with their own categories.  They can group a set of expenses into a bag or report, and send it to someone to be paid back. This is ideal for a college student to track their expenses and ask their parents to **Pay Me Back**.  Once submitted the parent and student can add comments on the expenses for clarifications or modifications.  Once the parent is clear about any expense, they can tick it as done (or reject it for some reason).  Once all expenses in a report are either approved or rejected, the report is closed, and the parent can finally **Pay The Student Back**.  Rejected expenses are returned to the pool of open expenses, approved expenses are removed and the bag/report is archived.
+
+## Configuration - Environments
 This is a basic foundation for a webapp that has configurations for different environments (development, staging, production) and is dockerized.  It is a starting point for a webapp that can be used to build upon.
 
 In the `dev` and `staging` modes, the changes made to the main Python code are automatically picked up.  Authentication is not done using mails, but by logging the secret url for the user in the DB.  The admin can view the list of users and their secret urls, and can also add new users directly.
@@ -16,18 +37,18 @@ The basic app has a `/` endpoint that checks the connection to the database and 
 It has a `/me` page which is only shown to authenticated users. It returns the user's email, name (if set, else an option to set it), and an option to set/reset their password. 
 The `/admin` page lists all users and their secret urls.  
 
-# Stenella - Foundation for a WebApp
+# PayMeBack - Technical Overview
 
-## What is Stenella?
-Stenella is a highly responsive, high-performance base web framework designed for rapid web application development. It comes properly dockerized right off the shelf, with distinct separations of concern.
+## What is PayMeBack?
+PayMeBack is a webapp that allows users to manage their expenses.  It has a simple admin interface that allows admins to manage users, and a simple user interface that allows users to manage their expenses.  It is based on the [Stenella](https://github.com/soumen-basu/stenella) web app template.  This template provides basic user authentication, and a dockerized, configuration driven environment for the app.
 
-In its current state, Stenella consists of:
+In its current state, PayMeBack consists of:
 - **FastAPI Backend (`/app`)**: Provides high-performance, asynchronous endpoints connecting securely to PostgreSQL. 
 - **Vite + React Frontend (`/frontend`)**: A decoupled, modern web user interface, employing glassmorphism aesthetics.
 - **PostgreSQL (`/db`)**: Containerized local database. 
 
 ## High Level Architecture
-Stenella takes a clean, decoupled approach by strictly physicalizing the split between backend and frontend. 
+PayMeBack takes a clean, decoupled approach by strictly physicalizing the split between backend and frontend. 
 - API service runs natively on port `8000`. 
 - The React application is built through Vite and served to port `3000`.
 - CORS (Cross-Origin Resource Sharing) is configured via standard `.env` configuration allowing native connectivity between the frontend interface and the API models inside the development docker environment.
@@ -35,7 +56,7 @@ Stenella takes a clean, decoupled approach by strictly physicalizing the split b
 ## Getting Started
 
 ### Prerequisites
-Stenella uses Docker-Compose for unified system orchestration. 
+PayMeBack uses Docker-Compose for unified system orchestration. 
 
 ### Bootstrapping your Environment
 
@@ -62,11 +83,11 @@ Stenella uses Docker-Compose for unified system orchestration.
 
 ### Forking and Renaming (Template Strategy)
 
-Stenella is designed to be a base template for future projects. Instead of copying the directory, use Git to retain the ability to pull future upstream fixes.
+PayMeBack is designed to be a base template for future projects. Instead of copying the directory, use Git to retain the ability to pull future upstream fixes.
 
 1. **Clone and Setup Remote:**
    ```bash
-   git clone git@github.com:soumen-basu/stenella.git my-awesome-app
+   git clone git@github.com:soumen-basu/PayMeBack.git my-awesome-app
    cd my-awesome-app
    
    # Rename the original reference to "upstream" so you can pull fixes later
@@ -77,7 +98,7 @@ Stenella is designed to be a base template for future projects. Instead of copyi
    ```
 
 2. **Initialize the New Project Name:**
-   Run the initialization script to rename all internal references of "Stenella" to your new project name:
+   Run the initialization script to rename all internal references of "PayMeBack" to your new project name:
    ```bash
    ./init_project.sh my-awesome-app
    ```
@@ -85,7 +106,7 @@ Stenella is designed to be a base template for future projects. Instead of copyi
    Carefully review the changes using `git status` and `git diff`, test the build, then commit and push to your new origin.
 
 3. **Pulling Upstream Fixes (Later):**
-   If a bug is fixed in the core Stenella boilerplate, you can pull it into your new project:
+   If a bug is fixed in the core PayMeBack boilerplate, you can pull it into your new project:
    ```bash
    git fetch upstream
    git merge upstream/main
@@ -102,7 +123,7 @@ ENV_FILE=env/local.env docker compose --env-file env/local.env logs -f api
 ```
 
 ### Shutdown
-To stop all Stenella services, run:
+To stop all PayMeBack services, run:
 ```bash
 docker compose down
 ```

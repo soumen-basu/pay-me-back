@@ -2,16 +2,31 @@
 trigger: always_on
 ---
 
-# Stenella
+# PayMeBack
 
-This is meant to be a base webapp foundation on which applications can be built. 
+A simple expense manager webapp, built on top of the [Stenella](https://github.com/soumen-basu/stenella) web app template.
 
 ## Objectives
 1. Provide a basic webapp that has an integrated database, has a public landing page, a login page where users can login, and a profile page that allows the user to view/edit their display name and password. 
 2. Create an API for the backend user creation.
 
 
-## Requirements
+## Core Functionality
+
+### Admin Functionality
+Admins can create, modify or delete users, and can also invalidate a users sessions.  Admins have access to dashboards and reports of Daily Active Users, Monthly Active Users, Signups, and other tracking metrics.
+
+### Login Functionality
+Users can be created directly by admins, else users can sign up via magic email link.  Users can view their own profile page, where they can set an optional password, and can set their display name (default is their email ID).  
+
+### Expense Functionality
+Users can add expenses, tagged with their own categories.  They can group a set of expenses into a bag or report, and send it to someone to be paid back. This is ideal for a college student to track their expenses and ask their parents to **Pay Me Back**.  Once submitted the parent and student can add comments on the expenses for clarifications or modifications.  Once the parent is clear about any expense, they can tick it as done (or reject it for some reason).  Once all expenses in a report are either approved or rejected, the report is closed, and the parent can finally **Pay The Student Back**.  Rejected expenses are returned to the pool of open expenses, approved expenses are removed and the bag/report is archived.
+
+
+## Technical Requirements
+
+These are derived from the [Stenella](https://github.com/soumen-basu/stenella) web app template.
+
 ### Integrated DB
 1. There must be an integrated DB for the persistent logic that will be built.  There must be a user table, which tracks a user's email, display name (optional) and password (optional), and the time at which their authentication will expire.
 2. User session information can also be stored in the DB.  
@@ -46,5 +61,5 @@ The backend `GET /api/v1/auth/verify` endpoint validates the email and token. It
 ### Profile ('/me')
 Display the user's profile page.  Display their email ID.  Show the display name if set, or allow the user to set their display name.  Show a checked box if their password is set.  Provide a mechanism to update their password if they wish.  Use standard password checking constraints (8-32 chars, lower and upper alpha, numeric, special character required.).
 
-### API 
-Create an API for the backend. A user can login with their username (email) and password.  If a user has the admin role, they can manage users.  (CRUD on all users).  A regular user with the 'User' role can only view their own profile, and can update their password and display name.
+## API 
+Define an API for operation on the defined models.   All business functionality should be exposed via the API.  Frontend should only be used for display and user interaction, and not for business logic. a

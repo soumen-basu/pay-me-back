@@ -71,7 +71,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to Stenella API", "docs": "/docs"}
+    return {"message": "Welcome to PayMeBack API", "docs": "/docs"}
 
 @app.get("/health")
 def health_check(db: Session = Depends(deps.get_db)) -> dict[str, str]:

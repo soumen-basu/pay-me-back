@@ -1,7 +1,7 @@
 .PHONY: all generate build clean init-go
 
 # The name of our generated binary
-CLI_BIN = stenella-cli
+CLI_BIN = PayMeBack-cli
 
 # Tools installation target
 init-go:
@@ -24,7 +24,7 @@ generate: export-api
 # Build the CLI application
 build: generate
 	@echo "Building $(CLI_BIN)..."
-	go build -o $(CLI_BIN) ./cmd/stenella-cli
+	go build -o $(CLI_BIN) ./cmd/PayMeBack-cli
 
 # Clean up
 clean:

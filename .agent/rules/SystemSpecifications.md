@@ -2,7 +2,7 @@
 trigger: always_on
 ---
 
-# Project Stenella
+# Project PayMeBack
 
 ## Overview
 Base framework for creating apps, using Docker for standard deployments using CI/CD, and configuration driven development, so that mocks and stubs can be used in Development and Test environments, and real external APIs are used in Staging and Prod environments.

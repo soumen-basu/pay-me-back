@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/soumen-basu/stenella/internal/cli/client"
+	"github.com/soumen-basu/pay-me-back/internal/cli/client"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +27,7 @@ func init() {
 
 var adminCmd = &cobra.Command{
 	Use:   "admin",
-	Short: "Admin operations for Stenella API",
+	Short: "Admin operations for PayMeBack API",
 	Long:  `Subcommands for performing administrative tasks.`,
 }
 

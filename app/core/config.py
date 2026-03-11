@@ -4,14 +4,14 @@ from pydantic import AnyHttpUrl, validator
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "Stenella"
+    PROJECT_NAME: str = "PayMeBack"
     
     # Database Config
     DB_HOST: str = "localhost"
     DB_PORT: str = "5432"
     DB_USER: str = "spinner"
     DB_PASSWORD: str = ""
-    DB_NAME: str = "stenella"
+    DB_NAME: str = "PayMeBack"
     DATABASE_URL: str | None = None
 
     @validator("DATABASE_URL", pre=True, always=True)

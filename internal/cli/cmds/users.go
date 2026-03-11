@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/soumen-basu/stenella/internal/cli/client"
+	"github.com/soumen-basu/pay-me-back/internal/cli/client"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +22,7 @@ func init() {
 
 var usersCmd = &cobra.Command{
 	Use:   "users",
-	Short: "Manage Stenella users",
+	Short: "Manage PayMeBack users",
 	Long:  `Subcommands for interacting with the user management endpoints.`,
 }
 
