@@ -186,7 +186,7 @@ def test_05_create_test2_as_user_with_password(module_client: TestClient, module
         "display_name": "Test2"
     }
     create_resp = module_client.post(
-        "/api/v1/users",
+        "/api/v1/admin/users",
         headers={"Authorization": f"Bearer {admin_token}"},
         json=new_user_data
     )

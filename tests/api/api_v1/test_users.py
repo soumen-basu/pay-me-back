@@ -96,7 +96,7 @@ def test_update_user_admin(client: TestClient, session: Session):
     
     # Admin updates target user
     update_response = client.patch(
-        f"/api/v1/users/{target_user.id}",
+        f"/api/v1/admin/users/{target_user.id}",
         headers={"Authorization": f"Bearer {admin_token}"},
         json={
             "display_name": "Target New",
@@ -115,3 +115,23 @@ def test_update_user_admin(client: TestClient, session: Session):
     assert target_user.display_name == "Target New"
     assert target_user.role == "admin"
     assert target_user.is_active is False
+
+def test_read_users_as_normal_user_fails(client: TestClient, session: Session):
+    normal_user = User(email="normal_read@example.com", password_hash=get_password_hash("normalPass1!"), role="user", is_active=True)
+    session.add(normal_user)
+    session.commit()
+    
+    login_response = client.post(
+        "/api/v1/auth/access-token",
+        data={"username": "normal_read@example.com", "password": "normalPass1!"}
+    )
+    token = login_response.json()["access_token"]
+    
+    # Attempt to list all users
+    response = client.get(
+        "/api/v1/users/",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    
+    assert response.status_code == 403
+    assert "The user doesn't have enough privileges" in response.json()["detail"]
