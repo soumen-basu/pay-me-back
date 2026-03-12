@@ -81,6 +81,12 @@ PayMeBack uses Docker-Compose for unified system orchestration.
    * View the React frontend: [http://localhost:3000](http://localhost:3000)
    * View the API docs (Swagger UI): [http://localhost:8000/docs](http://localhost:8000/docs)
 
+4. **Run Integration Tests:**
+   You can verify the backend is functioning correctly by running the integration test suite. Ensure the containers are running and execute:
+   ```bash
+   ./run_tests.sh
+   ```
+
 ### Forking and Renaming (Template Strategy)
 
 PayMeBack is designed to be a base template for future projects. Instead of copying the directory, use Git to retain the ability to pull future upstream fixes.

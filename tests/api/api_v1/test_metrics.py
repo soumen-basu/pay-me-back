@@ -57,11 +57,19 @@ def test_admin_metrics_endpoints(client: TestClient, session: Session):
     admin_token = login_response.json()["access_token"]
     headers = {"Authorization": f"Bearer {admin_token}"}
     
+    # Create users to satisfy foreign key constraints
+    test_user1 = User(email="test_metric1@example.com", is_active=True)
+    test_user2 = User(email="test_metric2@example.com", is_active=True)
+    session.add(test_user1)
+    session.add(test_user2)
+    session.commit()
+    
     # Seed historical DAU/MAU data manually
-    test_user_id = 999
+    test_user_id = test_user1.id
+    user2_id = test_user2.id
     session.add(UserActivity(user_id=test_user_id, date=datetime.utcnow().date()))
     session.add(UserActivity(user_id=test_user_id, date=datetime.utcnow().date() - timedelta(days=5)))
-    session.add(UserActivity(user_id=888, date=datetime.utcnow().date() - timedelta(days=5)))
+    session.add(UserActivity(user_id=user2_id, date=datetime.utcnow().date() - timedelta(days=5)))
     session.commit()
     
     # Verify DAU (Today) -> 2 (the admin hit /me indirectly when checking roles + test_user_id)

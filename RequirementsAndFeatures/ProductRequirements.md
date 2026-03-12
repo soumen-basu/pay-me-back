@@ -31,6 +31,11 @@ These are derived from the [Stenella](https://github.com/soumen-basu/stenella) w
 1. There must be an integrated DB for the persistent logic that will be built.  There must be a user table, which tracks a user's email, display name (optional) and password (optional), and the time at which their authentication will expire.
 2. User session information can also be stored in the DB.  
 3. User authentication should be valid only for 5 minutes, session data should be expired after 1 week since the last login.
+4. Additional Business Data Tables:
+   - `categories`: User-specific tags (e.g. name, user_id, is_active flag).
+   - `expenses`: Individual tracked expenses (e.g. amount, description, date, category_name, claim association, status).
+   - `claims`: "Bags" or reports grouping expenses together for reimbursement (e.g. title, submitter_id, approver_emails, status).
+   - `comments`: Conversation threads linked to specific expenses or claims.
 
 
 ### Docker Setup
@@ -62,4 +67,12 @@ The backend `GET /api/v1/auth/verify` endpoint validates the email and token. It
 Display the user's profile page.  Display their email ID.  Show the display name if set, or allow the user to set their display name.  Show a checked box if their password is set.  Provide a mechanism to update their password if they wish.  Use standard password checking constraints (8-32 chars, lower and upper alpha, numeric, special character required.).
 
 ## API 
-Define an API for operation on the defined models.   All business functionality should be exposed via the API.  Frontend should only be used for display and user interaction, and not for business logic. a
+Define an API for operation on the defined models.   All business functionality should be exposed via the API.  Frontend should only be used for display and user interaction, and not for business logic.
+
+### Core Business APIs
+- `GET/POST/DELETE /categories`: Manage user-specific categories.
+- `GET/POST/PATCH/DELETE /expenses`: Manage individual expenses. Access restricted to the owner or assigned claim approvers.
+- `GET/POST/PATCH /claims`: Manage claims (reports) and submit them to approvers.
+- `PATCH /claims/{id}/expenses/{expense_id}/status`: Action for approvers to mark individual expenses as OPEN, APPROVED, or REJECTED.
+- `POST /claims/{id}/close`: Finalizes a claim.
+- `POST /expenses/{id}/comments` and `POST /claims/{id}/comments`: Add discussion comments.

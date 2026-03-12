@@ -19,6 +19,7 @@ def session_fixture():
         engine = create_engine(
             "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
         )
+    SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
@@ -52,10 +53,10 @@ def test_01_admin_login_count_users(module_client: TestClient, module_session: S
     module_session.commit()
 
     # Ensure default admin exists
-    admin = module_session.query(User).filter(User.email == "admin@example.com").first()
+    admin = module_session.query(User).filter(User.email == "flow_admin@example.com").first()
     if not admin:
         admin = User(
-            email="admin@example.com",
+            email="flow_admin@example.com",
             password_hash=get_password_hash("spinner"),
             role="admin",
             is_active=True
@@ -67,7 +68,7 @@ def test_01_admin_login_count_users(module_client: TestClient, module_session: S
     # Login as default admin
     response = module_client.post(
         "/api/v1/auth/access-token",
-        data={"username": "admin@example.com", "password": "spinner"}
+        data={"username": "flow_admin@example.com", "password": "spinner"}
     )
     assert response.status_code == 200, "Admin login failed"
     token = response.json()["access_token"]
@@ -86,11 +87,11 @@ def test_01_admin_login_count_users(module_client: TestClient, module_session: S
     flow_state["initial_users_list"] = users_list
 
 def test_02_other_admin_verify_users(module_client: TestClient, module_session: Session, flow_state: dict):
-    # For this test, we log in as the same admin (admin@example.com) per the strategy document snippet,
-    # or another admin if one existed. The strategy said "Then login as admin@example.com/spinner".
+    # For this test, we log in as the same admin (flow_admin@example.com) per the strategy document snippet,
+    # or another admin if one existed.
     response = module_client.post(
         "/api/v1/auth/access-token",
-        data={"username": "admin@example.com", "password": "spinner"}
+        data={"username": "flow_admin@example.com", "password": "spinner"}
     )
     assert response.status_code == 200
     token = response.json()["access_token"]

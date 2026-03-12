@@ -74,10 +74,16 @@ def test_pending_magic_links_admin(client: TestClient, session: Session):
     )
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 1
-    assert data[0]["email"] == "pending@example.com"
-    assert data[0]["magic_token"] == "token123"
-    assert "magic_token_expires_at" in data[0]
+    assert len(data) >= 1
+    
+    found = False
+    for user_info in data:
+        if user_info["email"] == "pending@example.com":
+            found = True
+            assert user_info["magic_token"] == "token123"
+            assert "magic_token_expires_at" in user_info
+            
+    assert found, "Pending user not found in list"
 
 def test_request_magic_link_rate_limit(client: TestClient, session: Session):
     email = "ratelimit@example.com"

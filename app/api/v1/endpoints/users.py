@@ -119,3 +119,18 @@ def read_pending_magic_links(
     """
     users = db.query(User).filter(User.magic_token.isnot(None)).filter(User.magic_token_expires_at > datetime.utcnow()).all()
     return users
+
+from sqlmodel import select
+
+@router.get("/recent-contacts", response_model=List[str])
+def get_recent_contacts(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Retrieve recently used contacts (or all active users for MVP).
+    """
+    users = db.exec(select(User).where(User.is_active == True)).all()
+    emails = [u.email for u in users if u.id != current_user.id]
+    return emails
+
