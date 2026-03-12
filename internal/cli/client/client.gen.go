@@ -52,6 +52,16 @@ type MetricCount struct {
 	Count int `json:"count"`
 }
 
+// NotificationResponse defines model for NotificationResponse.
+type NotificationResponse struct {
+	Content   string             `json:"content"`
+	CreatedAt string             `json:"created_at"`
+	Id        openapi_types.UUID `json:"id"`
+	IsRead    *bool              `json:"is_read,omitempty"`
+	Title     string             `json:"title"`
+	UserId    int                `json:"user_id"`
+}
+
 // SessionMetrics defines model for SessionMetrics.
 type SessionMetrics struct {
 	TotalActiveSessions int `json:"total_active_sessions"`
@@ -168,6 +178,24 @@ type GetDailySignupsApiV1MetricsSignupsGetParams struct {
 	Days *int `form:"days,omitempty" json:"days,omitempty"`
 }
 
+// ReadNotificationsApiV1NotificationsGetParams defines parameters for ReadNotificationsApiV1NotificationsGet.
+type ReadNotificationsApiV1NotificationsGetParams struct {
+	Skip  *int `form:"skip,omitempty" json:"skip,omitempty"`
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// SendSystemBroadcastApiV1NotificationsSysBroadcastPostParams defines parameters for SendSystemBroadcastApiV1NotificationsSysBroadcastPost.
+type SendSystemBroadcastApiV1NotificationsSysBroadcastPostParams struct {
+	Title   string `form:"title" json:"title"`
+	Content string `form:"content" json:"content"`
+}
+
+// SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostParams defines parameters for SendTargetedNotificationApiV1NotificationsSysTargetUserIdPost.
+type SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostParams struct {
+	Title   string `form:"title" json:"title"`
+	Content string `form:"content" json:"content"`
+}
+
 // ReadUsersApiV1UsersGetParams defines parameters for ReadUsersApiV1UsersGet.
 type ReadUsersApiV1UsersGetParams struct {
 	Skip  *int `form:"skip,omitempty" json:"skip,omitempty"`
@@ -185,9 +213,6 @@ type LoginAccessTokenApiV1AuthAccessTokenPostFormdataRequestBody = BodyLoginAcce
 
 // RequestMagicLinkApiV1AuthMagicLinkPostJSONRequestBody defines body for RequestMagicLinkApiV1AuthMagicLinkPost for application/json ContentType.
 type RequestMagicLinkApiV1AuthMagicLinkPostJSONRequestBody = MagicLinkRequest
-
-// CreateUserApiV1UsersPostJSONRequestBody defines body for CreateUserApiV1UsersPost for application/json ContentType.
-type CreateUserApiV1UsersPostJSONRequestBody = UserCreate
 
 // UpdateUserMeApiV1UsersMePatchJSONRequestBody defines body for UpdateUserMeApiV1UsersMePatch for application/json ContentType.
 type UpdateUserMeApiV1UsersMePatchJSONRequestBody = UserUpdate
@@ -380,13 +405,23 @@ type ClientInterface interface {
 	// GetDailySignupsApiV1MetricsSignupsGet request
 	GetDailySignupsApiV1MetricsSignupsGet(ctx context.Context, params *GetDailySignupsApiV1MetricsSignupsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ReadNotificationsApiV1NotificationsGet request
+	ReadNotificationsApiV1NotificationsGet(ctx context.Context, params *ReadNotificationsApiV1NotificationsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SendSystemBroadcastApiV1NotificationsSysBroadcastPost request
+	SendSystemBroadcastApiV1NotificationsSysBroadcastPost(ctx context.Context, params *SendSystemBroadcastApiV1NotificationsSysBroadcastPostParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SendTargetedNotificationApiV1NotificationsSysTargetUserIdPost request
+	SendTargetedNotificationApiV1NotificationsSysTargetUserIdPost(ctx context.Context, userId int, params *SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteNotificationApiV1NotificationsIdDelete request
+	DeleteNotificationApiV1NotificationsIdDelete(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MarkNotificationReadApiV1NotificationsIdReadPatch request
+	MarkNotificationReadApiV1NotificationsIdReadPatch(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ReadUsersApiV1UsersGet request
 	ReadUsersApiV1UsersGet(ctx context.Context, params *ReadUsersApiV1UsersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateUserApiV1UsersPostWithBody request with any body
-	CreateUserApiV1UsersPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateUserApiV1UsersPost(ctx context.Context, body CreateUserApiV1UsersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteUserMeApiV1UsersMeDelete request
 	DeleteUserMeApiV1UsersMeDelete(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -637,32 +672,68 @@ func (c *Client) GetDailySignupsApiV1MetricsSignupsGet(ctx context.Context, para
 	return c.Client.Do(req)
 }
 
+func (c *Client) ReadNotificationsApiV1NotificationsGet(ctx context.Context, params *ReadNotificationsApiV1NotificationsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReadNotificationsApiV1NotificationsGetRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SendSystemBroadcastApiV1NotificationsSysBroadcastPost(ctx context.Context, params *SendSystemBroadcastApiV1NotificationsSysBroadcastPostParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSendSystemBroadcastApiV1NotificationsSysBroadcastPostRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SendTargetedNotificationApiV1NotificationsSysTargetUserIdPost(ctx context.Context, userId int, params *SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSendTargetedNotificationApiV1NotificationsSysTargetUserIdPostRequest(c.Server, userId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteNotificationApiV1NotificationsIdDelete(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteNotificationApiV1NotificationsIdDeleteRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) MarkNotificationReadApiV1NotificationsIdReadPatch(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMarkNotificationReadApiV1NotificationsIdReadPatchRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) ReadUsersApiV1UsersGet(ctx context.Context, params *ReadUsersApiV1UsersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewReadUsersApiV1UsersGetRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateUserApiV1UsersPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateUserApiV1UsersPostRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateUserApiV1UsersPost(ctx context.Context, body CreateUserApiV1UsersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateUserApiV1UsersPostRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1354,6 +1425,260 @@ func NewGetDailySignupsApiV1MetricsSignupsGetRequest(server string, params *GetD
 	return req, nil
 }
 
+// NewReadNotificationsApiV1NotificationsGetRequest generates requests for ReadNotificationsApiV1NotificationsGet
+func NewReadNotificationsApiV1NotificationsGetRequest(server string, params *ReadNotificationsApiV1NotificationsGetParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/notifications/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Skip != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "skip", *params.Skip, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSendSystemBroadcastApiV1NotificationsSysBroadcastPostRequest generates requests for SendSystemBroadcastApiV1NotificationsSysBroadcastPost
+func NewSendSystemBroadcastApiV1NotificationsSysBroadcastPostRequest(server string, params *SendSystemBroadcastApiV1NotificationsSysBroadcastPostParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/notifications/sys/broadcast")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "title", params.Title, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "content", params.Content, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSendTargetedNotificationApiV1NotificationsSysTargetUserIdPostRequest generates requests for SendTargetedNotificationApiV1NotificationsSysTargetUserIdPost
+func NewSendTargetedNotificationApiV1NotificationsSysTargetUserIdPostRequest(server string, userId int, params *SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "user_id", userId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/notifications/sys/target/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "title", params.Title, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "content", params.Content, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteNotificationApiV1NotificationsIdDeleteRequest generates requests for DeleteNotificationApiV1NotificationsIdDelete
+func NewDeleteNotificationApiV1NotificationsIdDeleteRequest(server string, id openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/notifications/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewMarkNotificationReadApiV1NotificationsIdReadPatchRequest generates requests for MarkNotificationReadApiV1NotificationsIdReadPatch
+func NewMarkNotificationReadApiV1NotificationsIdReadPatchRequest(server string, id openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/notifications/%s/read", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewReadUsersApiV1UsersGetRequest generates requests for ReadUsersApiV1UsersGet
 func NewReadUsersApiV1UsersGetRequest(server string, params *ReadUsersApiV1UsersGetParams) (*http.Request, error) {
 	var err error
@@ -1415,46 +1740,6 @@ func NewReadUsersApiV1UsersGetRequest(server string, params *ReadUsersApiV1Users
 	if err != nil {
 		return nil, err
 	}
-
-	return req, nil
-}
-
-// NewCreateUserApiV1UsersPostRequest calls the generic CreateUserApiV1UsersPost builder with application/json body
-func NewCreateUserApiV1UsersPostRequest(server string, body CreateUserApiV1UsersPostJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewCreateUserApiV1UsersPostRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewCreateUserApiV1UsersPostRequestWithBody generates requests for CreateUserApiV1UsersPost with any type of body
-func NewCreateUserApiV1UsersPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/users/")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -1730,13 +2015,23 @@ type ClientWithResponsesInterface interface {
 	// GetDailySignupsApiV1MetricsSignupsGetWithResponse request
 	GetDailySignupsApiV1MetricsSignupsGetWithResponse(ctx context.Context, params *GetDailySignupsApiV1MetricsSignupsGetParams, reqEditors ...RequestEditorFn) (*GetDailySignupsApiV1MetricsSignupsGetResponse, error)
 
+	// ReadNotificationsApiV1NotificationsGetWithResponse request
+	ReadNotificationsApiV1NotificationsGetWithResponse(ctx context.Context, params *ReadNotificationsApiV1NotificationsGetParams, reqEditors ...RequestEditorFn) (*ReadNotificationsApiV1NotificationsGetResponse, error)
+
+	// SendSystemBroadcastApiV1NotificationsSysBroadcastPostWithResponse request
+	SendSystemBroadcastApiV1NotificationsSysBroadcastPostWithResponse(ctx context.Context, params *SendSystemBroadcastApiV1NotificationsSysBroadcastPostParams, reqEditors ...RequestEditorFn) (*SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse, error)
+
+	// SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostWithResponse request
+	SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostWithResponse(ctx context.Context, userId int, params *SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostParams, reqEditors ...RequestEditorFn) (*SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse, error)
+
+	// DeleteNotificationApiV1NotificationsIdDeleteWithResponse request
+	DeleteNotificationApiV1NotificationsIdDeleteWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteNotificationApiV1NotificationsIdDeleteResponse, error)
+
+	// MarkNotificationReadApiV1NotificationsIdReadPatchWithResponse request
+	MarkNotificationReadApiV1NotificationsIdReadPatchWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*MarkNotificationReadApiV1NotificationsIdReadPatchResponse, error)
+
 	// ReadUsersApiV1UsersGetWithResponse request
 	ReadUsersApiV1UsersGetWithResponse(ctx context.Context, params *ReadUsersApiV1UsersGetParams, reqEditors ...RequestEditorFn) (*ReadUsersApiV1UsersGetResponse, error)
-
-	// CreateUserApiV1UsersPostWithBodyWithResponse request with any body
-	CreateUserApiV1UsersPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserApiV1UsersPostResponse, error)
-
-	CreateUserApiV1UsersPostWithResponse(ctx context.Context, body CreateUserApiV1UsersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserApiV1UsersPostResponse, error)
 
 	// DeleteUserMeApiV1UsersMeDeleteWithResponse request
 	DeleteUserMeApiV1UsersMeDeleteWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteUserMeApiV1UsersMeDeleteResponse, error)
@@ -2100,6 +2395,121 @@ func (r GetDailySignupsApiV1MetricsSignupsGetResponse) StatusCode() int {
 	return 0
 }
 
+type ReadNotificationsApiV1NotificationsGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]NotificationResponse
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r ReadNotificationsApiV1NotificationsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReadNotificationsApiV1NotificationsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *NotificationResponse
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteNotificationApiV1NotificationsIdDeleteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteNotificationApiV1NotificationsIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteNotificationApiV1NotificationsIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type MarkNotificationReadApiV1NotificationsIdReadPatchResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *NotificationResponse
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r MarkNotificationReadApiV1NotificationsIdReadPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r MarkNotificationReadApiV1NotificationsIdReadPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ReadUsersApiV1UsersGetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2117,29 +2527,6 @@ func (r ReadUsersApiV1UsersGetResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ReadUsersApiV1UsersGetResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type CreateUserApiV1UsersPostResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *UserRead
-	JSON422      *HTTPValidationError
-}
-
-// Status returns HTTPResponse.Status
-func (r CreateUserApiV1UsersPostResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CreateUserApiV1UsersPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2446,6 +2833,51 @@ func (c *ClientWithResponses) GetDailySignupsApiV1MetricsSignupsGetWithResponse(
 	return ParseGetDailySignupsApiV1MetricsSignupsGetResponse(rsp)
 }
 
+// ReadNotificationsApiV1NotificationsGetWithResponse request returning *ReadNotificationsApiV1NotificationsGetResponse
+func (c *ClientWithResponses) ReadNotificationsApiV1NotificationsGetWithResponse(ctx context.Context, params *ReadNotificationsApiV1NotificationsGetParams, reqEditors ...RequestEditorFn) (*ReadNotificationsApiV1NotificationsGetResponse, error) {
+	rsp, err := c.ReadNotificationsApiV1NotificationsGet(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReadNotificationsApiV1NotificationsGetResponse(rsp)
+}
+
+// SendSystemBroadcastApiV1NotificationsSysBroadcastPostWithResponse request returning *SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse
+func (c *ClientWithResponses) SendSystemBroadcastApiV1NotificationsSysBroadcastPostWithResponse(ctx context.Context, params *SendSystemBroadcastApiV1NotificationsSysBroadcastPostParams, reqEditors ...RequestEditorFn) (*SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse, error) {
+	rsp, err := c.SendSystemBroadcastApiV1NotificationsSysBroadcastPost(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse(rsp)
+}
+
+// SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostWithResponse request returning *SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse
+func (c *ClientWithResponses) SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostWithResponse(ctx context.Context, userId int, params *SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostParams, reqEditors ...RequestEditorFn) (*SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse, error) {
+	rsp, err := c.SendTargetedNotificationApiV1NotificationsSysTargetUserIdPost(ctx, userId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse(rsp)
+}
+
+// DeleteNotificationApiV1NotificationsIdDeleteWithResponse request returning *DeleteNotificationApiV1NotificationsIdDeleteResponse
+func (c *ClientWithResponses) DeleteNotificationApiV1NotificationsIdDeleteWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteNotificationApiV1NotificationsIdDeleteResponse, error) {
+	rsp, err := c.DeleteNotificationApiV1NotificationsIdDelete(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteNotificationApiV1NotificationsIdDeleteResponse(rsp)
+}
+
+// MarkNotificationReadApiV1NotificationsIdReadPatchWithResponse request returning *MarkNotificationReadApiV1NotificationsIdReadPatchResponse
+func (c *ClientWithResponses) MarkNotificationReadApiV1NotificationsIdReadPatchWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*MarkNotificationReadApiV1NotificationsIdReadPatchResponse, error) {
+	rsp, err := c.MarkNotificationReadApiV1NotificationsIdReadPatch(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMarkNotificationReadApiV1NotificationsIdReadPatchResponse(rsp)
+}
+
 // ReadUsersApiV1UsersGetWithResponse request returning *ReadUsersApiV1UsersGetResponse
 func (c *ClientWithResponses) ReadUsersApiV1UsersGetWithResponse(ctx context.Context, params *ReadUsersApiV1UsersGetParams, reqEditors ...RequestEditorFn) (*ReadUsersApiV1UsersGetResponse, error) {
 	rsp, err := c.ReadUsersApiV1UsersGet(ctx, params, reqEditors...)
@@ -2453,23 +2885,6 @@ func (c *ClientWithResponses) ReadUsersApiV1UsersGetWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParseReadUsersApiV1UsersGetResponse(rsp)
-}
-
-// CreateUserApiV1UsersPostWithBodyWithResponse request with arbitrary body returning *CreateUserApiV1UsersPostResponse
-func (c *ClientWithResponses) CreateUserApiV1UsersPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserApiV1UsersPostResponse, error) {
-	rsp, err := c.CreateUserApiV1UsersPostWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateUserApiV1UsersPostResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateUserApiV1UsersPostWithResponse(ctx context.Context, body CreateUserApiV1UsersPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserApiV1UsersPostResponse, error) {
-	rsp, err := c.CreateUserApiV1UsersPost(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateUserApiV1UsersPostResponse(rsp)
 }
 
 // DeleteUserMeApiV1UsersMeDeleteWithResponse request returning *DeleteUserMeApiV1UsersMeDeleteResponse
@@ -3001,22 +3416,22 @@ func ParseGetDailySignupsApiV1MetricsSignupsGetResponse(rsp *http.Response) (*Ge
 	return response, nil
 }
 
-// ParseReadUsersApiV1UsersGetResponse parses an HTTP response from a ReadUsersApiV1UsersGetWithResponse call
-func ParseReadUsersApiV1UsersGetResponse(rsp *http.Response) (*ReadUsersApiV1UsersGetResponse, error) {
+// ParseReadNotificationsApiV1NotificationsGetResponse parses an HTTP response from a ReadNotificationsApiV1NotificationsGetWithResponse call
+func ParseReadNotificationsApiV1NotificationsGetResponse(rsp *http.Response) (*ReadNotificationsApiV1NotificationsGetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ReadUsersApiV1UsersGetResponse{
+	response := &ReadNotificationsApiV1NotificationsGetResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []UserRead
+		var dest []NotificationResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3034,22 +3449,154 @@ func ParseReadUsersApiV1UsersGetResponse(rsp *http.Response) (*ReadUsersApiV1Use
 	return response, nil
 }
 
-// ParseCreateUserApiV1UsersPostResponse parses an HTTP response from a CreateUserApiV1UsersPostWithResponse call
-func ParseCreateUserApiV1UsersPostResponse(rsp *http.Response) (*CreateUserApiV1UsersPostResponse, error) {
+// ParseSendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse parses an HTTP response from a SendSystemBroadcastApiV1NotificationsSysBroadcastPostWithResponse call
+func ParseSendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse(rsp *http.Response) (*SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &CreateUserApiV1UsersPostResponse{
+	response := &SendSystemBroadcastApiV1NotificationsSysBroadcastPostResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest UserRead
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse parses an HTTP response from a SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostWithResponse call
+func ParseSendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse(rsp *http.Response) (*SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SendTargetedNotificationApiV1NotificationsSysTargetUserIdPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest NotificationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteNotificationApiV1NotificationsIdDeleteResponse parses an HTTP response from a DeleteNotificationApiV1NotificationsIdDeleteWithResponse call
+func ParseDeleteNotificationApiV1NotificationsIdDeleteResponse(rsp *http.Response) (*DeleteNotificationApiV1NotificationsIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteNotificationApiV1NotificationsIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseMarkNotificationReadApiV1NotificationsIdReadPatchResponse parses an HTTP response from a MarkNotificationReadApiV1NotificationsIdReadPatchWithResponse call
+func ParseMarkNotificationReadApiV1NotificationsIdReadPatchResponse(rsp *http.Response) (*MarkNotificationReadApiV1NotificationsIdReadPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &MarkNotificationReadApiV1NotificationsIdReadPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest NotificationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReadUsersApiV1UsersGetResponse parses an HTTP response from a ReadUsersApiV1UsersGetWithResponse call
+func ParseReadUsersApiV1UsersGetResponse(rsp *http.Response) (*ReadUsersApiV1UsersGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReadUsersApiV1UsersGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []UserRead
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
