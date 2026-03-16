@@ -6,7 +6,7 @@ from sqlmodel import Session, select, func
 
 from app.api import deps
 from app.core import config
-from app.models.user import User, UserCreate, UserRead, UserUpdateAdmin, UserAdminView, Session as UserSession
+from app.models.user import User, UserCreate, UserRead, UserUpdateAdmin, UserAdminView, UserContact, UserContactRead, Session as UserSession
 from app.core.security import get_password_hash, validate_password_complexity
 
 router = APIRouter()
@@ -169,3 +169,24 @@ def invalidate_user_sessions(
     db.commit()
     
     return {"msg": f"Successfully invalidated {deleted_count} sessions for user {user_id}"}
+
+@router.get("/users/{user_id}/contacts", response_model=List[UserContactRead])
+def read_user_contacts(
+    user_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    """
+    View a user's frequently-used contacts. Admin only.
+    """
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    contacts: List[UserContact] = (
+        db.query(UserContact)
+        .filter(UserContact.user_id == user_id)
+        .order_by(UserContact.created_at.desc())
+        .all()
+    )
+    return contacts

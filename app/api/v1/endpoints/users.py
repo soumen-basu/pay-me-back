@@ -40,6 +40,7 @@ def read_user_me(
         display_name=current_user.display_name,
         role=current_user.role,
         is_active=current_user.is_active,
+        preferred_currency=current_user.preferred_currency,
         id=current_user.id,
         created_at=current_user.created_at,
         has_password=bool(current_user.password_hash)
@@ -70,6 +71,9 @@ def update_user_me(
         
     if user_in.display_name is not None:
         current_user.display_name = user_in.display_name
+
+    if user_in.preferred_currency is not None:
+        current_user.preferred_currency = user_in.preferred_currency
         
     db.add(current_user)
     db.commit()
@@ -79,6 +83,7 @@ def update_user_me(
         display_name=current_user.display_name,
         role=current_user.role,
         is_active=current_user.is_active,
+        preferred_currency=current_user.preferred_currency,
         id=current_user.id,
         created_at=current_user.created_at,
         has_password=bool(current_user.password_hash)

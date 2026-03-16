@@ -28,6 +28,16 @@ def test_update_user_me(client: TestClient, session: Session):
     assert update_response.status_code == 200
     assert update_response.json()["display_name"] == "New Name"
     assert update_response.json()["has_password"] is True
+    assert update_response.json()["preferred_currency"] == "₹"  # default unchanged
+    
+    # Test updating preferred currency
+    currency_response = client.patch(
+        "/api/v1/users/me",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"preferred_currency": "$"}
+    )
+    assert currency_response.status_code == 200
+    assert currency_response.json()["preferred_currency"] == "$"
     
     # Test logging in with new password
     login_response2 = client.post(
@@ -58,6 +68,7 @@ def test_read_user_me(client: TestClient, session: Session):
     assert data["email"] == "read_me@example.com"
     assert data["display_name"] == "Read Me"
     assert data["has_password"] is True
+    assert data["preferred_currency"] == "₹"  # default value
 
 def test_update_user_me_complexity_enforced(client: TestClient, session: Session):
     password_hash = get_password_hash("oldPassword1!")

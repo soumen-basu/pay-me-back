@@ -31,3 +31,20 @@ Admin users can invalidate any user's sessions.  This results in a logout of the
 
 ## Admin View Active Users.
 Admin users can view all active users.  This returns a list of users with their ID, email, display name, role, and active state.  Also include the number of sessions for each user, and the last active time.
+
+## User Preferences
+
+### Preferred Currency
+Each user has a **preferred currency** field (string).  The default value is `₹` (Indian Rupee symbol).
+The preferred currency is returned as part of the user profile (`/me`), and can be updated
+via the existing `PATCH /users/me` endpoint (and admin `PATCH /admin/users/{id}`).
+
+### Frequently Used Contacts
+A user can maintain a list of **frequently used contacts** (email addresses).
+These contacts are people the user commonly interacts with (e.g. approvers for expense claims).
+
+- Contacts are managed under `GET/POST/DELETE /users/me/contacts`.
+- Each contact entry stores an email address and an optional label/alias.
+- A user cannot add the same email twice (uniqueness enforced).
+- Contacts are private to the user — only the owner can view/manage them.
+- Admins can view a user's contacts via `GET /admin/users/{id}/contacts`.
