@@ -9,7 +9,7 @@ function App() {
   useEffect(() => {
     if (loading) return;
     if (user) {
-      navigate('/me', { replace: true });
+      navigate('/dashboard', { replace: true });
     } else {
       navigate('/login', { replace: true });
     }

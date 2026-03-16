@@ -8,6 +8,7 @@ type UserProfile = {
     role: string;
     is_active: true;
     has_password?: boolean;
+    preferred_currency?: string;
 };
 
 interface AuthContextType {

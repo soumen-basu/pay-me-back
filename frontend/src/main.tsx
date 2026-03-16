@@ -8,6 +8,7 @@ import { ProtectedRoute } from './components/ProtectedRoute.tsx'
 import { Login } from './components/Login.tsx'
 import { Verify } from './components/Verify.tsx'
 import { Profile } from './components/Profile.tsx'
+import { Dashboard } from './components/Dashboard.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -20,6 +21,11 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/me" element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
             </ProtectedRoute>
           } />
           {/* Catch-all redirect */}
