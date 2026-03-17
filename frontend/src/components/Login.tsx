@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
+import { api } from '../services/api';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -32,7 +33,7 @@ export function Login() {
     setMessage(null);
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const response = await fetch(`${apiUrl}/api/v1/login/access-token`, {
+      const response = await fetch(`${apiUrl}/api/v1/auth/access-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
@@ -67,23 +68,11 @@ export function Login() {
     setIsSending(true);
     setMessage(null);
     try {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const response = await fetch(`${apiUrl}/api/v1/auth/magic-link`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to send magic link');
-      }
-
+      const data = await api.post<{ msg: string }>('/api/v1/auth/magic-link', { email });
       localStorage.setItem('lastEmail', email);
       setMessage({ text: data.msg || 'Magic link sent! Check your email.', type: 'success' });
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to send magic link';
+      const errorMsg = (err as any).detail || 'Failed to send magic link';
       setMessage({ text: errorMsg, type: 'error' });
     } finally {
       setIsSending(false);

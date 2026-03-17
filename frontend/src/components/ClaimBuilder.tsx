@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
+import { api } from '../services/api';
 
 // ── Interfaces ──
 
@@ -56,24 +57,17 @@ export function ClaimBuilder() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const token = localStorage.getItem('token');
-  const headers = useMemo(() => ({ Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }), [token]);
-
   const fetchExpenses = useCallback(async () => {
     try {
-      const res = await fetch(`${apiUrl}/api/v1/expenses`, { headers });
-      if (res.ok) {
-        const data: Expense[] = await res.json();
-        // Only show OPEN expenses not already assigned to a claim
-        setExpenses(data.filter((e) => e.status === 'OPEN' && !e.claim_id));
-      }
+      const data = await api.get<Expense[]>('/api/v1/expenses');
+      // Only show OPEN expenses not already assigned to a claim
+      setExpenses(data.filter((e) => e.status === 'OPEN' && !e.claim_id));
     } catch {
       // silently fail
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, headers]);
+  }, []);
 
   useEffect(() => {
     fetchExpenses();
@@ -134,30 +128,15 @@ export function ClaimBuilder() {
 
     try {
       // 1. Create the claim
-      const claimRes = await fetch(`${apiUrl}/api/v1/claims`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          title: claimTitle,
-          description: claimDescription || undefined,
-          approver_emails: approverEmail.trim() ? [approverEmail.trim()] : undefined,
-        }),
+      const claim = await api.post<any>('/api/v1/claims', {
+        title: claimTitle,
+        description: claimDescription || undefined,
+        approver_emails: approverEmail.trim() ? [approverEmail.trim()] : undefined,
       });
-
-      if (!claimRes.ok) {
-        const err = await claimRes.json();
-        throw new Error(err.detail || 'Failed to create claim');
-      }
-
-      const claim = await claimRes.json();
 
       // 2. Assign selected expenses to the claim
       for (const expenseId of selectedIds) {
-        await fetch(`${apiUrl}/api/v1/expenses/${expenseId}`, {
-          method: 'PATCH',
-          headers,
-          body: JSON.stringify({ claim_id: claim.id }),
-        });
+        await api.patch(`/api/v1/expenses/${expenseId}`, { claim_id: claim.id });
       }
 
       // Navigate to dashboard on success

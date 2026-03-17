@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { DonutChart } from './charts/DonutChart';
+import { api } from '../services/api';
 
 // ── TypeScript interfaces matching backend models ──
 
@@ -73,31 +74,20 @@ export function Dashboard() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const token = localStorage.getItem('token');
-
   const fetchData = useCallback(async () => {
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      const [expRes, claimRes] = await Promise.all([
-        fetch(`${apiUrl}/api/v1/expenses`, { headers }),
-        fetch(`${apiUrl}/api/v1/claims?role=submitter`, { headers }),
+      const [expData, claimData] = await Promise.all([
+        api.get<Expense[]>('/api/v1/expenses'),
+        api.get<Claim[]>('/api/v1/claims?role=submitter'),
       ]);
-
-      if (expRes.ok) {
-        const expData: Expense[] = await expRes.json();
-        setExpenses(expData);
-      }
-      if (claimRes.ok) {
-        const claimData: Claim[] = await claimRes.json();
-        setClaims(claimData);
-      }
+      setExpenses(expData);
+      setClaims(claimData);
     } catch {
       // silently fail — dashboard shows zeroed state
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, token]);
+  }, []);
 
   useEffect(() => {
     fetchData();

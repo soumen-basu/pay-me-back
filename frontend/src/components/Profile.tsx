@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
+import { api } from '../services/api';
 
 // Supported currencies
 const CURRENCIES = [
@@ -40,22 +41,14 @@ export function Profile() {
   const [isAddingContact, setIsAddingContact] = useState(false);
   const [contactMessage, setContactMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const token = localStorage.getItem('token');
-
   const fetchContacts = useCallback(async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/v1/users/me/contacts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data: Contact[] = await response.json();
-        setContacts(data);
-      }
+      const data = await api.get<Contact[]>('/api/v1/users/me/contacts');
+      setContacts(data);
     } catch {
       // silently fail for contacts fetch
     }
-  }, [apiUrl, token]);
+  }, []);
 
   useEffect(() => {
     fetchContacts();
@@ -78,22 +71,12 @@ export function Profile() {
         return;
       }
 
-      const response = await fetch(`${apiUrl}/api/v1/users/me`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Failed to update profile');
+      await api.patch<any>('/api/v1/users/me', payload);
 
       setMessage({ text: 'Profile updated successfully!', type: 'success' });
       await refreshToken();
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Update failed';
+      const errorMsg = (err as any).detail || 'Update failed';
       setMessage({ text: errorMsg, type: 'error' });
     } finally {
       setIsSaving(false);
@@ -110,24 +93,14 @@ export function Profile() {
     setPasswordMessage(null);
 
     try {
-      const response = await fetch(`${apiUrl}/api/v1/users/me`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ password: newPassword }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Failed to update password');
+      await api.patch<any>('/api/v1/users/me', { password: newPassword });
 
       setPasswordMessage({ text: 'Password updated successfully!', type: 'success' });
       setCurrentPassword('');
       setNewPassword('');
       await refreshToken();
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Update failed';
+      const errorMsg = (err as any).detail || 'Update failed';
       setPasswordMessage({ text: errorMsg, type: 'error' });
     } finally {
       setIsUpdatingPassword(false);
@@ -141,22 +114,11 @@ export function Profile() {
     setContactMessage(null);
 
     try {
-      const response = await fetch(`${apiUrl}/api/v1/users/me/contacts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ contact_email: newContactEmail }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Failed to add contact');
-
+      await api.post('/api/v1/users/me/contacts', { contact_email: newContactEmail });
       setNewContactEmail('');
       await fetchContacts();
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to add contact';
+      const errorMsg = (err as any).detail || 'Failed to add contact';
       setContactMessage({ text: errorMsg, type: 'error' });
     } finally {
       setIsAddingContact(false);
@@ -165,14 +127,10 @@ export function Profile() {
 
   const handleDeleteContact = async (contactId: number) => {
     try {
-      const response = await fetch(`${apiUrl}/api/v1/users/me/contacts/${contactId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error('Failed to delete contact');
+      await api.delete(`/api/v1/users/me/contacts/${contactId}`);
       await fetchContacts();
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to delete contact';
+      const errorMsg = (err as any).detail || 'Failed to delete contact';
       setContactMessage({ text: errorMsg, type: 'error' });
     }
   };
