@@ -9,6 +9,7 @@ import { Login } from './components/Login.tsx'
 import { Verify } from './components/Verify.tsx'
 import { Profile } from './components/Profile.tsx'
 import { Dashboard } from './components/Dashboard.tsx'
+import { ClaimBuilder } from './components/ClaimBuilder.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -26,6 +27,11 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/claims/new" element={
+            <ProtectedRoute>
+              <ClaimBuilder />
             </ProtectedRoute>
           } />
           {/* Catch-all redirect */}
