@@ -15,7 +15,7 @@ const getAuthHeaders = (): HeadersInit => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem('token');
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }

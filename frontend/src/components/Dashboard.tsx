@@ -338,7 +338,15 @@ export function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Recent Expenses Table — 3 columns */}
           <div className="lg:col-span-3">
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight mb-4">Recent Expenses</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">Recent Expenses</h2>
+              <button
+                onClick={() => navigate('/expenses')}
+                className="text-primary text-sm font-bold hover:underline cursor-pointer"
+              >
+                View All
+              </button>
+            </div>
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
               {recentExpenses.length === 0 ? (
                 <div className="p-8 text-center">
