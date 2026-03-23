@@ -88,107 +88,108 @@ export function Login() {
   return (
     <PageLayout variant="auth" topNavActions={topNavActions}>
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md animate-slide-up">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+        <div className="max-w-[480px] w-full animate-slide-up">
           {/* Login Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-10 border border-slate-100">
+          <div className="bg-white rounded-xl shadow-sm p-8 border border-primary/5 flex flex-col items-center">
             {/* Logo */}
-            <div className="flex flex-col items-center mb-8">
-              <div className="size-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-float border-2 border-primary/20">
+            <div className="flex flex-col items-center mb-8 w-full">
+              <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-float border-4 border-primary/20 shadow-lg">
                 <span className="material-symbols-outlined text-5xl text-primary">account_balance_wallet</span>
               </div>
-              <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome back!</h1>
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight text-center" style={{ fontFamily: "'Quicksand', sans-serif" }}>Welcome back!</h1>
               <p className="text-slate-500 text-center mt-2">
                 Enter your email to receive a magic link or continue with your password.
               </p>
             </div>
 
-            {/* Email Field */}
-            <div className="mb-6">
-              <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="login-email">
-                Email Address
-              </label>
-              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                <span className="material-symbols-outlined text-slate-400 text-xl mr-3">mail</span>
-                <input
-                  id="login-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-slate-900 placeholder:text-slate-400 text-sm font-medium"
-                  placeholder="name@example.com"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Send Magic Link Button */}
-            <button
-              type="button"
-              onClick={handleSendMagicLink}
-              disabled={isSending}
-              className="w-full bg-primary text-slate-900 font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 transition-all flex items-center justify-center gap-2 mb-4 disabled:opacity-60 disabled:hover:scale-100 cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-xl">auto_awesome</span>
-              {isSending && !showPassword ? 'Sending...' : 'Send Magic Link'}
-            </button>
-
-            {/* Divider */}
-            <div className="flex items-center gap-4 my-4">
-              <div className="flex-1 h-px bg-slate-200"></div>
-              <span className="text-sm text-slate-400 font-medium">or use password</span>
-              <div className="flex-1 h-px bg-slate-200"></div>
-            </div>
-
-            {/* Enter Password Button / Password Form */}
-            {!showPassword ? (
-              <button
-                type="button"
-                onClick={() => setShowPassword(true)}
-                className="w-full bg-white text-slate-700 font-bold py-4 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-xl">lock</span>
-                Enter Password
-              </button>
-            ) : (
-              <form onSubmit={handlePasswordLogin} className="space-y-4">
-                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                  <span className="material-symbols-outlined text-slate-400 text-xl mr-3">lock</span>
+            <div className="max-w-[320px] w-full flex flex-col gap-6">
+              {/* Email Field */}
+              <div className="w-full">
+                <label className="block text-sm font-bold text-slate-700 mb-2 text-center" htmlFor="login-email">
+                  Email Address
+                </label>
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all w-full relative">
+                  <span className="material-symbols-outlined text-slate-400 text-xl absolute left-4">mail</span>
                   <input
-                    id="login-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="flex-1 bg-transparent border-none outline-none text-slate-900 placeholder:text-slate-400 text-sm font-medium"
-                    placeholder="Enter your password"
-                    autoFocus
+                    id="login-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 bg-transparent border-none outline-none text-slate-900 placeholder:text-slate-400 text-sm font-medium w-full text-center"
+                    placeholder="name@example.com"
+                    required
                   />
                 </div>
-                <button
-                  type="submit"
-                  disabled={isSending}
-                  className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-xl">login</span>
-                  {isSending ? 'Signing in...' : 'Sign In'}
-                </button>
-              </form>
-            )}
+              </div>
 
-            {/* Create Account Link */}
-            <p className="text-center text-sm text-slate-500 mt-6">
-              Don't have an account?{' '}
+              {/* Send Magic Link Button */}
               <button
                 type="button"
-                className="text-primary font-bold hover:underline cursor-pointer"
-                onClick={() => {
-                  /* For now, send magic link which auto-creates */
-                  setMessage({ text: 'Enter your email above and click "Send Magic Link" — a new account will be created automatically.', type: 'success' });
-                }}
+                onClick={handleSendMagicLink}
+                disabled={isSending}
+                className="w-full bg-primary text-slate-900 font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:hover:scale-100"
               >
-                Create one
+                <span className="material-symbols-outlined text-xl">auto_awesome</span>
+                {isSending && !showPassword ? 'Sending...' : 'Send Magic Link'}
               </button>
-            </p>
+
+              {/* Divider */}
+              <div className="flex items-center gap-4 w-full">
+                <div className="flex-1 h-px bg-slate-200"></div>
+                <span className="text-sm text-slate-400 font-medium whitespace-nowrap text-center">or use password</span>
+                <div className="flex-1 h-px bg-slate-200"></div>
+              </div>
+
+              {/* Enter Password Button / Password Form */}
+              {!showPassword ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(true)}
+                  className="w-full bg-white text-slate-700 font-bold py-4 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-xl">lock</span>
+                  Enter Password
+                </button>
+              ) : (
+                <form onSubmit={handlePasswordLogin} className="flex flex-col gap-6 w-full">
+                  <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all w-full relative">
+                    <span className="material-symbols-outlined text-slate-400 text-xl absolute left-4">lock</span>
+                    <input
+                      id="login-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="flex-1 bg-transparent border-none outline-none text-slate-900 placeholder:text-slate-400 text-sm font-medium w-full text-center"
+                      placeholder="Enter your password"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSending}
+                    className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  >
+                    <span className="material-symbols-outlined text-xl">login</span>
+                    {isSending ? 'Signing in...' : 'Sign In'}
+                  </button>
+                </form>
+              )}
+
+              {/* Create Account Link */}
+              <p className="text-center text-sm text-slate-500 w-full mb-2">
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  className="text-primary font-bold hover:underline cursor-pointer"
+                  onClick={() => {
+                    setMessage({ text: 'Enter your email above and click "Send Magic Link" — a new account will be created automatically.', type: 'success' });
+                  }}
+                >
+                  Create one
+                </button>
+              </p>
+            </div>
 
             {/* Messages */}
             {message && (
@@ -206,17 +207,7 @@ export function Login() {
         </div>
       </div>
 
-      {/* Bottom Hero Banner */}
-      <div className="bg-primary/5 border-t border-primary/10 py-12 px-6">
-        <div className="max-w-lg mx-auto text-center">
-          <div className="size-16 bg-primary/20 rounded-2xl flex items-center justify-center text-primary mx-auto mb-4">
-            <span className="material-symbols-outlined text-3xl">payments</span>
-          </div>
-          <p className="text-slate-600 font-medium text-lg">
-            Track expenses and get paid back instantly.
-          </p>
-        </div>
-      </div>
+
     </PageLayout>
   );
 }

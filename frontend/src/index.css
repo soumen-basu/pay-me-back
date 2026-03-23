@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Spline+Sans:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import "tailwindcss";
 
@@ -11,7 +11,8 @@
   --color-surface: #ffffff;
   --color-surface-hover: #f1f5f9;
 
-  --font-family-display: 'Spline Sans', sans-serif;
+  --font-family-display: 'Quicksand', 'Spline Sans', sans-serif;
+  --font-family-body: 'Nunito', 'Spline Sans', sans-serif;
 }
 
 /* ── Base Styles ── */
@@ -22,7 +23,7 @@
 }
 
 body {
-  font-family: var(--font-family-display);
+  font-family: var(--font-family-body);
   background-color: var(--color-bg-light);
   color: #0f172a;
   line-height: 1.5;
