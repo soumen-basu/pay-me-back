@@ -15,29 +15,38 @@ router = APIRouter()
 def read_expenses(
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_active_user),
+    role: str = "submitter" # "submitter", "approver", "viewer", "all"
 ) -> Any:
     """
     Retrieve expenses. Restricts view to owned expenses or those shared via claims.
     """
-    expenses_owned = db.exec(
-        select(Expense).where(Expense.owner_id == current_user.id)
-    ).all()
-    
-    # Query all claims to check if current user is an approver/viewer
-    claims_shared = db.exec(select(Claim)).all()
-    
-    shared_claim_ids = []
-    for c in claims_shared:
-        if c.approver_emails and current_user.email in c.approver_emails:
-            shared_claim_ids.append(c.id)
-        elif c.viewer_emails and current_user.email in c.viewer_emails:
-            shared_claim_ids.append(c.id)
-            
-    expenses_shared = []
-    if shared_claim_ids:
-        expenses_shared = db.exec(
-            select(Expense).where(Expense.claim_id.in_(shared_claim_ids))
+    expenses_owned = []
+    if role in ["submitter", "all"]:
+        expenses_owned = db.exec(
+            select(Expense).where(Expense.owner_id == current_user.id)
         ).all()
+    
+    expenses_shared = []
+    if role in ["approver", "viewer", "all"]:
+        # Query all claims to check if current user is an approver/viewer
+        claims_shared = db.exec(select(Claim)).all()
+        
+        shared_claim_ids = []
+        for c in claims_shared:
+            is_approver = c.approver_emails and current_user.email in c.approver_emails
+            is_viewer = c.viewer_emails and current_user.email in c.viewer_emails
+            
+            if role == "all" and (is_approver or is_viewer):
+                shared_claim_ids.append(c.id)
+            elif role == "approver" and is_approver:
+                shared_claim_ids.append(c.id)
+            elif role == "viewer" and is_viewer:
+                shared_claim_ids.append(c.id)
+                
+        if shared_claim_ids:
+            expenses_shared = db.exec(
+                select(Expense).where(Expense.claim_id.in_(shared_claim_ids))
+            ).all()
         
     all_expenses = {e.id: e for e in expenses_owned + expenses_shared}
     return list(all_expenses.values())

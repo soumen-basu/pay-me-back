@@ -15,6 +15,7 @@ import { ExpensesPage } from './components/ExpensesPage.tsx'
 import { ClaimsPage } from './components/ClaimsPage.tsx'
 import { ApprovalsPage } from './components/ApprovalsPage.tsx'
 import { ClaimReview } from './components/ClaimReview.tsx'
+import { CategoriesPage } from './components/CategoriesPage.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -48,6 +49,11 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/claims" element={
             <ProtectedRoute>
               <ClaimsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/categories" element={
+            <ProtectedRoute>
+              <CategoriesPage />
             </ProtectedRoute>
           } />
           <Route path="/approvals" element={

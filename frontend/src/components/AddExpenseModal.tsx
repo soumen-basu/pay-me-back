@@ -10,14 +10,15 @@ interface AddExpenseModalProps {
   onClose: () => void;
   onSuccess: () => void;
   initialCategories?: Category[];
+  initialExpense?: any;
 }
 
-export function AddExpenseModal({ onClose, onSuccess, initialCategories }: AddExpenseModalProps) {
+export function AddExpenseModal({ onClose, onSuccess, initialCategories, initialExpense }: AddExpenseModalProps) {
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [categoryName, setCategoryName] = useState('');
+  const [description, setDescription] = useState(initialExpense?.description || '');
+  const [amount, setAmount] = useState(initialExpense?.amount?.toString() || '');
+  const [date, setDate] = useState(initialExpense?.date || new Date().toISOString().split('T')[0]);
+  const [categoryName, setCategoryName] = useState(initialExpense?.category_name || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,12 +50,19 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories }: AddEx
     setError(null);
 
     try {
-      await api.post('/api/v1/expenses', {
+      const payload = {
         description,
         amount: parseFloat(amount),
         date,
         category_name: categoryName,
-      });
+      };
+
+      if (initialExpense) {
+        await api.patch(`/api/v1/expenses/${initialExpense.id}`, payload);
+      } else {
+        await api.post('/api/v1/expenses', payload);
+      }
+      
       // Fire a custom event so other components (like ExpensesPage) can refresh automatically
       window.dispatchEvent(new Event('expense_added'));
       onSuccess();
@@ -70,7 +78,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories }: AddEx
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Add Expense</h2>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">{initialExpense ? 'Edit Expense' : 'Add Expense'}</h2>
             <button onClick={onClose} className="size-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-colors cursor-pointer">
               <span className="material-symbols-outlined">close</span>
             </button>
@@ -136,12 +144,12 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories }: AddEx
               </div>
             )}
 
-            <button
+              <button
               type="submit"
               disabled={isSubmitting}
               className="w-full bg-primary text-slate-900 font-black py-4 rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 mt-4 cursor-pointer"
             >
-              {isSubmitting ? 'Saving...' : 'Save Expense'}
+              {isSubmitting ? 'Saving...' : (initialExpense ? 'Update Expense' : 'Save Expense')}
             </button>
           </form>
         </div>

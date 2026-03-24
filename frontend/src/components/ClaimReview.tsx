@@ -18,10 +18,9 @@ interface Claim {
 interface Expense {
   id: string;
   amount: number;
-  merchant: string | null;
+  description: string;
   date: string | null;
-  category: string | null;
-  description: string | null;
+  category_name: string | null;
   claim_id: string | null;
   status: string;
 }
@@ -61,7 +60,7 @@ export function ClaimReview() {
       }
       setClaim(foundClaim);
 
-      const allExpenses = await api.get<Expense[]>('/api/v1/expenses');
+      const allExpenses = await api.get<Expense[]>('/api/v1/expenses?role=all');
       setExpenses(allExpenses.filter(e => e.claim_id === id));
     } catch (err) {
       console.error(err);
@@ -222,12 +221,11 @@ export function ClaimReview() {
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-bold text-lg text-slate-900">{e.merchant || 'Unknown Merchant'}</h3>
-                      <p className="text-sm text-slate-500">{e.category || 'Uncategorized'} • {formatDate(e.date)}</p>
+                      <h3 className="font-bold text-lg text-slate-900">{e.description}</h3>
+                      <p className="text-sm text-slate-500">{e.category_name || 'Uncategorized'} • {formatDate(e.date)}</p>
                     </div>
                     <p className="font-black text-xl text-slate-900">{formatCurrency(e.amount)}</p>
                   </div>
-                  {e.description && <p className="text-sm text-slate-400 mt-2">{e.description}</p>}
                   
                   {/* Status Indicator */}
                   <div className="mt-4">

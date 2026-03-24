@@ -17,6 +17,7 @@ const defaultNavItems: NavItem[] = [
   { label: 'Home', icon: 'home', path: '/dashboard' },
   { label: 'Expenses', icon: 'receipt_long', path: '/expenses' },
   { label: 'Claims', icon: 'assignment', path: '/claims' },
+  { label: 'Categories', icon: 'category', path: '/categories' },
   { label: 'Approvals', icon: 'fact_check', path: '/approvals' },
   { label: 'Reports', icon: 'bar_chart', path: '/reports' },
 ];

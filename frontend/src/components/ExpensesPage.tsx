@@ -42,6 +42,7 @@ export function ExpensesPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
   // ── Fetch Data ──
   const fetchData = useCallback(async () => {
@@ -154,11 +155,20 @@ export function ExpensesPage() {
                   const isAssigned = !!exp.claim_id;
                   const isSelected = selectedExpenseIds.includes(exp.id);
                   return (
-                  <tr key={exp.id} className={`border-b border-slate-50 transition-colors group ${isSelected ? 'bg-primary/5' : 'hover:bg-slate-50/50'}`}>
+                  <tr 
+                    key={exp.id} 
+                    className={`border-b border-slate-50 transition-colors group ${isSelected ? 'bg-primary/5' : 'hover:bg-slate-50/50'} ${!isAssigned ? 'cursor-pointer' : ''}`}
+                    onClick={() => {
+                      if (!isAssigned) setEditingExpense(exp);
+                    }}
+                  >
                     <td className="px-6 py-4">
                       {!isAssigned && (
                         <button 
-                          onClick={() => toggleExpense(exp.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExpense(exp.id);
+                          }}
                           className={`size-5 rounded border flex items-center justify-center transition-colors cursor-pointer ${
                             isSelected ? 'bg-primary border-primary text-slate-900' : 'border-slate-300 hover:border-primary/50 text-transparent'
                           }`}
@@ -234,6 +244,18 @@ export function ExpensesPage() {
             setIsModalOpen(false);
             fetchData();
           }} 
+        />
+      )}
+
+      {editingExpense && (
+        <AddExpenseModal
+          initialCategories={categories}
+          initialExpense={editingExpense}
+          onClose={() => setEditingExpense(null)}
+          onSuccess={() => {
+            setEditingExpense(null);
+            fetchData();
+          }}
         />
       )}
     </PageLayout>
