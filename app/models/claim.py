@@ -30,3 +30,11 @@ class ClaimUpdate(SQLModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status: Optional[str] = None
+
+class ClaimExpensesUpdate(SQLModel):
+    expense_ids: List[uuid.UUID]
+
+class ClaimReviewSubmit(SQLModel):
+    expense_statuses: dict[uuid.UUID, str]
+    claim_status: str
+    comment: Optional[str] = None

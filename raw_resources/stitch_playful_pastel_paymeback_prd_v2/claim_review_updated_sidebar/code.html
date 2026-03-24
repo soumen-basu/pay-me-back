@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Claim Review - Pay Me Back!</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "secondary-container": "#d4cbff",
+                "outline-variant": "#b2ada1",
+                "on-error": "#ffefee",
+                "on-primary-container": "#0f6342",
+                "surface-bright": "#fcf6e9",
+                "primary-dim": "#005c3c",
+                "secondary-fixed-dim": "#c6bdf2",
+                "on-surface-variant": "#5f5b52",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#176847",
+                "inverse-on-surface": "#a19c91",
+                "primary-fixed": "#aefcd0",
+                "tertiary-container": "#fae285",
+                "surface-container-low": "#f7f0e3",
+                "secondary-dim": "#514a77",
+                "inverse-surface": "#100e08",
+                "surface-container": "#eee8d9",
+                "on-tertiary-fixed": "#4b3f00",
+                "surface-container-highest": "#e3dccc",
+                "surface-container-high": "#e9e2d3",
+                "on-tertiary": "#fff2cb",
+                "on-primary": "#c9ffde",
+                "on-secondary-container": "#48416e",
+                "error": "#b31b25",
+                "error-dim": "#9f0519",
+                "surface": "#fcf6e9",
+                "on-secondary-fixed": "#352e5a",
+                "on-tertiary-fixed-variant": "#6b5a07",
+                "secondary": "#5d5684",
+                "primary": "#176847",
+                "on-tertiary-container": "#605100",
+                "outline": "#7b766c",
+                "tertiary-fixed-dim": "#ebd479",
+                "on-surface": "#312f26",
+                "surface-variant": "#e3dccc",
+                "surface-dim": "#dbd4c3",
+                "secondary-fixed": "#d4cbff",
+                "on-background": "#312f26",
+                "on-error-container": "#570008",
+                "primary-fixed-dim": "#a0edc3",
+                "background": "#fcf6e9",
+                "inverse-primary": "#b1ffd3",
+                "on-primary-fixed": "#004f33",
+                "tertiary": "#6b5a07",
+                "on-secondary-fixed-variant": "#524b78",
+                "primary-container": "#aefcd0",
+                "on-primary-fixed-variant": "#1f6e4c",
+                "tertiary-dim": "#5e4f00",
+                "tertiary-fixed": "#fae285",
+                "error-container": "#fb5151",
+                "on-secondary": "#f6f0ff"
+              },
+              fontFamily: {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Be Vietnam Pro"],
+                "label": ["Be Vietnam Pro"]
+              },
+              borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="hidden md:flex flex-col h-screen w-64 p-6 justify-between bg-[#F7F0E3] dark:bg-slate-900 border-none rounded-r-[24px] shadow-[0px_20px_40px_rgba(49,47,38,0.06)] shrink-0 z-50">
+<div class="space-y-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
+<img alt="Wallet Logo" class="w-6 h-6" data-alt="Abstract geometric wallet icon in mint color" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaLPKNRmJk6T6RjgfQVU3-rUPR92AQo59B2Kp1jY2WeaQGx17Ox3Jdb_4_NqXUVpQx3wt7y1qsTL9AVgUk7MPcmLRQ1laW5W2TgS8BEQjslN_RwjSS1TN7O7jbwGaBf-TddSupbYCDcBilDahmQ3wnJ31ou4cTpFPA_3SFH5L_jNsWmtS8ATz5t-PwRkMxK7ik5Evh9g1gn8iIKxmZ6vB0p2nrEm5KcOvSD7N8PtqQHvb5IaSpm99wnxi-tmry7xDObuHr-3Lv_tM"/>
+</div>
+<div>
+<h1 class="text-xl font-bold text-[#176847] dark:text-[#AEFCD0] leading-none">Pay Me Back!</h1>
+<span class="text-[10px] tracking-wider uppercase opacity-60">The Whimsical Curator</span>
+</div>
+</div>
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-sm font-semibold">Expenses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#176847] dark:text-[#AEFCD0] rounded-full font-bold shadow-sm transition-all hover:scale-105 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="request_quote" style="font-variation-settings: 'FILL' 1;">request_quote</span>
+<span class="text-sm font-semibold">Claims</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="text-sm font-semibold">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-sm font-semibold">Activity</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-semibold">Settings</span>
+</a>
+</nav>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-bold shadow-lg flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Expense
+            </button>
+<button class="w-full bg-secondary-container text-on-secondary-container py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="post_add">post_add</span>
+                New Claim
+            </button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center px-8 py-4 w-full sticky top-0 z-40 bg-[#FCF6E9]/80 dark:bg-slate-950/80 backdrop-blur-md">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h2 class="text-lg font-black text-[#176847] uppercase tracking-tighter">Claim Review #842</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container-low px-4 py-2 rounded-full w-64">
+<span class="material-symbols-outlined text-outline text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-outline/60" placeholder="Search claims..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-primary leading-tight">Reviewer Mode</p>
+<p class="text-[10px] text-outline uppercase tracking-widest">Alex Rivera</p>
+</div>
+<img alt="Avatar" class="w-10 h-10 rounded-full bg-tertiary-container shadow-sm" data-alt="Stylized avatar of a claim reviewer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW9qrfuHkpDs8ZN8PppLutZ3podbpHlkX2Y1F0PXS5Sll2oyUSwe9DXwWQ7x2XKfN-AyFp0Ln8xsROeOUnWZZwhyE_6hibg1IoHoQWamkvb9Go5WKCoYkVoJ9WSpALilVsHbPR7bf771ep_CazKs8WIwMTxJhWbjwQaK83bwSVMOfE_6XyOGpo72_PcEu_rzSpr-hxSXaLtEwkV-ulayX6xmh1HJ3RPFtRzCfVj1ii4T0h_u7agzEZ72VGH2DEu7uYOd5jSPL4epc"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar bg-surface">
+<!-- Breadcrumb / Meta -->
+<div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+<div>
+<span class="text-[10px] font-bold tracking-widest uppercase text-tertiary mb-1 block">Expense Claim Breakdown</span>
+<h3 class="text-3xl font-extrabold text-on-surface">Team Dinner &amp; Travel</h3>
+</div>
+<div class="flex gap-3">
+<div class="bg-surface-container-lowest px-5 py-3 rounded-xl flex items-center gap-3 shadow-[0px_10px_20px_rgba(49,47,38,0.03)]">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-outline">Total Amount</p>
+<p class="text-lg font-black text-on-surface">$482.50</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest px-5 py-3 rounded-xl flex items-center gap-3 shadow-[0px_10px_20px_rgba(49,47,38,0.03)] border-l-4 border-tertiary">
+<div>
+<p class="text-[10px] uppercase font-bold text-outline">Status</p>
+<p class="text-lg font-black text-tertiary">Pending Review</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Two-Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Expense List -->
+<div class="lg:col-span-7 space-y-6">
+<div class="flex items-center justify-between">
+<h4 class="text-sm font-bold uppercase tracking-widest text-outline">3 Line Items</h4>
+<button class="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined text-sm" data-icon="rule">rule</span>
+                            Bulk Approve
+                        </button>
+</div>
+<!-- Expense Item 1 (Approved) -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_20px_40px_rgba(49,47,38,0.04)] flex items-center gap-5 group hover:scale-[1.01] transition-transform">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden flex-shrink-0 relative">
+<img alt="Receipt" class="w-full h-full object-cover opacity-80" data-alt="A blurred photo of a restaurant receipt on a wooden table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3VrOeA_w1CcxEJ02b7eNTnsLQ3tnsU_s0Yoo2NuZVSgkvj8tS74X6XnISOJdjwIFeO5cTZ0mQ9CrHm_JVhyXTePE_xjUWcCCVLcWa9pS7AaQGgScjeSczQHhHTvnehHesp_2X_yTrwL5ATzwxXlbzK4AAXLRXOUPQiZM594kryWN3eo3ZJBILjpwq27b1WNwYij4VJ3ONoO1qRBUHU6-0xTGgj7fZLYuzTtEogI2ngY7Bs5wd_z4LdJakIRGzgZjwRsf_UjDRdBk"/>
+<div class="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined text-white" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-on-surface text-lg">Le Petit Bistro - Client Lunch</p>
+<p class="text-xs text-outline">March 14, 2024 • Meals &amp; Entertainment</p>
+</div>
+<span class="text-xl font-black text-primary">$124.00</span>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<button class="bg-[#88D4AB] text-[#0f6342] px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    Approve
+                                </button>
+<button class="bg-surface-container text-outline px-4 py-1.5 rounded-full text-xs font-bold hover:bg-[#FFB5A7]/20 transition-all">
+                                    Reject
+                                </button>
+</div>
+</div>
+</div>
+<!-- Expense Item 2 (Rejected State) -->
+<div class="bg-[#FFB5A7]/30 p-5 rounded-xl border border-[#FFB5A7]/20 shadow-none flex items-center gap-5 opacity-70">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high overflow-hidden flex-shrink-0 grayscale">
+<img alt="Receipt" class="w-full h-full object-cover opacity-50" data-alt="A grayscale image of a parking ticket receipt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCc4PuD86X2by8j1DGi_KaY-6CRF8R7h-jOXVqq6R2-l7-DiH8i627IMuWghknzI74ci8k4PQdtQxFcNNF5CvJdp4XmEdwD5wXjTe4AWyRSQ01XYOma2xFkm3NtTNB1hGnKg4-zdIDw0wcSh4Oex_LHh9IFXlvnxq0pNwK7o4ML5u6idrRiIErPX5ppw1JR4lDASofl2KypB68HUDRXdMUqpqJJBDDE_A-QXAhboIyWz-GYOvTrJ-WLJ7nuNxghMXcBCHaPkWHCG8"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-on-surface text-lg line-through decoration-error decoration-2">Premium Parking - Airport</p>
+<p class="text-xs text-outline">March 12, 2024 • Travel</p>
+</div>
+<span class="text-xl font-black text-on-surface line-through decoration-error decoration-2">$45.50</span>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<button class="bg-surface-container text-outline px-4 py-1.5 rounded-full text-xs font-bold hover:bg-[#88D4AB]/20 transition-all">
+                                    Approve
+                                </button>
+<button class="bg-error text-on-error px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="cancel" style="font-variation-settings: 'FILL' 1;">cancel</span>
+                                    Rejected
+                                </button>
+</div>
+</div>
+</div>
+<!-- Expense Item 3 (Pending State) -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_20px_40px_rgba(49,47,38,0.04)] flex items-center gap-5 border-2 border-transparent hover:border-primary-container transition-all">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img alt="Receipt" class="w-full h-full object-cover opacity-80" data-alt="A photo of a group of people at a business dinner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeZowKz3_w-MlTEXKIbz3x0PeHmvF6omeCcuNjUEhsxSLXWGxLHXdTkK-J6HDu64eam0Bey7CSHCygB19rbroe7xrQ-rqhANB1O0-YTtmxTIPzrmG916SshQ_4Cb2_DOpO0c0Iv1CPuPkOe3qR88o2wpXX29RL5l_e3f1KOmDo6S7ovF6lhoI1FcxGXHMCYDesrdxEY6dIStDKQx82jeiqPspfOOrQLgO94udbneEwHshpGhY4Qzpf2RVyRMYj6zAdSPUGMV3Rs7A"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-on-surface text-lg">Grand Hyatt - 3 Nights Stay</p>
+<p class="text-xs text-outline">March 11-14, 2024 • Lodging</p>
+</div>
+<span class="text-xl font-black text-primary">$313.00</span>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<button class="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-[#88D4AB] hover:text-white transition-all">
+                                    Approve
+                                </button>
+<button class="bg-surface-container-high text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold hover:bg-[#FFB5A7] hover:text-white transition-all">
+                                    Reject
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Comments & Actions -->
+<div class="lg:col-span-5 space-y-6">
+<!-- Action Panel -->
+<div class="bg-surface-container-low rounded-xl p-6 shadow-[0px_10px_30px_rgba(0,0,0,0.02)]">
+<h4 class="text-xs font-bold uppercase tracking-widest text-outline mb-4">Final Review</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Selected Items</span>
+<span class="font-bold">2 of 3</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Approved Total</span>
+<span class="font-black text-primary text-lg">$437.00</span>
+</div>
+<div class="pt-4 border-t border-outline-variant/20">
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-black shadow-lg shadow-primary/20 flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all">
+                                    Approve 2 of 3 Items
+                                    <span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+<p class="text-[10px] text-center text-outline mt-3 leading-relaxed">By clicking finalize, you verify that the selected expenses comply with company policy.</p>
+</div>
+</div>
+</div>
+<!-- Chat/Comment Thread -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col h-[400px] shadow-[0px_20px_40px_rgba(49,47,38,0.04)]">
+<div class="flex items-center gap-2 mb-6 border-b border-outline-variant/10 pb-4">
+<span class="material-symbols-outlined text-secondary" data-icon="forum">forum</span>
+<h4 class="text-sm font-bold uppercase tracking-widest text-on-surface">Discussion</h4>
+</div>
+<div class="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 no-scrollbar">
+<!-- User Message -->
+<div class="flex flex-col items-end">
+<div class="bg-secondary-container text-on-secondary-container p-3 rounded-2xl rounded-tr-none max-w-[85%]">
+<p class="text-sm leading-snug">Can you clarify why the parking was $45.50? Seems high for a day trip.</p>
+</div>
+<span class="text-[10px] text-outline mt-1 font-bold">Today, 09:24 AM</span>
+</div>
+<!-- Reply -->
+<div class="flex items-start gap-2">
+<img alt="Felix" class="w-8 h-8 rounded-full bg-primary-container" data-alt="Small avatar icon for Felix" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjgYipfitm3qAVRpJdIFNpULzA8HJMXeKpdORVeKtxEPUW9qTw8BDPaWHUwW_38ry6DHE39UEYrHnx8Uj5K94MN6QxH_8R2DzQ6ARdrgY7mct0AFbnIR_CEzE9Nx3ocPfyhGxz1BI3uI5kchIeRwPTxTmpHrMdPp-hLaEIVpl_H0ZkVw4RXfY8hLsbJzo0Pzw-KbLPtKubQdLkrsBHNIPCAIuuZJGNs6q2AcUHx-Zr4Ksp7-_HWJPVrUSvslUKa_aG2pCtDYkGnXI"/>
+<div>
+<div class="bg-surface-container p-3 rounded-2xl rounded-tl-none max-w-[95%]">
+<p class="text-sm leading-snug text-on-surface-variant">Hey Alex! It was valet at the airport due to a late arrival. I've attached the policy note.</p>
+</div>
+<span class="text-[10px] text-outline mt-1 font-bold">Today, 10:15 AM</span>
+</div>
+</div>
+<!-- Follow up -->
+<div class="flex flex-col items-end">
+<div class="bg-secondary-container text-on-secondary-container p-3 rounded-2xl rounded-tr-none max-w-[85%]">
+<p class="text-sm leading-snug">Policy only covers up to $25 for parking unless pre-approved. I'll have to reject the difference or the item.</p>
+</div>
+<span class="text-[10px] text-outline mt-1 font-bold">Just now</span>
+</div>
+</div>
+<!-- Input -->
+<div class="mt-auto relative">
+<input class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 rounded-full py-3 px-5 pr-12 text-sm" placeholder="Add a comment..." type="text"/>
+<button class="absolute right-2 top-1.5 w-9 h-9 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile FAB (Conditional Suppression usually applies but this is a main dashboard context) -->
+<button class="md:hidden fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden flex justify-around items-center py-3 bg-white/90 backdrop-blur-lg border-t border-outline-variant/10 sticky bottom-0 z-50">
+<button class="flex flex-col items-center gap-1 text-[#176847]">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Dash</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Expenses</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="request_quote" style="font-variation-settings: 'FILL' 1;">request_quote</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#176847]">Claims</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Config</span>
+</button>
+</nav>
+</main>
+</body></html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - Pay Me Back!</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#d4cbff",
+                        "outline-variant": "#b2ada1",
+                        "on-error": "#ffefee",
+                        "on-primary-container": "#0f6342",
+                        "surface-bright": "#fcf6e9",
+                        "primary-dim": "#005c3c",
+                        "secondary-fixed-dim": "#c6bdf2",
+                        "on-surface-variant": "#5f5b52",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#176847",
+                        "inverse-on-surface": "#a19c91",
+                        "primary-fixed": "#aefcd0",
+                        "tertiary-container": "#fae285",
+                        "surface-container-low": "#f7f0e3",
+                        "secondary-dim": "#514a77",
+                        "inverse-surface": "#100e08",
+                        "surface-container": "#eee8d9",
+                        "on-tertiary-fixed": "#4b3f00",
+                        "surface-container-highest": "#e3dccc",
+                        "surface-container-high": "#e9e2d3",
+                        "on-tertiary": "#fff2cb",
+                        "on-primary": "#c9ffde",
+                        "on-secondary-container": "#48416e",
+                        "error": "#b31b25",
+                        "error-dim": "#9f0519",
+                        "surface": "#fcf6e9",
+                        "on-secondary-fixed": "#352e5a",
+                        "on-tertiary-fixed-variant": "#6b5a07",
+                        "secondary": "#5d5684",
+                        "primary": "#176847",
+                        "on-tertiary-container": "#605100",
+                        "outline": "#7b766c",
+                        "tertiary-fixed-dim": "#ebd479",
+                        "on-surface": "#312f26",
+                        "surface-variant": "#e3dccc",
+                        "surface-dim": "#dbd4c3",
+                        "secondary-fixed": "#d4cbff",
+                        "on-background": "#312f26",
+                        "on-error-container": "#570008",
+                        "primary-fixed-dim": "#a0edc3",
+                        "background": "#fcf6e9",
+                        "inverse-primary": "#b1ffd3",
+                        "on-primary-fixed": "#004f33",
+                        "tertiary": "#6b5a07",
+                        "on-secondary-fixed-variant": "#524b78",
+                        "primary-container": "#aefcd0",
+                        "on-primary-fixed-variant": "#1f6e4c",
+                        "tertiary-dim": "#5e4f00",
+                        "tertiary-fixed": "#fae285",
+                        "error-container": "#fb5151",
+                        "on-secondary": "#f6f0ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Be Vietnam Pro"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #fcf6e9;
+            color: #312f26;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="hidden md:flex flex-col h-screen w-64 p-6 justify-between bg-[#F7F0E3] dark:bg-slate-900 rounded-r-[24px] shadow-[0px_20px_40px_rgba(49,47,38,0.06)] sticky top-0">
+<div class="space-y-8">
+<!-- Brand Logo -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
+<img alt="Wallet Logo" class="w-6 h-6" data-alt="Pay Me Back wallet icon illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzx4n9-0Sa7HPkrtnqOVTjeZikPcnekUUChl_MKJTGQKjoPI_8IAv5x76Uc-ry-S6gNfcO0frPs1lNt1rFJGrq8GavF0z_KRB6jOpR9fHGp0dTV0ZYO26wQ5jumg9FvjuayxK30fdSUU7NKaxDMxEm1hek6fhqrzj-LksVGZICxMikQ3K7Y0dqG7Hp973U-D-9Y1rJ4heO7AwXj1mpEODjZIb30Y0AmRckOJ_jTeMd83UFBM_YRsfBBGgcX7f3ht3rhsAGt9m4rwg"/>
+</div>
+<div>
+<h1 class="text-xl font-bold text-[#176847] dark:text-[#AEFCD0] leading-none">Pay Me Back!</h1>
+<p class="text-[10px] tracking-wider uppercase text-slate-500 mt-1">The Whimsical Curator</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#176847] dark:text-[#AEFCD0] rounded-full font-bold transition-transform hover:scale-105" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-sm">Expenses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105" href="#">
+<span class="material-symbols-outlined" data-icon="request_quote">request_quote</span>
+<span class="text-sm">Claims</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="text-sm">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-sm">Activity</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all hover:scale-105" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</nav>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-primary text-on-primary py-3 rounded-full font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform active:scale-95 shadow-lg">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                New Expense
+            </button>
+<button class="w-full bg-surface-container-highest text-on-surface py-3 rounded-full font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="outbox">outbox</span>
+                New Claim
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center px-8 py-6 w-full sticky top-0 z-40 bg-[#FCF6E9]/80 backdrop-blur-md">
+<div class="md:hidden flex items-center gap-3">
+<div class="w-8 h-8 bg-primary-container rounded-full flex items-center justify-center">
+<img alt="Wallet Logo" class="w-5 h-5" data-alt="Small mobile wallet logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASfmJ7rPusNr01lxfqvYI-yrrTCRetdQSBkW_RR1X51FJz4hq6bz3ZGEBtlCs8pV5iuNeA8mHFhvHA4a-rRSxN1gr643sHwmQN3IIxOejQhYTFJHm5DH5RKlix0kHpPt8djBrmGvRt4Icb0N3vOhcRqCGXRzJCsH3DYnAi0cL7i05qLQOsc-pFTyPKJ7JFfkFZhDwZaTFQpc-j3hl1Oej9GnEKif3bCSsSmnHRNjpvM7IyjV4ln3D6tvXLg4jyjw0aUfA3qLN-ql4"/>
+</div>
+<h1 class="text-lg font-black text-[#176847]">Pay Me Back!</h1>
+</div>
+<div class="hidden md:block">
+<h2 class="text-2xl font-extrabold text-[#176847]">Student Dashboard</h2>
+<p class="text-sm text-slate-500 font-medium">Welcome back, Curator!</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center bg-surface-container-low px-4 py-2 rounded-full focus-within:ring-2 ring-primary transition-all">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 placeholder:text-slate-400" placeholder="Search claims..." type="text"/>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="User profile avatar of a young student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB2fQQ4US0MyVtRCMEswQNqMjnVbJu2AVibSrJbBWXhO24ceTptInt9D-k_zkYIzVgdxpGCKwMNy9gYFLoq1nniPcg06Mxyj-MUxAmntIE4am5J9GlrymbwdXorrOsXbOYNixm-u4lAZrLEkFT7GvWLhDfu4jx7WAx_L92sGlwXWvqFnVmwQnlfyig-NuhGHJCVknJY15lyeqh-2iMi6Y4XekVL3zpsjc2pqDB4_tGruXv6V4w-dv2n762_7xbpRuRVzUNfQj5ewU"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Left Column: Unassigned Expenses -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<span class="label-sm tracking-wider uppercase text-[10px] text-primary font-bold">Inbox</span>
+<h3 class="text-xl font-bold mt-1">Unassigned Expenses</h3>
+</div>
+<span class="bg-primary-container text-on-primary-container text-[12px] font-bold px-3 py-1 rounded-full">4 Items</span>
+</div>
+<div class="space-y-4">
+<!-- Expense Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:scale-[1.02] transition-transform duration-300 shadow-[0px_10px_20px_rgba(49,47,38,0.03)] group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-2xl bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined text-2xl" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Late Night Pizza</h4>
+<p class="text-sm text-slate-500 font-medium">Yesterday • Food &amp; Drink</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-lg font-black text-primary">$24.50</span>
+<div class="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-[10px] font-bold uppercase tracking-widest text-secondary hover:underline">Add to Claim</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Expense Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:scale-[1.02] transition-transform duration-300 shadow-[0px_10px_20px_rgba(49,47,38,0.03)] group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-2xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-2xl" data-icon="commute">commute</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Uber to Campus</h4>
+<p class="text-sm text-slate-500 font-medium">Oct 12 • Transport</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-lg font-black text-primary">$12.80</span>
+<div class="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-[10px] font-bold uppercase tracking-widest text-secondary hover:underline">Add to Claim</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State Example (Hidden if cards present, shown here for visual demo) -->
+<div class="hidden flex-col items-center justify-center py-16 bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant/20">
+<div class="w-24 h-24 bg-surface-container-lowest rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-4xl text-primary/40" data-icon="cleaning_services">cleaning_services</span>
+</div>
+<h4 class="font-bold text-slate-600">All squeaky clean!</h4>
+<p class="text-sm text-slate-400">No loose receipts found.</p>
+</div>
+</div>
+</section>
+<!-- Right Column: Active Claims -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<span class="label-sm tracking-wider uppercase text-[10px] text-secondary font-bold">Pending</span>
+<h3 class="text-xl font-bold mt-1">Active Claims</h3>
+</div>
+<button class="text-sm font-bold text-secondary hover:bg-secondary-container/30 px-3 py-1 rounded-full transition-colors">View All</button>
+</div>
+<div class="space-y-4">
+<!-- Claim Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-8 border-tertiary shadow-[0px_10px_20px_rgba(49,47,38,0.03)]">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-xl" data-icon="pending_actions">pending_actions</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-tertiary-dim">Pending Approval</span>
+</div>
+<span class="text-[12px] font-medium text-slate-400">#CLM-4022</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<h4 class="text-xl font-bold text-on-surface">$145.00</h4>
+<div class="flex items-center gap-2 mt-2">
+<div class="w-6 h-6 rounded-full bg-surface-container overflow-hidden">
+<img alt="Dad" class="w-full h-full" data-alt="Avatar of recipient Dad" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv1ETH5DLyR24h20WukW88swWhMvQU3Lzg6mgq69sRtAcbHE8_nW6Y-2wdWuGhzzENl9DIpKqkcbxRL8yfVTwd7O8nGBbc6bGPKwIxTXvmNmI_Ti5aNKd7-Q8KtlcNRf02rTkQdDe8QXUBXa_ZYdNja51mr4UiCWycq9_-1kbtz65Y-sQYF2N4oy40pzMCz3v9purqTvYu-DhN92FFzKS7vv3VKq8EBjvxTu3VAZAMMocvetMNYooEBpHt1Dl30wdIjtKqpsoB9GQ"/>
+</div>
+<p class="text-sm font-medium text-slate-600">Recipient: <span class="text-on-surface font-bold">Dad</span></p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-full bg-surface-container-low text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-full text-xs font-bold shadow-sm hover:scale-105 transition-transform">Nudge</button>
+</div>
+</div>
+</div>
+<!-- Claim Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-8 border-primary-container shadow-[0px_10px_20px_rgba(49,47,38,0.03)]">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Approved</span>
+</div>
+<span class="text-[12px] font-medium text-slate-400">#CLM-4019</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<h4 class="text-xl font-bold text-on-surface">$32.00</h4>
+<div class="flex items-center gap-2 mt-2">
+<div class="w-6 h-6 rounded-full bg-surface-container overflow-hidden">
+<img alt="Roommate" class="w-full h-full" data-alt="Avatar of recipient Roommate" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy6uVmb2tjoKXK9dEiT3WtI8B5Vxm0uQ0honVl7eHRpc_uVOi-qSNIlBGPZH3TPEspBb9gUGSVoOOfJtM7UrsvlXoCpVQBwHv5SGM96laudxJHf5QpSyUAV68h3rew6gEIa-O1pqLKoPnAgKezLFlLknnsbfZBRlXzps7SlnVN4lqJz2TFYOD7buzhg3SlWPTLE7eRGbjHkwqNzhAA1V0qu60Z0ZW8YI9crZDCO8_pmrnTKxQu9GhjyV9GXmFFPKFym_sYddDYoJg"/>
+</div>
+<p class="text-sm font-medium text-slate-600">Recipient: <span class="text-on-surface font-bold">Roommate</span></p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-primary-dim uppercase tracking-tighter">Paid via Venmo</p>
+<p class="text-[12px] text-slate-400">2 hours ago</p>
+</div>
+</div>
+</div>
+<!-- Empty State Example (Mailbox) -->
+<div class="flex flex-col items-center justify-center py-12 bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant/10 mt-4">
+<div class="w-20 h-20 bg-surface-container-lowest rounded-full flex items-center justify-center mb-4 relative">
+<span class="material-symbols-outlined text-4xl text-secondary/30" data-icon="mail">mail</span>
+<div class="absolute -top-1 -right-1 w-4 h-4 bg-tertiary-container rounded-full border-2 border-white"></div>
+</div>
+<h4 class="font-bold text-slate-600">Quiet Mailbox</h4>
+<p class="text-sm text-slate-400 text-center px-8">You're all caught up with your claims. Time to celebrate!</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Floating Action Button for Mobile -->
+<button class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-transform z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+<!-- Bottom NavBar for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest/90 backdrop-blur-lg flex justify-around items-center py-4 border-t border-outline-variant/10 z-40">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] font-bold">Expenses</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-[10px] font-bold">Activity</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</nav>
+</main>
+</body></html>

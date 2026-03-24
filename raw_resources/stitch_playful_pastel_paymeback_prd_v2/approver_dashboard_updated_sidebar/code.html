@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pay Me Back! | Approver Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-container": "#d4cbff",
+              "outline-variant": "#b2ada1",
+              "on-error": "#ffefee",
+              "on-primary-container": "#0f6342",
+              "surface-bright": "#fcf6e9",
+              "primary-dim": "#005c3c",
+              "secondary-fixed-dim": "#c6bdf2",
+              "on-surface-variant": "#5f5b52",
+              "surface-container-lowest": "#ffffff",
+              "surface-tint": "#176847",
+              "inverse-on-surface": "#a19c91",
+              "primary-fixed": "#aefcd0",
+              "tertiary-container": "#fae285",
+              "surface-container-low": "#f7f0e3",
+              "secondary-dim": "#514a77",
+              "inverse-surface": "#100e08",
+              "surface-container": "#eee8d9",
+              "on-tertiary-fixed": "#4b3f00",
+              "surface-container-highest": "#e3dccc",
+              "surface-container-high": "#e9e2d3",
+              "on-tertiary": "#fff2cb",
+              "on-primary": "#c9ffde",
+              "on-secondary-container": "#48416e",
+              "error": "#b31b25",
+              "error-dim": "#9f0519",
+              "surface": "#fcf6e9",
+              "on-secondary-fixed": "#352e5a",
+              "on-tertiary-fixed-variant": "#6b5a07",
+              "secondary": "#5d5684",
+              "primary": "#176847",
+              "on-tertiary-container": "#605100",
+              "outline": "#7b766c",
+              "tertiary-fixed-dim": "#ebd479",
+              "on-surface": "#312f26",
+              "surface-variant": "#e3dccc",
+              "surface-dim": "#dbd4c3",
+              "secondary-fixed": "#d4cbff",
+              "on-background": "#312f26",
+              "on-error-container": "#570008",
+              "primary-fixed-dim": "#a0edc3",
+              "background": "#fcf6e9",
+              "inverse-primary": "#b1ffd3",
+              "on-primary-fixed": "#004f33",
+              "tertiary": "#6b5a07",
+              "on-secondary-fixed-variant": "#524b78",
+              "primary-container": "#aefcd0",
+              "on-primary-fixed-variant": "#1f6e4c",
+              "tertiary-dim": "#5e4f00",
+              "tertiary-fixed": "#fae285",
+              "error-container": "#fb5151",
+              "on-secondary": "#f6f0ff"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Be Vietnam Pro"],
+              "label": ["Be Vietnam Pro"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #FCF6E9; }
+        h1, h2, h3, .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<div class="flex min-h-screen">
+<!-- Sidebar Navigation (The Anchor) -->
+<aside class="hidden md:flex flex-col h-screen w-64 p-6 justify-between bg-[#F7F0E3] dark:bg-slate-900 border-none sticky top-0 shadow-[0px_20px_40px_rgba(49,47,38,0.06)] rounded-r-[24px]">
+<div class="space-y-8">
+<!-- Brand Identity -->
+<div class="flex items-center gap-3 text-xl font-bold text-[#176847] dark:text-[#AEFCD0]">
+<div class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+<img alt="Wallet Logo" class="w-6 h-6" data-alt="Minimalist wallet icon with mint background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgz8FPm9r_6a2VCjO9udc6yQwLe02KbCPhXkBKALpPuMmrE2i-LSA2XX-T4s2A0nqxkH8KoLmppZqz3TRj02X-PX6d3DwziPbebWrVJ5Pv-8p5zdd_9ZCmCH0567_EBfu6YkOU7AxgOvuzDNXGYJfSN7gHFW8HyDf3aWD5ACFboWvg3vuAh7lODDeLXJf8YzMQZ5J0VQXiepfDzCAmRwnwlrWV-5Fj_Oz8Xia9Ws8XArGh0SPadbyQyFXgX86n-hiuNpjVu92cypk"/>
+</div>
+<div class="flex flex-col">
+<span class="text-lg font-black leading-none">Pay Me Back!</span>
+<span class="text-[10px] tracking-wider uppercase font-medium opacity-60">The Whimsical Curator</span>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full bg-primary hover:scale-105 transition-transform duration-200 text-on-primary font-bold py-4 rounded-full flex items-center justify-center gap-2 shadow-lg active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                    New Expense
+                </button>
+<!-- Navigation Links -->
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-[#176847] dark:text-[#AEFCD0] rounded-full font-bold shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                        Dashboard
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                        Expenses
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="request_quote">request_quote</span>
+                        Claims
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+                        Categories
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                        Activity
+                    </a>
+</nav>
+</div>
+<!-- Footer Sidebar Actions -->
+<div class="space-y-4">
+<button class="w-full border-2 border-primary/20 hover:border-primary text-primary font-bold py-3 rounded-full flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+                    New Claim
+                </button>
+<div class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-full transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 min-h-screen overflow-y-auto px-6 py-8 md:px-12">
+<!-- Mobile Header / Top Bar (Small) -->
+<header class="flex md:hidden justify-between items-center mb-8 bg-[#FCF6E9]/80 backdrop-blur-md sticky top-0 z-40 py-4">
+<div class="flex items-center gap-2">
+<img alt="Wallet Logo" class="w-8 h-8 rounded-full" data-alt="Playful wallet logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCinBPo5spwXID-47HpupDQvFsZA0GokrTNncoRfgITrzEFrBS_6HC5NkzzNf_GZ__DHkYG3eBp0AgXqef1f_MFkWdjx9x0eh9Eos2BhjQI5IAiI2XL0MXOw-09FNIjTJ8W-P2esTgDJu7MrsuiEr12c2ZMynMN06-67LBm9PLDlySpPULm8KF3KtpspA-WXjZTVebEL-s50_mlACUXog3OUWRCVrGcq5AfLtMuFWIH4340zq0YBsCrs-3xFz92FFylcIx5QEhyWLM"/>
+<span class="font-black text-primary text-lg tracking-tight">Pay Me Back!</span>
+</div>
+<button class="p-2 text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<!-- Greet Section -->
+<section class="max-w-[800px] mx-auto mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<span class="label-sm uppercase tracking-wider text-[10px] font-bold text-tertiary">Current Status: Parent/Approver</span>
+<h1 class="text-4xl md:text-5xl font-black text-on-surface mt-1 leading-tight tracking-tight">
+                            Welcome back, <span class="text-primary">Dad</span>.
+                        </h1>
+<p class="text-on-surface-variant mt-2 text-lg">You have <span class="font-bold text-secondary">3 claims</span> waiting for your magic touch.</p>
+</div>
+<div class="flex gap-2">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm border-2 border-white">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Tabs Section -->
+<section class="max-w-[800px] mx-auto mb-8">
+<div class="inline-flex p-1.5 bg-surface-container-low rounded-full">
+<button class="px-8 py-2.5 bg-white shadow-sm text-primary font-bold rounded-full transition-all">
+                        Needs Review
+                    </button>
+<button class="px-8 py-2.5 text-on-surface-variant hover:text-on-surface font-medium rounded-full transition-all">
+                        Archived
+                    </button>
+</div>
+</section>
+<!-- Claims List (Single Column) -->
+<section class="max-w-[800px] mx-auto space-y-6 pb-24">
+<!-- Claim Card 1 -->
+<div class="group relative bg-surface-container-lowest p-8 rounded-xl shadow-[0px_20px_40px_rgba(49,47,38,0.06)] hover:translate-y-[-4px] transition-all duration-300">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="flex items-center gap-5">
+<div class="w-16 h-16 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary font-bold text-xl border-2 border-tertiary-container">
+                                A
+                            </div>
+<div>
+<span class="text-[10px] uppercase tracking-widest font-bold text-tertiary">Requester: Alex</span>
+<h3 class="text-2xl font-bold text-on-surface leading-tight">Textbooks for Biology 101</h3>
+<div class="flex items-center gap-2 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_month">calendar_month</span>
+<span class="text-sm">Submitted Oct 24, 2023</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
+<span class="text-3xl font-black text-primary">$245.00</span>
+<button class="w-full md:w-auto px-6 py-3 bg-secondary text-white font-bold rounded-full flex items-center justify-center gap-2 hover:scale-105 transition-transform active:scale-95 shadow-md">
+                                Open Claim
+                                <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Decorative Corner -->
+<div class="absolute top-4 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="menu_book">menu_book</span>
+</div>
+</div>
+<!-- Claim Card 2 -->
+<div class="group relative bg-surface-container-lowest p-8 rounded-xl shadow-[0px_20px_40px_rgba(49,47,38,0.06)] hover:translate-y-[-4px] transition-all duration-300">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="flex items-center gap-5">
+<div class="w-16 h-16 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary font-bold text-xl border-2 border-secondary-container">
+                                J
+                            </div>
+<div>
+<span class="text-[10px] uppercase tracking-widest font-bold text-secondary">Requester: Jamie</span>
+<h3 class="text-2xl font-bold text-on-surface leading-tight">Monthly Bus Pass</h3>
+<div class="flex items-center gap-2 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_month">calendar_month</span>
+<span class="text-sm">Submitted Oct 22, 2023</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
+<span class="text-3xl font-black text-primary">$82.50</span>
+<button class="w-full md:w-auto px-6 py-3 bg-secondary text-white font-bold rounded-full flex items-center justify-center gap-2 hover:scale-105 transition-transform active:scale-95 shadow-md">
+                                Open Claim
+                                <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="absolute top-4 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="directions_bus">directions_bus</span>
+</div>
+</div>
+<!-- Claim Card 3 -->
+<div class="group relative bg-surface-container-lowest p-8 rounded-xl shadow-[0px_20px_40px_rgba(49,47,38,0.06)] hover:translate-y-[-4px] transition-all duration-300">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="flex items-center gap-5">
+<div class="w-16 h-16 rounded-full bg-primary-container/30 flex items-center justify-center text-primary font-bold text-xl border-2 border-primary-container">
+                                A
+                            </div>
+<div>
+<span class="text-[10px] uppercase tracking-widest font-bold text-primary">Requester: Alex</span>
+<h3 class="text-2xl font-bold text-on-surface leading-tight">Grocery Run (Whole Foods)</h3>
+<div class="flex items-center gap-2 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_month">calendar_month</span>
+<span class="text-sm">Submitted Oct 21, 2023</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
+<span class="text-3xl font-black text-primary">$156.24</span>
+<button class="w-full md:w-auto px-6 py-3 bg-secondary text-white font-bold rounded-full flex items-center justify-center gap-2 hover:scale-105 transition-transform active:scale-95 shadow-md">
+                                Open Claim
+                                <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="absolute top-4 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="shopping_basket">shopping_basket</span>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Mobile Bottom Navigation (Destination Rule) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-surface-container flex justify-around items-center py-4 z-50">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold">Dash</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] font-medium">Expenses</span>
+</button>
+<div class="relative -top-8">
+<button class="w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center border-4 border-surface">
+<span class="material-symbols-outlined text-2xl" data-icon="add">add</span>
+</button>
+</div>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="request_quote">request_quote</span>
+<span class="text-[10px] font-medium">Claims</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</nav>
+</body></html>

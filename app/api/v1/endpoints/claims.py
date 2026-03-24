@@ -7,7 +7,7 @@ from sqlalchemy import or_
 
 from app.api import deps
 from app.models.user import User
-from app.models.claim import Claim, ClaimCreate, ClaimRead, ClaimUpdate
+from app.models.claim import Claim, ClaimCreate, ClaimRead, ClaimUpdate, ClaimExpensesUpdate, ClaimReviewSubmit
 from app.models.expense import Expense
 from app.models.comment import Comment, CommentCreate, CommentRead
 
@@ -174,3 +174,79 @@ def add_claim_comment(
     db.commit()
     db.refresh(comment)
     return comment
+
+@router.post("/{id}/expenses")
+def add_expenses_to_claim(
+    id: uuid.UUID,
+    claim_expenses: ClaimExpensesUpdate,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """Attach multiple open expenses directly to an open claim."""
+    claim = db.get(Claim, id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    if claim.submitter_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+        
+    if claim.status != "OPEN":
+        raise HTTPException(status_code=400, detail="Cannot assign expenses to a closed or approved claim")
+    
+    assigned_count = 0
+    for exp_id in claim_expenses.expense_ids:
+        expense = db.get(Expense, exp_id)
+        # Ensure the user owns this expense, and it isn't currently attached to another claim (unless it is)
+        if expense and expense.owner_id == current_user.id and expense.status == "OPEN":
+            if expense.claim_id is None:
+                expense.claim_id = id
+                db.add(expense)
+                assigned_count += 1
+                
+    db.commit()
+    return {"msg": f"Successfully attached {assigned_count} expenses"}
+
+@router.post("/{id}/review")
+def review_claim(
+    id: uuid.UUID,
+    review_data: ClaimReviewSubmit,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """Atomic partial/full claim approval and expense status update."""
+    claim = db.get(Claim, id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    if not claim.approver_emails or current_user.email not in claim.approver_emails:
+        raise HTTPException(status_code=403, detail="Only assigned approvers can review a claim")
+
+    if claim.status != "OPEN":
+        raise HTTPException(status_code=400, detail="Claim is no longer OPEN for review")
+
+    # Update individual expense statuses
+    for exp_id, status in review_data.expense_statuses.items():
+        if status in ["APPROVED", "REJECTED"]:
+            expense = db.get(Expense, exp_id)
+            if expense and expense.claim_id == id:
+                expense.status = status
+                # If rejected, untether from claim for user re-submission? Wait, if we keep them on claim, it's a historical record.
+                # However, the user flow says rejected expenses are returned to open pool or just marked as rejected. We'll mark as rejected.
+                db.add(expense)
+
+    # Add comment if provided 
+    if review_data.comment:
+        comment = Comment(
+            text=review_data.comment,
+            user_id=current_user.id,
+            claim_id=id
+        )
+        db.add(comment)
+
+    # Finally set the overall claim status 
+    if review_data.claim_status in ["APPROVED", "PARTIALLY_APPROVED", "REJECTED"]:
+        claim.status = review_data.claim_status
+        db.add(claim)
+
+    db.commit()
+    return {"msg": f"Claim reviewed and set to {review_data.claim_status}"}

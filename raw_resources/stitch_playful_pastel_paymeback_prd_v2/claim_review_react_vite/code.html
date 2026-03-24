@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Claim Review | Modern Claims Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec78",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Spline Sans', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #13ec7833;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 lg:px-20 py-4">
+<div class="mx-auto max-w-[1200px] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-background-dark">
+<span class="material-symbols-outlined font-bold">verified_user</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">Claim Review</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">notifications</span>
+<span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-primary"></span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-primary/10">
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/30">
+<img alt="Profile" class="h-full w-full object-cover" data-alt="Avatar of a smiling female professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmhIWYFonnmDPw2CJs_jALkLzNY62526IEE_nAZ5aKHiE-niilwvChY7McMFsdOl-2JDoIVqOReQu7wuPGW2rwzWTC4WeZa-DaN7hGAcEN18vBRtakqkIonPAl3HEQVB_rgN8-tf3QEqaACQcSrqvX2kehQyGgoXD8WZbctAb1gAioZuEQNYmWNXo6xcK7yBCmmxnrWyQHzOWZjKUwq7jF3Fn9vjrLudoABn-Uu6xRWJcEzCd6VNCc20HMMHIlwQCvDrO6HAyR5QY"/>
+</div>
+<div class="hidden md:block">
+<p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Adjuster</p>
+<p class="text-sm font-semibold">Sarah Jenkins</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="mx-auto w-full max-w-[1200px] px-6 lg:px-20 py-8">
+<!-- Header Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-2">
+<div class="inline-flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 text-xs font-bold text-primary-dark">
+<span class="h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                    ACTIVE REVIEW
+                </div>
+<h1 class="text-4xl font-bold tracking-tight">Claim #8291</h1>
+<p class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                    Submitted on Oct 12, 2023 by Alex Rivera
+                </p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 px-6 py-3 font-bold transition-transform active:scale-95">
+<span class="material-symbols-outlined">archive</span>
+                    Hold
+                </button>
+<button class="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-background-dark transition-transform active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">check_circle</span>
+                    Finalize
+                </button>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="mb-8 flex gap-6 border-b border-primary/10 overflow-x-auto">
+<a class="flex items-center gap-2 border-b-4 border-primary pb-4 text-sm font-bold text-slate-900 dark:text-slate-100" href="#">
+<span class="material-symbols-outlined">dashboard</span> Overview
+            </a>
+<a class="flex items-center gap-2 border-b-4 border-transparent pb-4 text-sm font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined">list_alt</span> Line Items
+                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-primary/20 text-[10px] text-primary-dark">4</span>
+</a>
+<a class="flex items-center gap-2 border-b-4 border-transparent pb-4 text-sm font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span> Messages
+            </a>
+<a class="flex items-center gap-2 border-b-4 border-transparent pb-4 text-sm font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined">history</span> Audit Log
+            </a>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Line Items -->
+<div class="lg:col-span-2 space-y-6">
+<div class="rounded-2xl bg-white dark:bg-slate-900/50 p-6 shadow-sm ring-1 ring-primary/5">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold">Claim Items</h3>
+<div class="flex gap-2">
+<span class="text-sm font-medium text-slate-500">Total Amount:</span>
+<span class="text-sm font-bold text-primary">$1,240.50</span>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Item 1 -->
+<div class="group flex flex-col md:flex-row items-center gap-4 rounded-xl border border-primary/10 bg-slate-50 dark:bg-slate-800/50 p-4 transition-all hover:shadow-md">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
+<span class="material-symbols-outlined text-2xl">medical_services</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<p class="font-bold">Emergency Room Visit</p>
+<p class="text-sm text-slate-500">General Hospital • Oct 10, 2023</p>
+<p class="mt-1 text-lg font-bold">$850.00</p>
+</div>
+<div class="flex gap-2">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-red-500 shadow-sm ring-1 ring-red-100 dark:ring-red-900/30 hover:bg-red-50 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-background-dark shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">check</span>
+</button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group flex flex-col md:flex-row items-center gap-4 rounded-xl border border-primary/10 bg-slate-50 dark:bg-slate-800/50 p-4 transition-all hover:shadow-md">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
+<span class="material-symbols-outlined text-2xl">pill</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<p class="font-bold">Prescription Medication</p>
+<p class="text-sm text-slate-500">CVS Pharmacy • Oct 11, 2023</p>
+<p class="mt-1 text-lg font-bold">$120.50</p>
+</div>
+<div class="flex gap-2">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-red-500 shadow-sm ring-1 ring-red-100 dark:ring-red-900/30 hover:bg-red-50 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-background-dark shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">check</span>
+</button>
+</div>
+</div>
+<!-- Item 3 - Rejected State -->
+<div class="group flex flex-col md:flex-row items-center gap-4 rounded-xl border border-red-200 dark:border-red-900/30 bg-red-50/30 dark:bg-red-900/10 p-4 opacity-70">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+<span class="material-symbols-outlined text-2xl">transportation</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<p class="font-bold">Parking Fees</p>
+<p class="text-sm text-slate-500">Hospital Garage • Oct 10, 2023</p>
+<p class="mt-1 text-lg font-bold">$45.00</p>
+</div>
+<div class="flex items-center gap-2 text-red-600 font-bold text-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">cancel</span> Rejected
+                            </div>
+</div>
+<!-- Item 4 -->
+<div class="group flex flex-col md:flex-row items-center gap-4 rounded-xl border border-primary/10 bg-slate-50 dark:bg-slate-800/50 p-4 transition-all hover:shadow-md">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
+<span class="material-symbols-outlined text-2xl">radiology</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<p class="font-bold">X-Ray Diagnostic</p>
+<p class="text-sm text-slate-500">General Hospital • Oct 10, 2023</p>
+<p class="mt-1 text-lg font-bold">$225.00</p>
+</div>
+<div class="flex gap-2">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-red-500 shadow-sm ring-1 ring-red-100 dark:ring-red-900/30 hover:bg-red-50 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-background-dark shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">check</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Documentation Section -->
+<div class="rounded-2xl bg-white dark:bg-slate-900/50 p-6 shadow-sm ring-1 ring-primary/5">
+<h3 class="text-xl font-bold mb-4">Supporting Documents</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="aspect-square rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden relative group cursor-pointer">
+<img alt="Invoice" class="h-full w-full object-cover" data-alt="A blurred medical invoice document" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe5rFENVzlAaKqyjOhhulv8UjXtr7Pto2-8PUaDtGQkMwQVI3bJoL5mea4yryx3OxcA_3PZxIAL-jK7DymLgFDYQcUP1nJkLqNePkrtT9iDC5bvwmyB_k6PKH9vrqzOhD1sLq-B5fFjSUMUk48uSPHu0f7xiqNemMBQlfPyQncVGEtHCZOoSTXfKEzJKKOekiQDWCUdsodXY_qfveSz9aXL1KiYYDhGXWS072tsLg2YgElcJ8t2HHZuTAwVHfPtA5G6i5TyvkriJ0"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">visibility</span>
+</div>
+</div>
+<div class="aspect-square rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden relative group cursor-pointer">
+<img alt="Prescription" class="h-full w-full object-cover" data-alt="A medical prescription with handwritten notes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQlEzfNbpHw1V3McQBc-eLY_1eXdER9xhPDB9j1-kN4cjyVQvYQyzS0XIx4-gVibtOx5h9AVmi3b-UVtf9Iw0JSdM6geOslrCOTT34micbjMK8WgFIcBIQT6aonaBz4YLFCaSLdI2OPTDMXvH1XQ6zdPhA9qX5lY52w4HXNqn02yYDu1dwCTR1wckfbQ39wX8_aKAq2m3grPuiR96tikwYP48jOvwYqrVXxM_kNV_j5nk8DbM8sdV3ceLTuUjCreSCnL4IelPliWc"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">visibility</span>
+</div>
+</div>
+<div class="aspect-square rounded-xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center text-primary hover:bg-primary/5 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-3xl">add</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Add Doc</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Comments & Activity -->
+<div class="space-y-6">
+<!-- User Info Card -->
+<div class="rounded-2xl bg-white dark:bg-slate-900/50 p-6 shadow-sm ring-1 ring-primary/5">
+<h3 class="text-lg font-bold mb-4">Claimant Info</h3>
+<div class="flex items-center gap-4 mb-4">
+<div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
+                            AR
+                        </div>
+<div>
+<p class="font-bold">Alex Rivera</p>
+<p class="text-xs text-slate-500">Member ID: #99281-X</p>
+</div>
+</div>
+<div class="space-y-3 pt-4 border-t border-primary/10">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Plan Type</span>
+<span class="font-semibold">Platinum Plus</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Deductible Met</span>
+<span class="font-semibold text-primary">$2,450 / $3,000</span>
+</div>
+</div>
+</div>
+<!-- Comment Feed -->
+<div class="rounded-2xl bg-white dark:bg-slate-900/50 p-6 shadow-sm ring-1 ring-primary/5 flex flex-col h-[500px]">
+<h3 class="text-lg font-bold mb-4">Communication</h3>
+<div class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
+<!-- System Message -->
+<div class="text-center">
+<span class="inline-block px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-400 uppercase tracking-widest">Oct 12, 10:15 AM</span>
+</div>
+<!-- Claimant Message -->
+<div class="flex flex-col items-start gap-1">
+<div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-3 max-w-[85%] text-sm">
+                                Hello, I've uploaded the invoices for my ER visit last Tuesday. Please let me know if anything else is needed.
+                            </div>
+<span class="text-[10px] text-slate-400 font-bold ml-2">ALEX R.</span>
+</div>
+<!-- System Log -->
+<div class="flex items-center gap-2 text-[10px] text-slate-400 italic font-medium px-2">
+<span class="h-1 flex-1 bg-primary/10"></span>
+                             Sarah J. viewed claim items
+                            <span class="h-1 flex-1 bg-primary/10"></span>
+</div>
+<!-- Adjuster Message -->
+<div class="flex flex-col items-end gap-1">
+<div class="rounded-2xl bg-primary/20 text-slate-900 dark:text-slate-100 p-3 max-w-[85%] text-sm">
+                                Thanks Alex. I'm reviewing the items now. Note that parking fees aren't covered under your current plan.
+                            </div>
+<span class="text-[10px] text-primary-dark font-bold mr-2 uppercase">YOU</span>
+</div>
+<!-- Claimant Message -->
+<div class="flex flex-col items-start gap-1">
+<div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-3 max-w-[85%] text-sm">
+                                Understood. Thank you for the quick update!
+                            </div>
+<span class="text-[10px] text-slate-400 font-bold ml-2">ALEX R.</span>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-primary/10">
+<div class="relative">
+<textarea class="w-full rounded-xl border-none bg-slate-50 dark:bg-slate-800 p-3 pr-12 text-sm focus:ring-2 focus:ring-primary/50 resize-none h-20 custom-scrollbar" placeholder="Type a message..."></textarea>
+<button class="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-background-dark shadow-sm hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+<div class="mt-2 flex gap-2">
+<button class="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xs">attach_file</span> ATTACH
+                            </button>
+<button class="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xs">mood</span> EMOJI
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
