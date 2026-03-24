@@ -4,6 +4,7 @@ import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { DonutChart } from './charts/DonutChart';
 import { api } from '../services/api';
+import { useExpenseSelection } from '../contexts/ExpenseSelectionContext';
 
 // ── TypeScript interfaces matching backend models ──
 
@@ -70,6 +71,7 @@ function getCategoryIcon(name: string): string {
 export function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { selectedExpenseIds, toggleExpense, clearSelection } = useExpenseSelection();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,6 +93,10 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchData();
+
+    const handleExpenseAdded = () => fetchData();
+    window.addEventListener('expense_added', handleExpenseAdded);
+    return () => window.removeEventListener('expense_added', handleExpenseAdded);
   }, [fetchData]);
 
   // ── Computed stats ──
@@ -357,16 +363,32 @@ export function Dashboard() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-100">
-                      <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-6 py-3">Item</th>
+                      <th className="w-12 px-6 py-3"></th>
+                      <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-3">Item</th>
                       <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-4 py-3">Date</th>
                       <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-4 py-3">Category</th>
                       <th className="text-right text-xs font-bold text-slate-400 uppercase tracking-wider px-6 py-3">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {recentExpenses.map((exp) => (
-                      <tr key={exp.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                    {recentExpenses.map((exp) => {
+                      const isAssigned = !!exp.claim_id;
+                      const isSelected = selectedExpenseIds.includes(exp.id);
+                      return (
+                      <tr key={exp.id} className={`border-b border-slate-50 transition-colors ${isSelected ? 'bg-primary/5' : 'hover:bg-slate-50/50'}`}>
                         <td className="px-6 py-4">
+                          {!isAssigned && (
+                            <button 
+                              onClick={() => toggleExpense(exp.id)}
+                              className={`size-5 rounded border flex items-center justify-center transition-colors cursor-pointer ${
+                                isSelected ? 'bg-primary border-primary text-slate-900' : 'border-slate-300 hover:border-primary/50 text-transparent'
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-[16px] font-bold">check</span>
+                            </button>
+                          )}
+                        </td>
+                        <td className="px-2 py-4">
                           <p className="font-bold text-slate-900 text-sm">{exp.description}</p>
                         </td>
                         <td className="px-4 py-4 text-sm text-slate-500">{formatDate(exp.date)}</td>
@@ -380,7 +402,7 @@ export function Dashboard() {
                           {formatCurrency(exp.amount)}
                         </td>
                       </tr>
-                    ))}
+                    )})}
                   </tbody>
                 </table>
               )}
@@ -409,6 +431,34 @@ export function Dashboard() {
           </div>
         </div>
       </div>
+
+      {selectedExpenseIds.length > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-5">
+          <div className="bg-slate-900 border border-slate-700 shadow-2xl rounded-full px-6 py-3 flex items-center gap-6">
+            <span className="text-white font-medium text-sm">
+              <span className="font-bold">{selectedExpenseIds.length}</span> expenses selected
+            </span>
+            <div className="h-6 w-px bg-slate-700"></div>
+            <div className="flex gap-2">
+              <button 
+                onClick={clearSelection}
+                className="text-slate-400 hover:text-white px-3 py-1.5 text-sm font-bold transition-colors cursor-pointer"
+              >
+                Clear
+              </button>
+              <button 
+                onClick={() => {
+                   navigate('/claims/new');
+                }}
+                className="bg-primary text-slate-900 hover:bg-primary/90 px-4 py-1.5 rounded-full text-sm font-bold shadow-lg shadow-primary/20 transition-all cursor-pointer flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">add_task</span>
+                Add to Claim
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageLayout>
   );
 }

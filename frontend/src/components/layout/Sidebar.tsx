@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
+import { AddExpenseModal } from '../AddExpenseModal';
 
 interface NavItem {
   label: string;
@@ -28,6 +30,7 @@ export function Sidebar({ items }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
   const navItems = items ?? defaultNavItems;
 
   const handleLogout = () => {
@@ -47,6 +50,14 @@ export function Sidebar({ items }: SidebarProps) {
 
       {/* Menu */}
       <nav className="flex-1 flex flex-col gap-1">
+        <button
+          onClick={() => setIsAddExpenseModalOpen(true)}
+          className="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl text-sm font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-all cursor-pointer shadow-sm"
+        >
+          <span className="material-symbols-outlined text-xl">add_circle</span>
+          New Expense
+        </button>
+
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Menu</p>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -104,6 +115,13 @@ export function Sidebar({ items }: SidebarProps) {
             <span className="material-symbols-outlined text-xl">logout</span>
           </button>
         </div>
+      )}
+
+      {isAddExpenseModalOpen && (
+        <AddExpenseModal
+          onClose={() => setIsAddExpenseModalOpen(false)}
+          onSuccess={() => setIsAddExpenseModalOpen(false)}
+        />
       )}
     </aside>
   );

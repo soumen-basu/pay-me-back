@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
+import { useExpenseSelection } from '../contexts/ExpenseSelectionContext';
 
 // ── Interfaces ──
 
@@ -38,6 +39,7 @@ function getCategoryIcon(name: string): string {
 export function ClaimBuilder() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { selectedExpenseIds, clearSelection } = useExpenseSelection();
 
   // ── Wizard state ──
   const [step, setStep] = useState(0);
@@ -49,7 +51,7 @@ export function ClaimBuilder() {
 
   // ── Step 2: Expense selection ──
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(selectedExpenseIds));
   const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
 
@@ -134,10 +136,13 @@ export function ClaimBuilder() {
         approver_emails: approverEmail.trim() ? [approverEmail.trim()] : undefined,
       });
 
-      // 2. Assign selected expenses to the claim
-      for (const expenseId of selectedIds) {
-        await api.patch(`/api/v1/expenses/${expenseId}`, { claim_id: claim.id });
-      }
+      // 2. Assign selected expenses to the claim using the new bulk API
+      await api.post(`/api/v1/claims/${claim.id}/expenses`, { 
+        expense_ids: Array.from(selectedIds) 
+      });
+
+      // Clear the global selection state
+      clearSelection();
 
       // Navigate to dashboard on success
       navigate('/dashboard', { replace: true });

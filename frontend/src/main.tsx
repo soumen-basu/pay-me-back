@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './components/AuthProvider.tsx'
+import { ExpenseSelectionProvider } from './contexts/ExpenseSelectionContext.tsx'
 import { ProtectedRoute } from './components/ProtectedRoute.tsx'
 import { Login } from './components/Login.tsx'
 import { Verify } from './components/Verify.tsx'
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
+        <ExpenseSelectionProvider>
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/login" element={<Login />} />
@@ -66,6 +68,7 @@ createRoot(document.getElementById('root')!).render(
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ExpenseSelectionProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

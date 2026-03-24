@@ -142,3 +142,35 @@ def add_expense_comment(
     db.commit()
     db.refresh(comment)
     return comment
+
+@router.get("/{id}/comments", response_model=List[CommentRead])
+def get_expense_comments(
+    id: uuid.UUID,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    expense = db.get(Expense, id)
+    if not expense:
+        raise HTTPException(status_code=404, detail="Expense not found")
+        
+    has_permission = False
+    if expense.owner_id == current_user.id:
+        has_permission = True
+    elif expense.claim_id:
+        claim = db.get(Claim, expense.claim_id)
+        if claim:
+            if claim.approver_emails and current_user.email in claim.approver_emails:
+                has_permission = True
+            elif claim.viewer_emails and current_user.email in claim.viewer_emails:
+                has_permission = True
+                
+    if not has_permission:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+        
+    comments = db.exec(
+        select(Comment)
+        .where(Comment.expense_id == id)
+        .order_by(Comment.created_at.asc())
+    ).all()
+    
+    return comments
