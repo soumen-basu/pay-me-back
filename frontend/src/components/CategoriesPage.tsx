@@ -168,9 +168,14 @@ export function CategoriesPage() {
                 {/* Action */}
                 <button 
                   onClick={() => navigate('/expenses')}
-                  className="w-full py-2.5 rounded-full border border-slate-200 text-primary font-bold text-sm hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-pointer"
+                  disabled={catExpenses.length === 0}
+                  className={`w-full py-2.5 rounded-full border text-sm font-bold transition-colors ${
+                    catExpenses.length === 0 
+                      ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
+                      : 'border-slate-200 text-primary hover:border-primary/30 hover:bg-primary/5 cursor-pointer'
+                  }`}
                 >
-                  {catExpenses.length === 0 ? 'View History' : 'View All Expenses'}
+                  View All Expenses
                 </button>
               </div>
             );
