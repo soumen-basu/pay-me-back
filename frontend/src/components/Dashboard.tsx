@@ -64,7 +64,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 function getCategoryIcon(name: string): string {
-  const key = name.toLowerCase().trim();
+  const key = (name || '').toLowerCase().trim();
   return CATEGORY_ICONS[key] || 'category';
 }
 

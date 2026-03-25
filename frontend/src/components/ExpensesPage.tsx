@@ -31,7 +31,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 function getCategoryIcon(name: string): string {
-  return CATEGORY_ICONS[name.toLowerCase().trim()] || 'category';
+  return CATEGORY_ICONS[(name || '').toLowerCase().trim()] || 'category';
 }
 
 export function ExpensesPage() {
@@ -72,8 +72,8 @@ export function ExpensesPage() {
   // ── Filtering ──
   const filteredExpenses = useMemo(() => {
     return expenses.filter(e => 
-      e.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.category_name.toLowerCase().includes(searchQuery.toLowerCase())
+      (e.description || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+      (e.category_name || '').toLowerCase().includes((searchQuery || '').toLowerCase())
     ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [expenses, searchQuery]);
 

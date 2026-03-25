@@ -33,7 +33,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 function getCategoryIcon(name: string): string {
-  return CATEGORY_ICONS[name.toLowerCase().trim()] || 'category';
+  return CATEGORY_ICONS[(name || '').toLowerCase().trim()] || 'category';
 }
 
 export function ClaimBuilder() {

@@ -61,7 +61,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
       // 1a. Automatically create the category for the user if it's new
       const trimmedCategory = categoryName.trim();
       const categoryExists = categories.some(
-        (c) => c.name.toLowerCase() === trimmedCategory.toLowerCase()
+        (c) => (c.name || '').toLowerCase() === (trimmedCategory || '').toLowerCase()
       );
       
       if (!categoryExists && trimmedCategory) {
@@ -175,7 +175,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
 
               {isCategoryDropdownOpen && (
                 <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 max-h-48 overflow-y-auto custom-scrollbar overflow-hidden">
-                  {categories.filter(c => c.name.toLowerCase().includes(categoryName.toLowerCase())).map(cat => (
+                  {categories.filter(c => (c.name || '').toLowerCase().includes((categoryName || '').toLowerCase())).map(cat => (
                     <div
                       key={cat.id}
                       className="px-5 py-3 hover:bg-slate-50 cursor-pointer text-slate-700 font-medium transition-colors border-b border-slate-50 last:border-b-0"
@@ -188,7 +188,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
                       {cat.name}
                     </div>
                   ))}
-                  {categories.filter(c => c.name.toLowerCase().includes(categoryName.toLowerCase())).length === 0 && (
+                  {categories.filter(c => (c.name || '').toLowerCase().includes((categoryName || '').toLowerCase())).length === 0 && (
                      <div className="px-5 py-3 text-slate-400 text-sm font-medium italic bg-slate-50/50">
                        {categoryName ? `Press Save to permanently create "${categoryName}"` : "No categories found."}
                      </div>
