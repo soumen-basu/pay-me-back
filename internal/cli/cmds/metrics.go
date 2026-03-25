@@ -9,10 +9,7 @@ import (
 )
 
 func init() {
-	metricsCmd.PersistentFlags().StringVarP(&adminToken, "token", "t", "", "Bearer token for authentication (admin only)")
-	metricsCmd.MarkPersistentFlagRequired("token")
 	rootCmd.AddCommand(metricsCmd)
-
 	metricsCmd.AddCommand(dauCmd)
 	metricsCmd.AddCommand(mauCmd)
 	metricsCmd.AddCommand(sessionsCmd)
@@ -31,7 +28,7 @@ var dauCmd = &cobra.Command{
 		c := getAdminClient()
 		ctx := context.Background()
 
-		parsedResp, err := c.GetDailyActiveUsersApiV1MetricsDauGetWithResponse(ctx, addAdminBearerToken)
+		parsedResp, err := c.GetDailyActiveUsersApiV1MetricsDauGetWithResponse(ctx, addBearerTokenEditor)
 		if err != nil {
 			fmt.Println("Request Failed:", err)
 			os.Exit(1)
@@ -53,7 +50,7 @@ var mauCmd = &cobra.Command{
 		c := getAdminClient()
 		ctx := context.Background()
 
-		parsedResp, err := c.GetMonthlyActiveUsersApiV1MetricsMauGetWithResponse(ctx, addAdminBearerToken)
+		parsedResp, err := c.GetMonthlyActiveUsersApiV1MetricsMauGetWithResponse(ctx, addBearerTokenEditor)
 		if err != nil {
 			fmt.Println("Request Failed:", err)
 			os.Exit(1)
@@ -75,7 +72,7 @@ var sessionsCmd = &cobra.Command{
 		c := getAdminClient()
 		ctx := context.Background()
 
-		parsedResp, err := c.GetSessionMetricsApiV1MetricsSessionsGetWithResponse(ctx, addAdminBearerToken)
+		parsedResp, err := c.GetSessionMetricsApiV1MetricsSessionsGetWithResponse(ctx, addBearerTokenEditor)
 		if err != nil {
 			fmt.Println("Request Failed:", err)
 			os.Exit(1)

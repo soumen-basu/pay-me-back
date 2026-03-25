@@ -128,6 +128,52 @@ To view the real-time logs for the API service, ensure you specify the correct e
 ENV_FILE=env/local.env docker compose --env-file env/local.env logs -f api
 ```
 
+### CLI Tool
+
+PayMeBack includes a Go-based CLI tool for interacting with the API (User management, Metrics, Admin tasks).
+
+#### Build the CLI
+Ensure you have Go installed, then run:
+```bash
+make build
+```
+This will:
+1. Export the latest OpenAPI spec from the FastAPI app.
+2. Generate the Go client code.
+3. Build the `PayMeBack-cli` binary.
+
+#### Use the CLI
+Once built, you can use it to interact with the backend (defaults to `http://localhost:8000`).
+
+The CLI uses a token file (`token.txt` by default) to persist authentication. You can change this using `-t` or `--token-file`.
+
+**Authentication Examples:**
+```bash
+# Login using password (saves token to token.txt)
+./PayMeBack-cli auth login -e admin -p spinner
+
+# Request a magic link
+./PayMeBack-cli auth magic-link -e user@example.com
+
+# Verify magic link token (saves token to token.txt)
+./PayMeBack-cli auth verify -e user@example.com -k <secret_token>
+```
+
+**Resource Examples:**
+```bash
+# Get current profile (automatically uses token from token.txt)
+./PayMeBack-cli users me
+
+# List active users (admin only)
+./PayMeBack-cli admin users active
+
+# Use a specific token file
+./PayMeBack-cli -t mytoken.txt users me
+
+# Override with a raw token string
+./PayMeBack-cli -T <raw_token_here> users me
+```
+
 ### Shutdown
 To stop all PayMeBack services, run:
 ```bash

@@ -31,10 +31,111 @@ type BodyLoginAccessTokenApiV1AuthAccessTokenPost struct {
 	Username     string  `json:"username"`
 }
 
+// CategoryCreate defines model for CategoryCreate.
+type CategoryCreate struct {
+	Name string `json:"name"`
+}
+
+// CategoryRead defines model for CategoryRead.
+type CategoryRead struct {
+	Id       openapi_types.UUID `json:"id"`
+	IsActive *bool              `json:"is_active,omitempty"`
+	Name     string             `json:"name"`
+	UserId   int                `json:"user_id"`
+}
+
+// ClaimCreate defines model for ClaimCreate.
+type ClaimCreate struct {
+	ApproverEmails *[]string `json:"approver_emails,omitempty"`
+	Description    *string   `json:"description,omitempty"`
+	Title          string    `json:"title"`
+	ViewerEmails   *[]string `json:"viewer_emails,omitempty"`
+}
+
+// ClaimExpensesUpdate defines model for ClaimExpensesUpdate.
+type ClaimExpensesUpdate struct {
+	ExpenseIds []openapi_types.UUID `json:"expense_ids"`
+}
+
+// ClaimRead defines model for ClaimRead.
+type ClaimRead struct {
+	ApproverEmails *[]string          `json:"approver_emails,omitempty"`
+	CreatedAt      string             `json:"created_at"`
+	Description    *string            `json:"description,omitempty"`
+	Id             openapi_types.UUID `json:"id"`
+	Status         *string            `json:"status,omitempty"`
+	SubmitterId    int                `json:"submitter_id"`
+	Title          string             `json:"title"`
+	ViewerEmails   *[]string          `json:"viewer_emails,omitempty"`
+}
+
+// ClaimReviewSubmit defines model for ClaimReviewSubmit.
+type ClaimReviewSubmit struct {
+	ClaimStatus     string            `json:"claim_status"`
+	Comment         *string           `json:"comment,omitempty"`
+	ExpenseStatuses map[string]string `json:"expense_statuses"`
+}
+
+// ClaimUpdate defines model for ClaimUpdate.
+type ClaimUpdate struct {
+	Description *string `json:"description,omitempty"`
+	Status      *string `json:"status,omitempty"`
+	Title       *string `json:"title,omitempty"`
+}
+
+// CommentCreate defines model for CommentCreate.
+type CommentCreate struct {
+	ClaimId   *openapi_types.UUID `json:"claim_id,omitempty"`
+	ExpenseId *openapi_types.UUID `json:"expense_id,omitempty"`
+	Text      string              `json:"text"`
+}
+
+// CommentRead defines model for CommentRead.
+type CommentRead struct {
+	ClaimId   *openapi_types.UUID `json:"claim_id,omitempty"`
+	CreatedAt string              `json:"created_at"`
+	ExpenseId *openapi_types.UUID `json:"expense_id,omitempty"`
+	Id        openapi_types.UUID  `json:"id"`
+	Text      string              `json:"text"`
+	UserId    int                 `json:"user_id"`
+}
+
 // DailyMetric defines model for DailyMetric.
 type DailyMetric struct {
 	Count int    `json:"count"`
 	Date  string `json:"date"`
+}
+
+// ExpenseCreate defines model for ExpenseCreate.
+type ExpenseCreate struct {
+	Amount       float32             `json:"amount"`
+	CategoryName string              `json:"category_name"`
+	ClaimId      *openapi_types.UUID `json:"claim_id,omitempty"`
+	Date         openapi_types.Date  `json:"date"`
+	Description  string              `json:"description"`
+}
+
+// ExpenseRead defines model for ExpenseRead.
+type ExpenseRead struct {
+	Amount       float32             `json:"amount"`
+	CategoryName string              `json:"category_name"`
+	ClaimId      *openapi_types.UUID `json:"claim_id,omitempty"`
+	CreatedAt    string              `json:"created_at"`
+	Date         openapi_types.Date  `json:"date"`
+	Description  string              `json:"description"`
+	Id           openapi_types.UUID  `json:"id"`
+	OwnerId      int                 `json:"owner_id"`
+	Status       *string             `json:"status,omitempty"`
+}
+
+// ExpenseUpdate defines model for ExpenseUpdate.
+type ExpenseUpdate struct {
+	Amount       *float32            `json:"amount,omitempty"`
+	CategoryName *string             `json:"category_name,omitempty"`
+	ClaimId      *openapi_types.UUID `json:"claim_id,omitempty"`
+	Date         *openapi_types.Date `json:"date,omitempty"`
+	Description  *string             `json:"description,omitempty"`
+	Status       *string             `json:"status,omitempty"`
 }
 
 // HTTPValidationError defines model for HTTPValidationError.
@@ -70,58 +171,79 @@ type SessionMetrics struct {
 
 // UserAdminView defines model for UserAdminView.
 type UserAdminView struct {
-	CreatedAt      string  `json:"created_at"`
-	DisplayName    *string `json:"display_name,omitempty"`
-	Email          string  `json:"email"`
-	Id             int     `json:"id"`
-	IsActive       *bool   `json:"is_active,omitempty"`
-	LastActiveTime *string `json:"last_active_time,omitempty"`
-	Role           *string `json:"role,omitempty"`
-	SessionCount   *int    `json:"session_count,omitempty"`
+	CreatedAt         string  `json:"created_at"`
+	DisplayName       *string `json:"display_name,omitempty"`
+	Email             string  `json:"email"`
+	Id                int     `json:"id"`
+	IsActive          *bool   `json:"is_active,omitempty"`
+	LastActiveTime    *string `json:"last_active_time,omitempty"`
+	PreferredCurrency *string `json:"preferred_currency,omitempty"`
+	Role              *string `json:"role,omitempty"`
+	SessionCount      *int    `json:"session_count,omitempty"`
+}
+
+// UserContactCreate defines model for UserContactCreate.
+type UserContactCreate struct {
+	ContactEmail string  `json:"contact_email"`
+	Label        *string `json:"label,omitempty"`
+}
+
+// UserContactRead defines model for UserContactRead.
+type UserContactRead struct {
+	ContactEmail string  `json:"contact_email"`
+	CreatedAt    string  `json:"created_at"`
+	Id           int     `json:"id"`
+	Label        *string `json:"label,omitempty"`
+	UserId       int     `json:"user_id"`
 }
 
 // UserCreate defines model for UserCreate.
 type UserCreate struct {
-	DisplayName *string `json:"display_name,omitempty"`
-	Email       string  `json:"email"`
-	IsActive    *bool   `json:"is_active,omitempty"`
-	Password    string  `json:"password"`
-	Role        *string `json:"role,omitempty"`
+	DisplayName       *string `json:"display_name,omitempty"`
+	Email             string  `json:"email"`
+	IsActive          *bool   `json:"is_active,omitempty"`
+	Password          string  `json:"password"`
+	PreferredCurrency *string `json:"preferred_currency,omitempty"`
+	Role              *string `json:"role,omitempty"`
 }
 
 // UserProfileOut defines model for UserProfileOut.
 type UserProfileOut struct {
-	CreatedAt   string  `json:"created_at"`
-	DisplayName *string `json:"display_name,omitempty"`
-	Email       string  `json:"email"`
-	HasPassword bool    `json:"has_password"`
-	Id          int     `json:"id"`
-	IsActive    *bool   `json:"is_active,omitempty"`
-	Role        *string `json:"role,omitempty"`
+	CreatedAt         string  `json:"created_at"`
+	DisplayName       *string `json:"display_name,omitempty"`
+	Email             string  `json:"email"`
+	HasPassword       bool    `json:"has_password"`
+	Id                int     `json:"id"`
+	IsActive          *bool   `json:"is_active,omitempty"`
+	PreferredCurrency *string `json:"preferred_currency,omitempty"`
+	Role              *string `json:"role,omitempty"`
 }
 
 // UserRead defines model for UserRead.
 type UserRead struct {
-	CreatedAt   string  `json:"created_at"`
-	DisplayName *string `json:"display_name,omitempty"`
-	Email       string  `json:"email"`
-	Id          int     `json:"id"`
-	IsActive    *bool   `json:"is_active,omitempty"`
-	Role        *string `json:"role,omitempty"`
+	CreatedAt         string  `json:"created_at"`
+	DisplayName       *string `json:"display_name,omitempty"`
+	Email             string  `json:"email"`
+	Id                int     `json:"id"`
+	IsActive          *bool   `json:"is_active,omitempty"`
+	PreferredCurrency *string `json:"preferred_currency,omitempty"`
+	Role              *string `json:"role,omitempty"`
 }
 
 // UserUpdate defines model for UserUpdate.
 type UserUpdate struct {
-	DisplayName *string `json:"display_name,omitempty"`
-	Password    *string `json:"password,omitempty"`
+	DisplayName       *string `json:"display_name,omitempty"`
+	Password          *string `json:"password,omitempty"`
+	PreferredCurrency *string `json:"preferred_currency,omitempty"`
 }
 
 // UserUpdateAdmin defines model for UserUpdateAdmin.
 type UserUpdateAdmin struct {
-	DisplayName *string `json:"display_name,omitempty"`
-	IsActive    *bool   `json:"is_active,omitempty"`
-	Password    *string `json:"password,omitempty"`
-	Role        *string `json:"role,omitempty"`
+	DisplayName       *string `json:"display_name,omitempty"`
+	IsActive          *bool   `json:"is_active,omitempty"`
+	Password          *string `json:"password,omitempty"`
+	PreferredCurrency *string `json:"preferred_currency,omitempty"`
+	Role              *string `json:"role,omitempty"`
 }
 
 // UserWithMagicLink defines model for UserWithMagicLink.
@@ -133,6 +255,7 @@ type UserWithMagicLink struct {
 	IsActive            *bool   `json:"is_active,omitempty"`
 	MagicToken          *string `json:"magic_token,omitempty"`
 	MagicTokenExpiresAt *string `json:"magic_token_expires_at,omitempty"`
+	PreferredCurrency   *string `json:"preferred_currency,omitempty"`
 	Role                *string `json:"role,omitempty"`
 }
 
@@ -166,6 +289,21 @@ type ReadActiveUsersApiV1AdminUsersActiveGetParams struct {
 type VerifyMagicLinkApiV1AuthVerifyGetParams struct {
 	Email string `form:"email" json:"email"`
 	Token string `form:"token" json:"token"`
+}
+
+// ReadClaimsApiV1ClaimsGetParams defines parameters for ReadClaimsApiV1ClaimsGet.
+type ReadClaimsApiV1ClaimsGetParams struct {
+	Role *string `form:"role,omitempty" json:"role,omitempty"`
+}
+
+// UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchParams defines parameters for UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatch.
+type UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchParams struct {
+	Status string `form:"status" json:"status"`
+}
+
+// ReadExpensesApiV1ExpensesGetParams defines parameters for ReadExpensesApiV1ExpensesGet.
+type ReadExpensesApiV1ExpensesGetParams struct {
+	Role *string `form:"role,omitempty" json:"role,omitempty"`
 }
 
 // GetActiveUsersByDayApiV1MetricsActiveUsersGetParams defines parameters for GetActiveUsersByDayApiV1MetricsActiveUsersGet.
@@ -214,8 +352,38 @@ type LoginAccessTokenApiV1AuthAccessTokenPostFormdataRequestBody = BodyLoginAcce
 // RequestMagicLinkApiV1AuthMagicLinkPostJSONRequestBody defines body for RequestMagicLinkApiV1AuthMagicLinkPost for application/json ContentType.
 type RequestMagicLinkApiV1AuthMagicLinkPostJSONRequestBody = MagicLinkRequest
 
+// CreateCategoryApiV1CategoriesPostJSONRequestBody defines body for CreateCategoryApiV1CategoriesPost for application/json ContentType.
+type CreateCategoryApiV1CategoriesPostJSONRequestBody = CategoryCreate
+
+// CreateClaimApiV1ClaimsPostJSONRequestBody defines body for CreateClaimApiV1ClaimsPost for application/json ContentType.
+type CreateClaimApiV1ClaimsPostJSONRequestBody = ClaimCreate
+
+// UpdateClaimApiV1ClaimsIdPatchJSONRequestBody defines body for UpdateClaimApiV1ClaimsIdPatch for application/json ContentType.
+type UpdateClaimApiV1ClaimsIdPatchJSONRequestBody = ClaimUpdate
+
+// AddClaimCommentApiV1ClaimsIdCommentsPostJSONRequestBody defines body for AddClaimCommentApiV1ClaimsIdCommentsPost for application/json ContentType.
+type AddClaimCommentApiV1ClaimsIdCommentsPostJSONRequestBody = CommentCreate
+
+// AddExpensesToClaimApiV1ClaimsIdExpensesPostJSONRequestBody defines body for AddExpensesToClaimApiV1ClaimsIdExpensesPost for application/json ContentType.
+type AddExpensesToClaimApiV1ClaimsIdExpensesPostJSONRequestBody = ClaimExpensesUpdate
+
+// ReviewClaimApiV1ClaimsIdReviewPostJSONRequestBody defines body for ReviewClaimApiV1ClaimsIdReviewPost for application/json ContentType.
+type ReviewClaimApiV1ClaimsIdReviewPostJSONRequestBody = ClaimReviewSubmit
+
+// CreateExpenseApiV1ExpensesPostJSONRequestBody defines body for CreateExpenseApiV1ExpensesPost for application/json ContentType.
+type CreateExpenseApiV1ExpensesPostJSONRequestBody = ExpenseCreate
+
+// UpdateExpenseApiV1ExpensesIdPatchJSONRequestBody defines body for UpdateExpenseApiV1ExpensesIdPatch for application/json ContentType.
+type UpdateExpenseApiV1ExpensesIdPatchJSONRequestBody = ExpenseUpdate
+
+// AddExpenseCommentApiV1ExpensesIdCommentsPostJSONRequestBody defines body for AddExpenseCommentApiV1ExpensesIdCommentsPost for application/json ContentType.
+type AddExpenseCommentApiV1ExpensesIdCommentsPostJSONRequestBody = CommentCreate
+
 // UpdateUserMeApiV1UsersMePatchJSONRequestBody defines body for UpdateUserMeApiV1UsersMePatch for application/json ContentType.
 type UpdateUserMeApiV1UsersMePatchJSONRequestBody = UserUpdate
+
+// AddContactApiV1UsersMeContactsPostJSONRequestBody defines body for AddContactApiV1UsersMeContactsPost for application/json ContentType.
+type AddContactApiV1UsersMeContactsPostJSONRequestBody = UserContactCreate
 
 // AsValidationErrorLoc0 returns the union data inside the ValidationError_Loc_Item as a ValidationErrorLoc0
 func (t ValidationError_Loc_Item) AsValidationErrorLoc0() (ValidationErrorLoc0, error) {
@@ -374,6 +542,9 @@ type ClientInterface interface {
 
 	UpdateUserApiV1AdminUsersUserIdPatch(ctx context.Context, userId int, body UpdateUserApiV1AdminUsersUserIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ReadUserContactsApiV1AdminUsersUserIdContactsGet request
+	ReadUserContactsApiV1AdminUsersUserIdContactsGet(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePost request
 	InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePost(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -389,6 +560,75 @@ type ClientInterface interface {
 
 	// VerifyMagicLinkApiV1AuthVerifyGet request
 	VerifyMagicLinkApiV1AuthVerifyGet(ctx context.Context, params *VerifyMagicLinkApiV1AuthVerifyGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReadCategoriesApiV1CategoriesGet request
+	ReadCategoriesApiV1CategoriesGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateCategoryApiV1CategoriesPostWithBody request with any body
+	CreateCategoryApiV1CategoriesPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateCategoryApiV1CategoriesPost(ctx context.Context, body CreateCategoryApiV1CategoriesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteCategoryApiV1CategoriesNameDelete request
+	DeleteCategoryApiV1CategoriesNameDelete(ctx context.Context, name string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReadClaimsApiV1ClaimsGet request
+	ReadClaimsApiV1ClaimsGet(ctx context.Context, params *ReadClaimsApiV1ClaimsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateClaimApiV1ClaimsPostWithBody request with any body
+	CreateClaimApiV1ClaimsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateClaimApiV1ClaimsPost(ctx context.Context, body CreateClaimApiV1ClaimsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateClaimApiV1ClaimsIdPatchWithBody request with any body
+	UpdateClaimApiV1ClaimsIdPatchWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateClaimApiV1ClaimsIdPatch(ctx context.Context, id openapi_types.UUID, body UpdateClaimApiV1ClaimsIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CloseClaimApiV1ClaimsIdClosePost request
+	CloseClaimApiV1ClaimsIdClosePost(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddClaimCommentApiV1ClaimsIdCommentsPostWithBody request with any body
+	AddClaimCommentApiV1ClaimsIdCommentsPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddClaimCommentApiV1ClaimsIdCommentsPost(ctx context.Context, id openapi_types.UUID, body AddClaimCommentApiV1ClaimsIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBody request with any body
+	AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddExpensesToClaimApiV1ClaimsIdExpensesPost(ctx context.Context, id openapi_types.UUID, body AddExpensesToClaimApiV1ClaimsIdExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatch request
+	UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatch(ctx context.Context, id openapi_types.UUID, expenseId openapi_types.UUID, params *UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReviewClaimApiV1ClaimsIdReviewPostWithBody request with any body
+	ReviewClaimApiV1ClaimsIdReviewPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	ReviewClaimApiV1ClaimsIdReviewPost(ctx context.Context, id openapi_types.UUID, body ReviewClaimApiV1ClaimsIdReviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReadExpensesApiV1ExpensesGet request
+	ReadExpensesApiV1ExpensesGet(ctx context.Context, params *ReadExpensesApiV1ExpensesGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateExpenseApiV1ExpensesPostWithBody request with any body
+	CreateExpenseApiV1ExpensesPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateExpenseApiV1ExpensesPost(ctx context.Context, body CreateExpenseApiV1ExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteExpenseApiV1ExpensesIdDelete request
+	DeleteExpenseApiV1ExpensesIdDelete(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateExpenseApiV1ExpensesIdPatchWithBody request with any body
+	UpdateExpenseApiV1ExpensesIdPatchWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateExpenseApiV1ExpensesIdPatch(ctx context.Context, id openapi_types.UUID, body UpdateExpenseApiV1ExpensesIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetExpenseCommentsApiV1ExpensesIdCommentsGet request
+	GetExpenseCommentsApiV1ExpensesIdCommentsGet(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddExpenseCommentApiV1ExpensesIdCommentsPostWithBody request with any body
+	AddExpenseCommentApiV1ExpensesIdCommentsPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddExpenseCommentApiV1ExpensesIdCommentsPost(ctx context.Context, id openapi_types.UUID, body AddExpenseCommentApiV1ExpensesIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetActiveUsersByDayApiV1MetricsActiveUsersGet request
 	GetActiveUsersByDayApiV1MetricsActiveUsersGet(ctx context.Context, params *GetActiveUsersByDayApiV1MetricsActiveUsersGetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -434,11 +674,25 @@ type ClientInterface interface {
 
 	UpdateUserMeApiV1UsersMePatch(ctx context.Context, body UpdateUserMeApiV1UsersMePatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListContactsApiV1UsersMeContactsGet request
+	ListContactsApiV1UsersMeContactsGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddContactApiV1UsersMeContactsPostWithBody request with any body
+	AddContactApiV1UsersMeContactsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddContactApiV1UsersMeContactsPost(ctx context.Context, body AddContactApiV1UsersMeContactsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteContactApiV1UsersMeContactsContactIdDelete request
+	DeleteContactApiV1UsersMeContactsContactIdDelete(ctx context.Context, contactId int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePost request
 	InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePost(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ReadPendingMagicLinksApiV1UsersPendingMagicLinksGet request
 	ReadPendingMagicLinksApiV1UsersPendingMagicLinksGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetRecentContactsApiV1UsersRecentContactsGet request
+	GetRecentContactsApiV1UsersRecentContactsGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// HealthCheckHealthGet request
 	HealthCheckHealthGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -540,6 +794,18 @@ func (c *Client) UpdateUserApiV1AdminUsersUserIdPatch(ctx context.Context, userI
 	return c.Client.Do(req)
 }
 
+func (c *Client) ReadUserContactsApiV1AdminUsersUserIdContactsGet(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReadUserContactsApiV1AdminUsersUserIdContactsGetRequest(c.Server, userId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePost(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewInvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostRequest(c.Server, userId)
 	if err != nil {
@@ -602,6 +868,318 @@ func (c *Client) RequestMagicLinkApiV1AuthMagicLinkPost(ctx context.Context, bod
 
 func (c *Client) VerifyMagicLinkApiV1AuthVerifyGet(ctx context.Context, params *VerifyMagicLinkApiV1AuthVerifyGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewVerifyMagicLinkApiV1AuthVerifyGetRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReadCategoriesApiV1CategoriesGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReadCategoriesApiV1CategoriesGetRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCategoryApiV1CategoriesPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCategoryApiV1CategoriesPostRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCategoryApiV1CategoriesPost(ctx context.Context, body CreateCategoryApiV1CategoriesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCategoryApiV1CategoriesPostRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteCategoryApiV1CategoriesNameDelete(ctx context.Context, name string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCategoryApiV1CategoriesNameDeleteRequest(c.Server, name)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReadClaimsApiV1ClaimsGet(ctx context.Context, params *ReadClaimsApiV1ClaimsGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReadClaimsApiV1ClaimsGetRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateClaimApiV1ClaimsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateClaimApiV1ClaimsPostRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateClaimApiV1ClaimsPost(ctx context.Context, body CreateClaimApiV1ClaimsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateClaimApiV1ClaimsPostRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateClaimApiV1ClaimsIdPatchWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateClaimApiV1ClaimsIdPatchRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateClaimApiV1ClaimsIdPatch(ctx context.Context, id openapi_types.UUID, body UpdateClaimApiV1ClaimsIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateClaimApiV1ClaimsIdPatchRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CloseClaimApiV1ClaimsIdClosePost(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCloseClaimApiV1ClaimsIdClosePostRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddClaimCommentApiV1ClaimsIdCommentsPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddClaimCommentApiV1ClaimsIdCommentsPostRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddClaimCommentApiV1ClaimsIdCommentsPost(ctx context.Context, id openapi_types.UUID, body AddClaimCommentApiV1ClaimsIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddClaimCommentApiV1ClaimsIdCommentsPostRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddExpensesToClaimApiV1ClaimsIdExpensesPostRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddExpensesToClaimApiV1ClaimsIdExpensesPost(ctx context.Context, id openapi_types.UUID, body AddExpensesToClaimApiV1ClaimsIdExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddExpensesToClaimApiV1ClaimsIdExpensesPostRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatch(ctx context.Context, id openapi_types.UUID, expenseId openapi_types.UUID, params *UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchRequest(c.Server, id, expenseId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReviewClaimApiV1ClaimsIdReviewPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReviewClaimApiV1ClaimsIdReviewPostRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReviewClaimApiV1ClaimsIdReviewPost(ctx context.Context, id openapi_types.UUID, body ReviewClaimApiV1ClaimsIdReviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReviewClaimApiV1ClaimsIdReviewPostRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ReadExpensesApiV1ExpensesGet(ctx context.Context, params *ReadExpensesApiV1ExpensesGetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReadExpensesApiV1ExpensesGetRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateExpenseApiV1ExpensesPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateExpenseApiV1ExpensesPostRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateExpenseApiV1ExpensesPost(ctx context.Context, body CreateExpenseApiV1ExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateExpenseApiV1ExpensesPostRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteExpenseApiV1ExpensesIdDelete(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteExpenseApiV1ExpensesIdDeleteRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateExpenseApiV1ExpensesIdPatchWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateExpenseApiV1ExpensesIdPatchRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateExpenseApiV1ExpensesIdPatch(ctx context.Context, id openapi_types.UUID, body UpdateExpenseApiV1ExpensesIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateExpenseApiV1ExpensesIdPatchRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetExpenseCommentsApiV1ExpensesIdCommentsGet(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetExpenseCommentsApiV1ExpensesIdCommentsGetRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddExpenseCommentApiV1ExpensesIdCommentsPostWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddExpenseCommentApiV1ExpensesIdCommentsPostRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddExpenseCommentApiV1ExpensesIdCommentsPost(ctx context.Context, id openapi_types.UUID, body AddExpenseCommentApiV1ExpensesIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddExpenseCommentApiV1ExpensesIdCommentsPostRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -792,6 +1370,54 @@ func (c *Client) UpdateUserMeApiV1UsersMePatch(ctx context.Context, body UpdateU
 	return c.Client.Do(req)
 }
 
+func (c *Client) ListContactsApiV1UsersMeContactsGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListContactsApiV1UsersMeContactsGetRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddContactApiV1UsersMeContactsPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddContactApiV1UsersMeContactsPostRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddContactApiV1UsersMeContactsPost(ctx context.Context, body AddContactApiV1UsersMeContactsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddContactApiV1UsersMeContactsPostRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteContactApiV1UsersMeContactsContactIdDelete(ctx context.Context, contactId int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteContactApiV1UsersMeContactsContactIdDeleteRequest(c.Server, contactId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePost(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewInvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostRequest(c.Server)
 	if err != nil {
@@ -806,6 +1432,18 @@ func (c *Client) InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePost(ctx con
 
 func (c *Client) ReadPendingMagicLinksApiV1UsersPendingMagicLinksGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewReadPendingMagicLinksApiV1UsersPendingMagicLinksGetRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetRecentContactsApiV1UsersRecentContactsGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetRecentContactsApiV1UsersRecentContactsGetRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -1075,6 +1713,40 @@ func NewUpdateUserApiV1AdminUsersUserIdPatchRequestWithBody(server string, userI
 	return req, nil
 }
 
+// NewReadUserContactsApiV1AdminUsersUserIdContactsGetRequest generates requests for ReadUserContactsApiV1AdminUsersUserIdContactsGet
+func NewReadUserContactsApiV1AdminUsersUserIdContactsGetRequest(server string, userId int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "user_id", userId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/admin/users/%s/contacts", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewInvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostRequest generates requests for InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePost
 func NewInvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostRequest(server string, userId int) (*http.Request, error) {
 	var err error
@@ -1242,6 +1914,728 @@ func NewVerifyMagicLinkApiV1AuthVerifyGetRequest(server string, params *VerifyMa
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewReadCategoriesApiV1CategoriesGetRequest generates requests for ReadCategoriesApiV1CategoriesGet
+func NewReadCategoriesApiV1CategoriesGetRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/categories/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateCategoryApiV1CategoriesPostRequest calls the generic CreateCategoryApiV1CategoriesPost builder with application/json body
+func NewCreateCategoryApiV1CategoriesPostRequest(server string, body CreateCategoryApiV1CategoriesPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateCategoryApiV1CategoriesPostRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateCategoryApiV1CategoriesPostRequestWithBody generates requests for CreateCategoryApiV1CategoriesPost with any type of body
+func NewCreateCategoryApiV1CategoriesPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/categories/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteCategoryApiV1CategoriesNameDeleteRequest generates requests for DeleteCategoryApiV1CategoriesNameDelete
+func NewDeleteCategoryApiV1CategoriesNameDeleteRequest(server string, name string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "name", name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/categories/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewReadClaimsApiV1ClaimsGetRequest generates requests for ReadClaimsApiV1ClaimsGet
+func NewReadClaimsApiV1ClaimsGetRequest(server string, params *ReadClaimsApiV1ClaimsGetParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Role != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "role", *params.Role, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateClaimApiV1ClaimsPostRequest calls the generic CreateClaimApiV1ClaimsPost builder with application/json body
+func NewCreateClaimApiV1ClaimsPostRequest(server string, body CreateClaimApiV1ClaimsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateClaimApiV1ClaimsPostRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateClaimApiV1ClaimsPostRequestWithBody generates requests for CreateClaimApiV1ClaimsPost with any type of body
+func NewCreateClaimApiV1ClaimsPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUpdateClaimApiV1ClaimsIdPatchRequest calls the generic UpdateClaimApiV1ClaimsIdPatch builder with application/json body
+func NewUpdateClaimApiV1ClaimsIdPatchRequest(server string, id openapi_types.UUID, body UpdateClaimApiV1ClaimsIdPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateClaimApiV1ClaimsIdPatchRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateClaimApiV1ClaimsIdPatchRequestWithBody generates requests for UpdateClaimApiV1ClaimsIdPatch with any type of body
+func NewUpdateClaimApiV1ClaimsIdPatchRequestWithBody(server string, id openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCloseClaimApiV1ClaimsIdClosePostRequest generates requests for CloseClaimApiV1ClaimsIdClosePost
+func NewCloseClaimApiV1ClaimsIdClosePostRequest(server string, id openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/%s/close", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddClaimCommentApiV1ClaimsIdCommentsPostRequest calls the generic AddClaimCommentApiV1ClaimsIdCommentsPost builder with application/json body
+func NewAddClaimCommentApiV1ClaimsIdCommentsPostRequest(server string, id openapi_types.UUID, body AddClaimCommentApiV1ClaimsIdCommentsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddClaimCommentApiV1ClaimsIdCommentsPostRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewAddClaimCommentApiV1ClaimsIdCommentsPostRequestWithBody generates requests for AddClaimCommentApiV1ClaimsIdCommentsPost with any type of body
+func NewAddClaimCommentApiV1ClaimsIdCommentsPostRequestWithBody(server string, id openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/%s/comments", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewAddExpensesToClaimApiV1ClaimsIdExpensesPostRequest calls the generic AddExpensesToClaimApiV1ClaimsIdExpensesPost builder with application/json body
+func NewAddExpensesToClaimApiV1ClaimsIdExpensesPostRequest(server string, id openapi_types.UUID, body AddExpensesToClaimApiV1ClaimsIdExpensesPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddExpensesToClaimApiV1ClaimsIdExpensesPostRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewAddExpensesToClaimApiV1ClaimsIdExpensesPostRequestWithBody generates requests for AddExpensesToClaimApiV1ClaimsIdExpensesPost with any type of body
+func NewAddExpensesToClaimApiV1ClaimsIdExpensesPostRequestWithBody(server string, id openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/%s/expenses", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchRequest generates requests for UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatch
+func NewUpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchRequest(server string, id openapi_types.UUID, expenseId openapi_types.UUID, params *UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "expense_id", expenseId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/%s/expenses/%s/status", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewReviewClaimApiV1ClaimsIdReviewPostRequest calls the generic ReviewClaimApiV1ClaimsIdReviewPost builder with application/json body
+func NewReviewClaimApiV1ClaimsIdReviewPostRequest(server string, id openapi_types.UUID, body ReviewClaimApiV1ClaimsIdReviewPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewReviewClaimApiV1ClaimsIdReviewPostRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewReviewClaimApiV1ClaimsIdReviewPostRequestWithBody generates requests for ReviewClaimApiV1ClaimsIdReviewPost with any type of body
+func NewReviewClaimApiV1ClaimsIdReviewPostRequestWithBody(server string, id openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/claims/%s/review", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewReadExpensesApiV1ExpensesGetRequest generates requests for ReadExpensesApiV1ExpensesGet
+func NewReadExpensesApiV1ExpensesGetRequest(server string, params *ReadExpensesApiV1ExpensesGetParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/expenses/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Role != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "role", *params.Role, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateExpenseApiV1ExpensesPostRequest calls the generic CreateExpenseApiV1ExpensesPost builder with application/json body
+func NewCreateExpenseApiV1ExpensesPostRequest(server string, body CreateExpenseApiV1ExpensesPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateExpenseApiV1ExpensesPostRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateExpenseApiV1ExpensesPostRequestWithBody generates requests for CreateExpenseApiV1ExpensesPost with any type of body
+func NewCreateExpenseApiV1ExpensesPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/expenses/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteExpenseApiV1ExpensesIdDeleteRequest generates requests for DeleteExpenseApiV1ExpensesIdDelete
+func NewDeleteExpenseApiV1ExpensesIdDeleteRequest(server string, id openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/expenses/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateExpenseApiV1ExpensesIdPatchRequest calls the generic UpdateExpenseApiV1ExpensesIdPatch builder with application/json body
+func NewUpdateExpenseApiV1ExpensesIdPatchRequest(server string, id openapi_types.UUID, body UpdateExpenseApiV1ExpensesIdPatchJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateExpenseApiV1ExpensesIdPatchRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateExpenseApiV1ExpensesIdPatchRequestWithBody generates requests for UpdateExpenseApiV1ExpensesIdPatch with any type of body
+func NewUpdateExpenseApiV1ExpensesIdPatchRequestWithBody(server string, id openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/expenses/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetExpenseCommentsApiV1ExpensesIdCommentsGetRequest generates requests for GetExpenseCommentsApiV1ExpensesIdCommentsGet
+func NewGetExpenseCommentsApiV1ExpensesIdCommentsGetRequest(server string, id openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/expenses/%s/comments", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddExpenseCommentApiV1ExpensesIdCommentsPostRequest calls the generic AddExpenseCommentApiV1ExpensesIdCommentsPost builder with application/json body
+func NewAddExpenseCommentApiV1ExpensesIdCommentsPostRequest(server string, id openapi_types.UUID, body AddExpenseCommentApiV1ExpensesIdCommentsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddExpenseCommentApiV1ExpensesIdCommentsPostRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewAddExpenseCommentApiV1ExpensesIdCommentsPostRequestWithBody generates requests for AddExpenseCommentApiV1ExpensesIdCommentsPost with any type of body
+func NewAddExpenseCommentApiV1ExpensesIdCommentsPostRequestWithBody(server string, id openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/expenses/%s/comments", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -1838,6 +3232,107 @@ func NewUpdateUserMeApiV1UsersMePatchRequestWithBody(server string, contentType 
 	return req, nil
 }
 
+// NewListContactsApiV1UsersMeContactsGetRequest generates requests for ListContactsApiV1UsersMeContactsGet
+func NewListContactsApiV1UsersMeContactsGetRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/users/me/contacts/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddContactApiV1UsersMeContactsPostRequest calls the generic AddContactApiV1UsersMeContactsPost builder with application/json body
+func NewAddContactApiV1UsersMeContactsPostRequest(server string, body AddContactApiV1UsersMeContactsPostJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddContactApiV1UsersMeContactsPostRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewAddContactApiV1UsersMeContactsPostRequestWithBody generates requests for AddContactApiV1UsersMeContactsPost with any type of body
+func NewAddContactApiV1UsersMeContactsPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/users/me/contacts/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteContactApiV1UsersMeContactsContactIdDeleteRequest generates requests for DeleteContactApiV1UsersMeContactsContactIdDelete
+func NewDeleteContactApiV1UsersMeContactsContactIdDeleteRequest(server string, contactId int) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "contact_id", contactId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/users/me/contacts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewInvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostRequest generates requests for InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePost
 func NewInvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostRequest(server string) (*http.Request, error) {
 	var err error
@@ -1875,6 +3370,33 @@ func NewReadPendingMagicLinksApiV1UsersPendingMagicLinksGetRequest(server string
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/users/pending-magic-links")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetRecentContactsApiV1UsersRecentContactsGetRequest generates requests for GetRecentContactsApiV1UsersRecentContactsGet
+func NewGetRecentContactsApiV1UsersRecentContactsGetRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/users/recent-contacts")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1984,6 +3506,9 @@ type ClientWithResponsesInterface interface {
 
 	UpdateUserApiV1AdminUsersUserIdPatchWithResponse(ctx context.Context, userId int, body UpdateUserApiV1AdminUsersUserIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserApiV1AdminUsersUserIdPatchResponse, error)
 
+	// ReadUserContactsApiV1AdminUsersUserIdContactsGetWithResponse request
+	ReadUserContactsApiV1AdminUsersUserIdContactsGetWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse, error)
+
 	// InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostWithResponse request
 	InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostResponse, error)
 
@@ -1999,6 +3524,75 @@ type ClientWithResponsesInterface interface {
 
 	// VerifyMagicLinkApiV1AuthVerifyGetWithResponse request
 	VerifyMagicLinkApiV1AuthVerifyGetWithResponse(ctx context.Context, params *VerifyMagicLinkApiV1AuthVerifyGetParams, reqEditors ...RequestEditorFn) (*VerifyMagicLinkApiV1AuthVerifyGetResponse, error)
+
+	// ReadCategoriesApiV1CategoriesGetWithResponse request
+	ReadCategoriesApiV1CategoriesGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ReadCategoriesApiV1CategoriesGetResponse, error)
+
+	// CreateCategoryApiV1CategoriesPostWithBodyWithResponse request with any body
+	CreateCategoryApiV1CategoriesPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCategoryApiV1CategoriesPostResponse, error)
+
+	CreateCategoryApiV1CategoriesPostWithResponse(ctx context.Context, body CreateCategoryApiV1CategoriesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCategoryApiV1CategoriesPostResponse, error)
+
+	// DeleteCategoryApiV1CategoriesNameDeleteWithResponse request
+	DeleteCategoryApiV1CategoriesNameDeleteWithResponse(ctx context.Context, name string, reqEditors ...RequestEditorFn) (*DeleteCategoryApiV1CategoriesNameDeleteResponse, error)
+
+	// ReadClaimsApiV1ClaimsGetWithResponse request
+	ReadClaimsApiV1ClaimsGetWithResponse(ctx context.Context, params *ReadClaimsApiV1ClaimsGetParams, reqEditors ...RequestEditorFn) (*ReadClaimsApiV1ClaimsGetResponse, error)
+
+	// CreateClaimApiV1ClaimsPostWithBodyWithResponse request with any body
+	CreateClaimApiV1ClaimsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateClaimApiV1ClaimsPostResponse, error)
+
+	CreateClaimApiV1ClaimsPostWithResponse(ctx context.Context, body CreateClaimApiV1ClaimsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateClaimApiV1ClaimsPostResponse, error)
+
+	// UpdateClaimApiV1ClaimsIdPatchWithBodyWithResponse request with any body
+	UpdateClaimApiV1ClaimsIdPatchWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateClaimApiV1ClaimsIdPatchResponse, error)
+
+	UpdateClaimApiV1ClaimsIdPatchWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateClaimApiV1ClaimsIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateClaimApiV1ClaimsIdPatchResponse, error)
+
+	// CloseClaimApiV1ClaimsIdClosePostWithResponse request
+	CloseClaimApiV1ClaimsIdClosePostWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*CloseClaimApiV1ClaimsIdClosePostResponse, error)
+
+	// AddClaimCommentApiV1ClaimsIdCommentsPostWithBodyWithResponse request with any body
+	AddClaimCommentApiV1ClaimsIdCommentsPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddClaimCommentApiV1ClaimsIdCommentsPostResponse, error)
+
+	AddClaimCommentApiV1ClaimsIdCommentsPostWithResponse(ctx context.Context, id openapi_types.UUID, body AddClaimCommentApiV1ClaimsIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddClaimCommentApiV1ClaimsIdCommentsPostResponse, error)
+
+	// AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBodyWithResponse request with any body
+	AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse, error)
+
+	AddExpensesToClaimApiV1ClaimsIdExpensesPostWithResponse(ctx context.Context, id openapi_types.UUID, body AddExpensesToClaimApiV1ClaimsIdExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse, error)
+
+	// UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchWithResponse request
+	UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchWithResponse(ctx context.Context, id openapi_types.UUID, expenseId openapi_types.UUID, params *UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchParams, reqEditors ...RequestEditorFn) (*UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse, error)
+
+	// ReviewClaimApiV1ClaimsIdReviewPostWithBodyWithResponse request with any body
+	ReviewClaimApiV1ClaimsIdReviewPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReviewClaimApiV1ClaimsIdReviewPostResponse, error)
+
+	ReviewClaimApiV1ClaimsIdReviewPostWithResponse(ctx context.Context, id openapi_types.UUID, body ReviewClaimApiV1ClaimsIdReviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*ReviewClaimApiV1ClaimsIdReviewPostResponse, error)
+
+	// ReadExpensesApiV1ExpensesGetWithResponse request
+	ReadExpensesApiV1ExpensesGetWithResponse(ctx context.Context, params *ReadExpensesApiV1ExpensesGetParams, reqEditors ...RequestEditorFn) (*ReadExpensesApiV1ExpensesGetResponse, error)
+
+	// CreateExpenseApiV1ExpensesPostWithBodyWithResponse request with any body
+	CreateExpenseApiV1ExpensesPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateExpenseApiV1ExpensesPostResponse, error)
+
+	CreateExpenseApiV1ExpensesPostWithResponse(ctx context.Context, body CreateExpenseApiV1ExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateExpenseApiV1ExpensesPostResponse, error)
+
+	// DeleteExpenseApiV1ExpensesIdDeleteWithResponse request
+	DeleteExpenseApiV1ExpensesIdDeleteWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteExpenseApiV1ExpensesIdDeleteResponse, error)
+
+	// UpdateExpenseApiV1ExpensesIdPatchWithBodyWithResponse request with any body
+	UpdateExpenseApiV1ExpensesIdPatchWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateExpenseApiV1ExpensesIdPatchResponse, error)
+
+	UpdateExpenseApiV1ExpensesIdPatchWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateExpenseApiV1ExpensesIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateExpenseApiV1ExpensesIdPatchResponse, error)
+
+	// GetExpenseCommentsApiV1ExpensesIdCommentsGetWithResponse request
+	GetExpenseCommentsApiV1ExpensesIdCommentsGetWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse, error)
+
+	// AddExpenseCommentApiV1ExpensesIdCommentsPostWithBodyWithResponse request with any body
+	AddExpenseCommentApiV1ExpensesIdCommentsPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddExpenseCommentApiV1ExpensesIdCommentsPostResponse, error)
+
+	AddExpenseCommentApiV1ExpensesIdCommentsPostWithResponse(ctx context.Context, id openapi_types.UUID, body AddExpenseCommentApiV1ExpensesIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddExpenseCommentApiV1ExpensesIdCommentsPostResponse, error)
 
 	// GetActiveUsersByDayApiV1MetricsActiveUsersGetWithResponse request
 	GetActiveUsersByDayApiV1MetricsActiveUsersGetWithResponse(ctx context.Context, params *GetActiveUsersByDayApiV1MetricsActiveUsersGetParams, reqEditors ...RequestEditorFn) (*GetActiveUsersByDayApiV1MetricsActiveUsersGetResponse, error)
@@ -2044,11 +3638,25 @@ type ClientWithResponsesInterface interface {
 
 	UpdateUserMeApiV1UsersMePatchWithResponse(ctx context.Context, body UpdateUserMeApiV1UsersMePatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserMeApiV1UsersMePatchResponse, error)
 
+	// ListContactsApiV1UsersMeContactsGetWithResponse request
+	ListContactsApiV1UsersMeContactsGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListContactsApiV1UsersMeContactsGetResponse, error)
+
+	// AddContactApiV1UsersMeContactsPostWithBodyWithResponse request with any body
+	AddContactApiV1UsersMeContactsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddContactApiV1UsersMeContactsPostResponse, error)
+
+	AddContactApiV1UsersMeContactsPostWithResponse(ctx context.Context, body AddContactApiV1UsersMeContactsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddContactApiV1UsersMeContactsPostResponse, error)
+
+	// DeleteContactApiV1UsersMeContactsContactIdDeleteWithResponse request
+	DeleteContactApiV1UsersMeContactsContactIdDeleteWithResponse(ctx context.Context, contactId int, reqEditors ...RequestEditorFn) (*DeleteContactApiV1UsersMeContactsContactIdDeleteResponse, error)
+
 	// InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostWithResponse request
 	InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostResponse, error)
 
 	// ReadPendingMagicLinksApiV1UsersPendingMagicLinksGetWithResponse request
 	ReadPendingMagicLinksApiV1UsersPendingMagicLinksGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ReadPendingMagicLinksApiV1UsersPendingMagicLinksGetResponse, error)
+
+	// GetRecentContactsApiV1UsersRecentContactsGetWithResponse request
+	GetRecentContactsApiV1UsersRecentContactsGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetRecentContactsApiV1UsersRecentContactsGetResponse, error)
 
 	// HealthCheckHealthGetWithResponse request
 	HealthCheckHealthGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthCheckHealthGetResponse, error)
@@ -2191,6 +3799,29 @@ func (r UpdateUserApiV1AdminUsersUserIdPatchResponse) StatusCode() int {
 	return 0
 }
 
+type ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]UserContactRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2277,6 +3908,396 @@ func (r VerifyMagicLinkApiV1AuthVerifyGetResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r VerifyMagicLinkApiV1AuthVerifyGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReadCategoriesApiV1CategoriesGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]CategoryRead
+}
+
+// Status returns HTTPResponse.Status
+func (r ReadCategoriesApiV1CategoriesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReadCategoriesApiV1CategoriesGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateCategoryApiV1CategoriesPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CategoryRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateCategoryApiV1CategoriesPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateCategoryApiV1CategoriesPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteCategoryApiV1CategoriesNameDeleteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteCategoryApiV1CategoriesNameDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteCategoryApiV1CategoriesNameDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReadClaimsApiV1ClaimsGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]ClaimRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r ReadClaimsApiV1ClaimsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReadClaimsApiV1ClaimsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateClaimApiV1ClaimsPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ClaimRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateClaimApiV1ClaimsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateClaimApiV1ClaimsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateClaimApiV1ClaimsIdPatchResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ClaimRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateClaimApiV1ClaimsIdPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateClaimApiV1ClaimsIdPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CloseClaimApiV1ClaimsIdClosePostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r CloseClaimApiV1ClaimsIdClosePostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CloseClaimApiV1ClaimsIdClosePostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddClaimCommentApiV1ClaimsIdCommentsPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CommentRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r AddClaimCommentApiV1ClaimsIdCommentsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddClaimCommentApiV1ClaimsIdCommentsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReviewClaimApiV1ClaimsIdReviewPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r ReviewClaimApiV1ClaimsIdReviewPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReviewClaimApiV1ClaimsIdReviewPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ReadExpensesApiV1ExpensesGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]ExpenseRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r ReadExpensesApiV1ExpensesGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReadExpensesApiV1ExpensesGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateExpenseApiV1ExpensesPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ExpenseRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateExpenseApiV1ExpensesPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateExpenseApiV1ExpensesPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteExpenseApiV1ExpensesIdDeleteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteExpenseApiV1ExpensesIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteExpenseApiV1ExpensesIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateExpenseApiV1ExpensesIdPatchResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ExpenseRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateExpenseApiV1ExpensesIdPatchResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateExpenseApiV1ExpensesIdPatchResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]CommentRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddExpenseCommentApiV1ExpensesIdCommentsPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CommentRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r AddExpenseCommentApiV1ExpensesIdCommentsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddExpenseCommentApiV1ExpensesIdCommentsPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2600,6 +4621,74 @@ func (r UpdateUserMeApiV1UsersMePatchResponse) StatusCode() int {
 	return 0
 }
 
+type ListContactsApiV1UsersMeContactsGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]UserContactRead
+}
+
+// Status returns HTTPResponse.Status
+func (r ListContactsApiV1UsersMeContactsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListContactsApiV1UsersMeContactsGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddContactApiV1UsersMeContactsPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *UserContactRead
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r AddContactApiV1UsersMeContactsPostResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddContactApiV1UsersMeContactsPostResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteContactApiV1UsersMeContactsContactIdDeleteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON422      *HTTPValidationError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteContactApiV1UsersMeContactsContactIdDeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteContactApiV1UsersMeContactsContactIdDeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2638,6 +4727,28 @@ func (r ReadPendingMagicLinksApiV1UsersPendingMagicLinksGetResponse) Status() st
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ReadPendingMagicLinksApiV1UsersPendingMagicLinksGetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetRecentContactsApiV1UsersRecentContactsGetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]string
+}
+
+// Status returns HTTPResponse.Status
+func (r GetRecentContactsApiV1UsersRecentContactsGetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetRecentContactsApiV1UsersRecentContactsGetResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2736,6 +4847,15 @@ func (c *ClientWithResponses) UpdateUserApiV1AdminUsersUserIdPatchWithResponse(c
 	return ParseUpdateUserApiV1AdminUsersUserIdPatchResponse(rsp)
 }
 
+// ReadUserContactsApiV1AdminUsersUserIdContactsGetWithResponse request returning *ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse
+func (c *ClientWithResponses) ReadUserContactsApiV1AdminUsersUserIdContactsGetWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse, error) {
+	rsp, err := c.ReadUserContactsApiV1AdminUsersUserIdContactsGet(ctx, userId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReadUserContactsApiV1AdminUsersUserIdContactsGetResponse(rsp)
+}
+
 // InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostWithResponse request returning *InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostResponse
 func (c *ClientWithResponses) InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostWithResponse(ctx context.Context, userId int, reqEditors ...RequestEditorFn) (*InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostResponse, error) {
 	rsp, err := c.InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePost(ctx, userId, reqEditors...)
@@ -2786,6 +4906,231 @@ func (c *ClientWithResponses) VerifyMagicLinkApiV1AuthVerifyGetWithResponse(ctx 
 		return nil, err
 	}
 	return ParseVerifyMagicLinkApiV1AuthVerifyGetResponse(rsp)
+}
+
+// ReadCategoriesApiV1CategoriesGetWithResponse request returning *ReadCategoriesApiV1CategoriesGetResponse
+func (c *ClientWithResponses) ReadCategoriesApiV1CategoriesGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ReadCategoriesApiV1CategoriesGetResponse, error) {
+	rsp, err := c.ReadCategoriesApiV1CategoriesGet(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReadCategoriesApiV1CategoriesGetResponse(rsp)
+}
+
+// CreateCategoryApiV1CategoriesPostWithBodyWithResponse request with arbitrary body returning *CreateCategoryApiV1CategoriesPostResponse
+func (c *ClientWithResponses) CreateCategoryApiV1CategoriesPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCategoryApiV1CategoriesPostResponse, error) {
+	rsp, err := c.CreateCategoryApiV1CategoriesPostWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCategoryApiV1CategoriesPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateCategoryApiV1CategoriesPostWithResponse(ctx context.Context, body CreateCategoryApiV1CategoriesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCategoryApiV1CategoriesPostResponse, error) {
+	rsp, err := c.CreateCategoryApiV1CategoriesPost(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCategoryApiV1CategoriesPostResponse(rsp)
+}
+
+// DeleteCategoryApiV1CategoriesNameDeleteWithResponse request returning *DeleteCategoryApiV1CategoriesNameDeleteResponse
+func (c *ClientWithResponses) DeleteCategoryApiV1CategoriesNameDeleteWithResponse(ctx context.Context, name string, reqEditors ...RequestEditorFn) (*DeleteCategoryApiV1CategoriesNameDeleteResponse, error) {
+	rsp, err := c.DeleteCategoryApiV1CategoriesNameDelete(ctx, name, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCategoryApiV1CategoriesNameDeleteResponse(rsp)
+}
+
+// ReadClaimsApiV1ClaimsGetWithResponse request returning *ReadClaimsApiV1ClaimsGetResponse
+func (c *ClientWithResponses) ReadClaimsApiV1ClaimsGetWithResponse(ctx context.Context, params *ReadClaimsApiV1ClaimsGetParams, reqEditors ...RequestEditorFn) (*ReadClaimsApiV1ClaimsGetResponse, error) {
+	rsp, err := c.ReadClaimsApiV1ClaimsGet(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReadClaimsApiV1ClaimsGetResponse(rsp)
+}
+
+// CreateClaimApiV1ClaimsPostWithBodyWithResponse request with arbitrary body returning *CreateClaimApiV1ClaimsPostResponse
+func (c *ClientWithResponses) CreateClaimApiV1ClaimsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateClaimApiV1ClaimsPostResponse, error) {
+	rsp, err := c.CreateClaimApiV1ClaimsPostWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateClaimApiV1ClaimsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateClaimApiV1ClaimsPostWithResponse(ctx context.Context, body CreateClaimApiV1ClaimsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateClaimApiV1ClaimsPostResponse, error) {
+	rsp, err := c.CreateClaimApiV1ClaimsPost(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateClaimApiV1ClaimsPostResponse(rsp)
+}
+
+// UpdateClaimApiV1ClaimsIdPatchWithBodyWithResponse request with arbitrary body returning *UpdateClaimApiV1ClaimsIdPatchResponse
+func (c *ClientWithResponses) UpdateClaimApiV1ClaimsIdPatchWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateClaimApiV1ClaimsIdPatchResponse, error) {
+	rsp, err := c.UpdateClaimApiV1ClaimsIdPatchWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateClaimApiV1ClaimsIdPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateClaimApiV1ClaimsIdPatchWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateClaimApiV1ClaimsIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateClaimApiV1ClaimsIdPatchResponse, error) {
+	rsp, err := c.UpdateClaimApiV1ClaimsIdPatch(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateClaimApiV1ClaimsIdPatchResponse(rsp)
+}
+
+// CloseClaimApiV1ClaimsIdClosePostWithResponse request returning *CloseClaimApiV1ClaimsIdClosePostResponse
+func (c *ClientWithResponses) CloseClaimApiV1ClaimsIdClosePostWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*CloseClaimApiV1ClaimsIdClosePostResponse, error) {
+	rsp, err := c.CloseClaimApiV1ClaimsIdClosePost(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCloseClaimApiV1ClaimsIdClosePostResponse(rsp)
+}
+
+// AddClaimCommentApiV1ClaimsIdCommentsPostWithBodyWithResponse request with arbitrary body returning *AddClaimCommentApiV1ClaimsIdCommentsPostResponse
+func (c *ClientWithResponses) AddClaimCommentApiV1ClaimsIdCommentsPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddClaimCommentApiV1ClaimsIdCommentsPostResponse, error) {
+	rsp, err := c.AddClaimCommentApiV1ClaimsIdCommentsPostWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddClaimCommentApiV1ClaimsIdCommentsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddClaimCommentApiV1ClaimsIdCommentsPostWithResponse(ctx context.Context, id openapi_types.UUID, body AddClaimCommentApiV1ClaimsIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddClaimCommentApiV1ClaimsIdCommentsPostResponse, error) {
+	rsp, err := c.AddClaimCommentApiV1ClaimsIdCommentsPost(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddClaimCommentApiV1ClaimsIdCommentsPostResponse(rsp)
+}
+
+// AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBodyWithResponse request with arbitrary body returning *AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse
+func (c *ClientWithResponses) AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse, error) {
+	rsp, err := c.AddExpensesToClaimApiV1ClaimsIdExpensesPostWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddExpensesToClaimApiV1ClaimsIdExpensesPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddExpensesToClaimApiV1ClaimsIdExpensesPostWithResponse(ctx context.Context, id openapi_types.UUID, body AddExpensesToClaimApiV1ClaimsIdExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse, error) {
+	rsp, err := c.AddExpensesToClaimApiV1ClaimsIdExpensesPost(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddExpensesToClaimApiV1ClaimsIdExpensesPostResponse(rsp)
+}
+
+// UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchWithResponse request returning *UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse
+func (c *ClientWithResponses) UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchWithResponse(ctx context.Context, id openapi_types.UUID, expenseId openapi_types.UUID, params *UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchParams, reqEditors ...RequestEditorFn) (*UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse, error) {
+	rsp, err := c.UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatch(ctx, id, expenseId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse(rsp)
+}
+
+// ReviewClaimApiV1ClaimsIdReviewPostWithBodyWithResponse request with arbitrary body returning *ReviewClaimApiV1ClaimsIdReviewPostResponse
+func (c *ClientWithResponses) ReviewClaimApiV1ClaimsIdReviewPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReviewClaimApiV1ClaimsIdReviewPostResponse, error) {
+	rsp, err := c.ReviewClaimApiV1ClaimsIdReviewPostWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReviewClaimApiV1ClaimsIdReviewPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) ReviewClaimApiV1ClaimsIdReviewPostWithResponse(ctx context.Context, id openapi_types.UUID, body ReviewClaimApiV1ClaimsIdReviewPostJSONRequestBody, reqEditors ...RequestEditorFn) (*ReviewClaimApiV1ClaimsIdReviewPostResponse, error) {
+	rsp, err := c.ReviewClaimApiV1ClaimsIdReviewPost(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReviewClaimApiV1ClaimsIdReviewPostResponse(rsp)
+}
+
+// ReadExpensesApiV1ExpensesGetWithResponse request returning *ReadExpensesApiV1ExpensesGetResponse
+func (c *ClientWithResponses) ReadExpensesApiV1ExpensesGetWithResponse(ctx context.Context, params *ReadExpensesApiV1ExpensesGetParams, reqEditors ...RequestEditorFn) (*ReadExpensesApiV1ExpensesGetResponse, error) {
+	rsp, err := c.ReadExpensesApiV1ExpensesGet(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReadExpensesApiV1ExpensesGetResponse(rsp)
+}
+
+// CreateExpenseApiV1ExpensesPostWithBodyWithResponse request with arbitrary body returning *CreateExpenseApiV1ExpensesPostResponse
+func (c *ClientWithResponses) CreateExpenseApiV1ExpensesPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateExpenseApiV1ExpensesPostResponse, error) {
+	rsp, err := c.CreateExpenseApiV1ExpensesPostWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateExpenseApiV1ExpensesPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateExpenseApiV1ExpensesPostWithResponse(ctx context.Context, body CreateExpenseApiV1ExpensesPostJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateExpenseApiV1ExpensesPostResponse, error) {
+	rsp, err := c.CreateExpenseApiV1ExpensesPost(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateExpenseApiV1ExpensesPostResponse(rsp)
+}
+
+// DeleteExpenseApiV1ExpensesIdDeleteWithResponse request returning *DeleteExpenseApiV1ExpensesIdDeleteResponse
+func (c *ClientWithResponses) DeleteExpenseApiV1ExpensesIdDeleteWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteExpenseApiV1ExpensesIdDeleteResponse, error) {
+	rsp, err := c.DeleteExpenseApiV1ExpensesIdDelete(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteExpenseApiV1ExpensesIdDeleteResponse(rsp)
+}
+
+// UpdateExpenseApiV1ExpensesIdPatchWithBodyWithResponse request with arbitrary body returning *UpdateExpenseApiV1ExpensesIdPatchResponse
+func (c *ClientWithResponses) UpdateExpenseApiV1ExpensesIdPatchWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateExpenseApiV1ExpensesIdPatchResponse, error) {
+	rsp, err := c.UpdateExpenseApiV1ExpensesIdPatchWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateExpenseApiV1ExpensesIdPatchResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateExpenseApiV1ExpensesIdPatchWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateExpenseApiV1ExpensesIdPatchJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateExpenseApiV1ExpensesIdPatchResponse, error) {
+	rsp, err := c.UpdateExpenseApiV1ExpensesIdPatch(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateExpenseApiV1ExpensesIdPatchResponse(rsp)
+}
+
+// GetExpenseCommentsApiV1ExpensesIdCommentsGetWithResponse request returning *GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse
+func (c *ClientWithResponses) GetExpenseCommentsApiV1ExpensesIdCommentsGetWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse, error) {
+	rsp, err := c.GetExpenseCommentsApiV1ExpensesIdCommentsGet(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetExpenseCommentsApiV1ExpensesIdCommentsGetResponse(rsp)
+}
+
+// AddExpenseCommentApiV1ExpensesIdCommentsPostWithBodyWithResponse request with arbitrary body returning *AddExpenseCommentApiV1ExpensesIdCommentsPostResponse
+func (c *ClientWithResponses) AddExpenseCommentApiV1ExpensesIdCommentsPostWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddExpenseCommentApiV1ExpensesIdCommentsPostResponse, error) {
+	rsp, err := c.AddExpenseCommentApiV1ExpensesIdCommentsPostWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddExpenseCommentApiV1ExpensesIdCommentsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddExpenseCommentApiV1ExpensesIdCommentsPostWithResponse(ctx context.Context, id openapi_types.UUID, body AddExpenseCommentApiV1ExpensesIdCommentsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddExpenseCommentApiV1ExpensesIdCommentsPostResponse, error) {
+	rsp, err := c.AddExpenseCommentApiV1ExpensesIdCommentsPost(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddExpenseCommentApiV1ExpensesIdCommentsPostResponse(rsp)
 }
 
 // GetActiveUsersByDayApiV1MetricsActiveUsersGetWithResponse request returning *GetActiveUsersByDayApiV1MetricsActiveUsersGetResponse
@@ -2922,6 +5267,41 @@ func (c *ClientWithResponses) UpdateUserMeApiV1UsersMePatchWithResponse(ctx cont
 	return ParseUpdateUserMeApiV1UsersMePatchResponse(rsp)
 }
 
+// ListContactsApiV1UsersMeContactsGetWithResponse request returning *ListContactsApiV1UsersMeContactsGetResponse
+func (c *ClientWithResponses) ListContactsApiV1UsersMeContactsGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListContactsApiV1UsersMeContactsGetResponse, error) {
+	rsp, err := c.ListContactsApiV1UsersMeContactsGet(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListContactsApiV1UsersMeContactsGetResponse(rsp)
+}
+
+// AddContactApiV1UsersMeContactsPostWithBodyWithResponse request with arbitrary body returning *AddContactApiV1UsersMeContactsPostResponse
+func (c *ClientWithResponses) AddContactApiV1UsersMeContactsPostWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddContactApiV1UsersMeContactsPostResponse, error) {
+	rsp, err := c.AddContactApiV1UsersMeContactsPostWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddContactApiV1UsersMeContactsPostResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddContactApiV1UsersMeContactsPostWithResponse(ctx context.Context, body AddContactApiV1UsersMeContactsPostJSONRequestBody, reqEditors ...RequestEditorFn) (*AddContactApiV1UsersMeContactsPostResponse, error) {
+	rsp, err := c.AddContactApiV1UsersMeContactsPost(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddContactApiV1UsersMeContactsPostResponse(rsp)
+}
+
+// DeleteContactApiV1UsersMeContactsContactIdDeleteWithResponse request returning *DeleteContactApiV1UsersMeContactsContactIdDeleteResponse
+func (c *ClientWithResponses) DeleteContactApiV1UsersMeContactsContactIdDeleteWithResponse(ctx context.Context, contactId int, reqEditors ...RequestEditorFn) (*DeleteContactApiV1UsersMeContactsContactIdDeleteResponse, error) {
+	rsp, err := c.DeleteContactApiV1UsersMeContactsContactIdDelete(ctx, contactId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteContactApiV1UsersMeContactsContactIdDeleteResponse(rsp)
+}
+
 // InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostWithResponse request returning *InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostResponse
 func (c *ClientWithResponses) InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostResponse, error) {
 	rsp, err := c.InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePost(ctx, reqEditors...)
@@ -2938,6 +5318,15 @@ func (c *ClientWithResponses) ReadPendingMagicLinksApiV1UsersPendingMagicLinksGe
 		return nil, err
 	}
 	return ParseReadPendingMagicLinksApiV1UsersPendingMagicLinksGetResponse(rsp)
+}
+
+// GetRecentContactsApiV1UsersRecentContactsGetWithResponse request returning *GetRecentContactsApiV1UsersRecentContactsGetResponse
+func (c *ClientWithResponses) GetRecentContactsApiV1UsersRecentContactsGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetRecentContactsApiV1UsersRecentContactsGetResponse, error) {
+	rsp, err := c.GetRecentContactsApiV1UsersRecentContactsGet(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetRecentContactsApiV1UsersRecentContactsGetResponse(rsp)
 }
 
 // HealthCheckHealthGetWithResponse request returning *HealthCheckHealthGetResponse
@@ -3140,6 +5529,39 @@ func ParseUpdateUserApiV1AdminUsersUserIdPatchResponse(rsp *http.Response) (*Upd
 	return response, nil
 }
 
+// ParseReadUserContactsApiV1AdminUsersUserIdContactsGetResponse parses an HTTP response from a ReadUserContactsApiV1AdminUsersUserIdContactsGetWithResponse call
+func ParseReadUserContactsApiV1AdminUsersUserIdContactsGetResponse(rsp *http.Response) (*ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReadUserContactsApiV1AdminUsersUserIdContactsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []UserContactRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseInvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostResponse parses an HTTP response from a InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostWithResponse call
 func ParseInvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostResponse(rsp *http.Response) (*InvalidateUserSessionsApiV1AdminUsersUserIdSessionsInvalidatePostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -3255,6 +5677,560 @@ func ParseVerifyMagicLinkApiV1AuthVerifyGetResponse(rsp *http.Response) (*Verify
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReadCategoriesApiV1CategoriesGetResponse parses an HTTP response from a ReadCategoriesApiV1CategoriesGetWithResponse call
+func ParseReadCategoriesApiV1CategoriesGetResponse(rsp *http.Response) (*ReadCategoriesApiV1CategoriesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReadCategoriesApiV1CategoriesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []CategoryRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateCategoryApiV1CategoriesPostResponse parses an HTTP response from a CreateCategoryApiV1CategoriesPostWithResponse call
+func ParseCreateCategoryApiV1CategoriesPostResponse(rsp *http.Response) (*CreateCategoryApiV1CategoriesPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateCategoryApiV1CategoriesPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CategoryRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteCategoryApiV1CategoriesNameDeleteResponse parses an HTTP response from a DeleteCategoryApiV1CategoriesNameDeleteWithResponse call
+func ParseDeleteCategoryApiV1CategoriesNameDeleteResponse(rsp *http.Response) (*DeleteCategoryApiV1CategoriesNameDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteCategoryApiV1CategoriesNameDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReadClaimsApiV1ClaimsGetResponse parses an HTTP response from a ReadClaimsApiV1ClaimsGetWithResponse call
+func ParseReadClaimsApiV1ClaimsGetResponse(rsp *http.Response) (*ReadClaimsApiV1ClaimsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReadClaimsApiV1ClaimsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ClaimRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateClaimApiV1ClaimsPostResponse parses an HTTP response from a CreateClaimApiV1ClaimsPostWithResponse call
+func ParseCreateClaimApiV1ClaimsPostResponse(rsp *http.Response) (*CreateClaimApiV1ClaimsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateClaimApiV1ClaimsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ClaimRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateClaimApiV1ClaimsIdPatchResponse parses an HTTP response from a UpdateClaimApiV1ClaimsIdPatchWithResponse call
+func ParseUpdateClaimApiV1ClaimsIdPatchResponse(rsp *http.Response) (*UpdateClaimApiV1ClaimsIdPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateClaimApiV1ClaimsIdPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ClaimRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCloseClaimApiV1ClaimsIdClosePostResponse parses an HTTP response from a CloseClaimApiV1ClaimsIdClosePostWithResponse call
+func ParseCloseClaimApiV1ClaimsIdClosePostResponse(rsp *http.Response) (*CloseClaimApiV1ClaimsIdClosePostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CloseClaimApiV1ClaimsIdClosePostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddClaimCommentApiV1ClaimsIdCommentsPostResponse parses an HTTP response from a AddClaimCommentApiV1ClaimsIdCommentsPostWithResponse call
+func ParseAddClaimCommentApiV1ClaimsIdCommentsPostResponse(rsp *http.Response) (*AddClaimCommentApiV1ClaimsIdCommentsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddClaimCommentApiV1ClaimsIdCommentsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CommentRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddExpensesToClaimApiV1ClaimsIdExpensesPostResponse parses an HTTP response from a AddExpensesToClaimApiV1ClaimsIdExpensesPostWithResponse call
+func ParseAddExpensesToClaimApiV1ClaimsIdExpensesPostResponse(rsp *http.Response) (*AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddExpensesToClaimApiV1ClaimsIdExpensesPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse parses an HTTP response from a UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchWithResponse call
+func ParseUpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse(rsp *http.Response) (*UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateClaimExpenseStatusApiV1ClaimsIdExpensesExpenseIdStatusPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReviewClaimApiV1ClaimsIdReviewPostResponse parses an HTTP response from a ReviewClaimApiV1ClaimsIdReviewPostWithResponse call
+func ParseReviewClaimApiV1ClaimsIdReviewPostResponse(rsp *http.Response) (*ReviewClaimApiV1ClaimsIdReviewPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReviewClaimApiV1ClaimsIdReviewPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReadExpensesApiV1ExpensesGetResponse parses an HTTP response from a ReadExpensesApiV1ExpensesGetWithResponse call
+func ParseReadExpensesApiV1ExpensesGetResponse(rsp *http.Response) (*ReadExpensesApiV1ExpensesGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReadExpensesApiV1ExpensesGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ExpenseRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateExpenseApiV1ExpensesPostResponse parses an HTTP response from a CreateExpenseApiV1ExpensesPostWithResponse call
+func ParseCreateExpenseApiV1ExpensesPostResponse(rsp *http.Response) (*CreateExpenseApiV1ExpensesPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateExpenseApiV1ExpensesPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ExpenseRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteExpenseApiV1ExpensesIdDeleteResponse parses an HTTP response from a DeleteExpenseApiV1ExpensesIdDeleteWithResponse call
+func ParseDeleteExpenseApiV1ExpensesIdDeleteResponse(rsp *http.Response) (*DeleteExpenseApiV1ExpensesIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteExpenseApiV1ExpensesIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateExpenseApiV1ExpensesIdPatchResponse parses an HTTP response from a UpdateExpenseApiV1ExpensesIdPatchWithResponse call
+func ParseUpdateExpenseApiV1ExpensesIdPatchResponse(rsp *http.Response) (*UpdateExpenseApiV1ExpensesIdPatchResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateExpenseApiV1ExpensesIdPatchResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ExpenseRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetExpenseCommentsApiV1ExpensesIdCommentsGetResponse parses an HTTP response from a GetExpenseCommentsApiV1ExpensesIdCommentsGetWithResponse call
+func ParseGetExpenseCommentsApiV1ExpensesIdCommentsGetResponse(rsp *http.Response) (*GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetExpenseCommentsApiV1ExpensesIdCommentsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []CommentRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddExpenseCommentApiV1ExpensesIdCommentsPostResponse parses an HTTP response from a AddExpenseCommentApiV1ExpensesIdCommentsPostWithResponse call
+func ParseAddExpenseCommentApiV1ExpensesIdCommentsPostResponse(rsp *http.Response) (*AddExpenseCommentApiV1ExpensesIdCommentsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddExpenseCommentApiV1ExpensesIdCommentsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CommentRead
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3699,6 +6675,98 @@ func ParseUpdateUserMeApiV1UsersMePatchResponse(rsp *http.Response) (*UpdateUser
 	return response, nil
 }
 
+// ParseListContactsApiV1UsersMeContactsGetResponse parses an HTTP response from a ListContactsApiV1UsersMeContactsGetWithResponse call
+func ParseListContactsApiV1UsersMeContactsGetResponse(rsp *http.Response) (*ListContactsApiV1UsersMeContactsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListContactsApiV1UsersMeContactsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []UserContactRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddContactApiV1UsersMeContactsPostResponse parses an HTTP response from a AddContactApiV1UsersMeContactsPostWithResponse call
+func ParseAddContactApiV1UsersMeContactsPostResponse(rsp *http.Response) (*AddContactApiV1UsersMeContactsPostResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddContactApiV1UsersMeContactsPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest UserContactRead
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteContactApiV1UsersMeContactsContactIdDeleteResponse parses an HTTP response from a DeleteContactApiV1UsersMeContactsContactIdDeleteWithResponse call
+func ParseDeleteContactApiV1UsersMeContactsContactIdDeleteResponse(rsp *http.Response) (*DeleteContactApiV1UsersMeContactsContactIdDeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteContactApiV1UsersMeContactsContactIdDeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest HTTPValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseInvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostResponse parses an HTTP response from a InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostWithResponse call
 func ParseInvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostResponse(rsp *http.Response) (*InvalidateOwnSessionsApiV1UsersMeSessionsInvalidatePostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -3741,6 +6809,32 @@ func ParseReadPendingMagicLinksApiV1UsersPendingMagicLinksGetResponse(rsp *http.
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest []UserWithMagicLink
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetRecentContactsApiV1UsersRecentContactsGetResponse parses an HTTP response from a GetRecentContactsApiV1UsersRecentContactsGetWithResponse call
+func ParseGetRecentContactsApiV1UsersRecentContactsGetResponse(rsp *http.Response) (*GetRecentContactsApiV1UsersRecentContactsGetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetRecentContactsApiV1UsersRecentContactsGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []string
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

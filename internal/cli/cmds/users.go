@@ -6,17 +6,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/soumen-basu/pay-me-back/internal/cli/client"
+	"github.com/soumen-basu/PayMeBack/internal/cli/client"
 	"github.com/spf13/cobra"
 )
 
-var token string
-
 func init() {
-	usersCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "Bearer token for authentication")
-	usersCmd.MarkPersistentFlagRequired("token")
 	rootCmd.AddCommand(usersCmd)
-
 	usersCmd.AddCommand(meCmd)
 }
 
@@ -24,6 +19,12 @@ var usersCmd = &cobra.Command{
 	Use:   "users",
 	Short: "Manage PayMeBack users",
 	Long:  `Subcommands for interacting with the user management endpoints.`,
+}
+
+func addBearerToken(ctx context.Context, req *http.Request) error {
+	token := getEffectiveToken()
+	req.Header.Add("Authorization", "Bearer "+token)
+	return nil
 }
 
 var meCmd = &cobra.Command{
@@ -37,12 +38,6 @@ var meCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-
-		// Helper to configure the Authorization header
-		addBearerToken := func(ctx context.Context, req *http.Request) error {
-			req.Header.Add("Authorization", "Bearer "+token)
-			return nil
-		}
 
 		parsedResp, err := c.ReadUserMeApiV1UsersMeGetWithResponse(ctx, addBearerToken)
 		if err != nil {

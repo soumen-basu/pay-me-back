@@ -7,19 +7,13 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/soumen-basu/pay-me-back/internal/cli/client"
+	"github.com/soumen-basu/PayMeBack/internal/cli/client"
 	"github.com/spf13/cobra"
 )
 
-var adminToken string
-
 func init() {
-	adminCmd.PersistentFlags().StringVarP(&adminToken, "token", "t", "", "Bearer token for authentication")
-	adminCmd.MarkPersistentFlagRequired("token")
 	rootCmd.AddCommand(adminCmd)
-
 	adminCmd.AddCommand(adminUsersCmd)
-
 	adminUsersCmd.AddCommand(adminUsersActiveCmd)
 	adminUsersCmd.AddCommand(adminUsersViewCmd)
 	adminUsersCmd.AddCommand(adminUsersDeactivateCmd)
@@ -28,7 +22,6 @@ func init() {
 var adminCmd = &cobra.Command{
 	Use:   "admin",
 	Short: "Admin operations for PayMeBack API",
-	Long:  `Subcommands for performing administrative tasks.`,
 }
 
 var adminUsersCmd = &cobra.Command{
@@ -36,8 +29,9 @@ var adminUsersCmd = &cobra.Command{
 	Short: "Admin user management",
 }
 
-func addAdminBearerToken(ctx context.Context, req *http.Request) error {
-	req.Header.Add("Authorization", "Bearer "+adminToken)
+func addBearerTokenEditor(ctx context.Context, req *http.Request) error {
+	token := getEffectiveToken()
+	req.Header.Add("Authorization", "Bearer "+token)
 	return nil
 }
 
@@ -57,8 +51,7 @@ var adminUsersActiveCmd = &cobra.Command{
 		c := getAdminClient()
 		ctx := context.Background()
 
-		// Send request
-		parsedResp, err := c.ReadActiveUsersApiV1AdminUsersActiveGetWithResponse(ctx, &client.ReadActiveUsersApiV1AdminUsersActiveGetParams{}, addAdminBearerToken)
+		parsedResp, err := c.ReadActiveUsersApiV1AdminUsersActiveGetWithResponse(ctx, &client.ReadActiveUsersApiV1AdminUsersActiveGetParams{}, addBearerTokenEditor)
 		if err != nil {
 			fmt.Println("Request Failed:", err)
 			os.Exit(1)
@@ -93,7 +86,7 @@ var adminUsersViewCmd = &cobra.Command{
 		ctx := context.Background()
 		userIdent := args[0]
 
-		parsedResp, err := c.ReadUserApiV1AdminUsersUserIdentGetWithResponse(ctx, userIdent, addAdminBearerToken)
+		parsedResp, err := c.ReadUserApiV1AdminUsersUserIdentGetWithResponse(ctx, userIdent, addBearerTokenEditor)
 		if err != nil {
 			fmt.Println("Request Failed:", err)
 			os.Exit(1)
@@ -112,9 +105,6 @@ var adminUsersViewCmd = &cobra.Command{
 			}
 		} else {
 			fmt.Printf("API Error HTTP %d\n", parsedResp.StatusCode())
-			if parsedResp.JSON422 != nil {
-				fmt.Printf("Validation Error Details: %+v\n", parsedResp.JSON422)
-			}
 		}
 	},
 }
@@ -133,7 +123,7 @@ var adminUsersDeactivateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		parsedResp, err := c.DeleteUserApiV1AdminUsersUserIdDeleteWithResponse(ctx, userId, addAdminBearerToken)
+		parsedResp, err := c.DeleteUserApiV1AdminUsersUserIdDeleteWithResponse(ctx, userId, addBearerTokenEditor)
 		if err != nil {
 			fmt.Println("Request Failed:", err)
 			os.Exit(1)

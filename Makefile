@@ -18,7 +18,7 @@ export-api:
 generate: export-api
 	@echo "Generating Go API client..."
 	mkdir -p internal/cli/client
-	$$(go env GOPATH)/bin/oapi-codegen -generate types,client -package client openapi-generated.json > internal/cli/client/client.gen.go
+	/home/soumen/Workspace/go/bin/oapi-codegen -generate types,client -package client openapi-generated.json > internal/cli/client/client.gen.go
 	go mod tidy
 
 # Build the CLI application
