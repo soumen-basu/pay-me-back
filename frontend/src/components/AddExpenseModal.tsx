@@ -24,6 +24,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   // Close modal on escape key
   useEffect(() => {
@@ -103,9 +104,38 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
     }
   };
 
+  const filteredCategories = categories.filter(c => (c.name || '').toLowerCase().includes((categoryName || '').toLowerCase()));
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isCategoryDropdownOpen) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        setIsCategoryDropdownOpen(true);
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIndex(prev => (prev < filteredCategories.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : prev));
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && activeIndex < filteredCategories.length) {
+        e.preventDefault();
+        setCategoryName(filteredCategories[activeIndex].name);
+        setIsCategoryDropdownOpen(false);
+        setActiveIndex(-1);
+      }
+    } else if (e.key === 'Escape') {
+      setIsCategoryDropdownOpen(false);
+      setActiveIndex(-1);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 relative border border-slate-100">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg animate-in zoom-in-95 duration-200 relative border border-slate-100">
         <div className="p-8 sm:p-10 w-full flex flex-col" style={{ padding: '32px' }}>
           <button onClick={onClose} className="absolute top-6 right-6 size-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-colors cursor-pointer z-10">
             <span className="material-symbols-outlined">close</span>
@@ -164,7 +194,9 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
                   onChange={(e) => {
                     setCategoryName(e.target.value);
                     setIsCategoryDropdownOpen(true);
+                    setActiveIndex(-1);
                   }}
+                  onKeyDown={handleKeyDown}
                   onFocus={() => setIsCategoryDropdownOpen(true)}
                   onBlur={() => setTimeout(() => setIsCategoryDropdownOpen(false), 200)}
                   placeholder="Type or select a category"
@@ -182,21 +214,23 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
               </div>
 
               {isCategoryDropdownOpen && (
-                <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 max-h-48 overflow-y-auto custom-scrollbar overflow-hidden">
-                  {categories.filter(c => (c.name || '').toLowerCase().includes((categoryName || '').toLowerCase())).map(cat => (
+                <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 max-h-48 overflow-y-auto custom-scrollbar">
+                  {filteredCategories.map((cat: Category, index: number) => (
                     <div
                       key={cat.id}
-                      className="px-5 py-3 hover:bg-slate-50 cursor-pointer text-slate-700 font-medium transition-colors border-b border-slate-50 last:border-b-0"
+                      className={`px-5 py-3 cursor-pointer text-slate-700 font-medium transition-colors border-b border-slate-50 last:border-b-0 ${activeIndex === index ? 'bg-slate-100' : 'hover:bg-slate-50'}`}
                       onMouseDown={(e) => { 
                         e.preventDefault(); 
                         setCategoryName(cat.name); 
                         setIsCategoryDropdownOpen(false); 
+                        setActiveIndex(-1);
                       }}
+                      onMouseEnter={() => setActiveIndex(index)}
                     >
                       {cat.name}
                     </div>
                   ))}
-                  {categories.filter(c => (c.name || '').toLowerCase().includes((categoryName || '').toLowerCase())).length === 0 && (
+                  {filteredCategories.length === 0 && (
                      <div className="px-5 py-3 text-slate-400 text-sm font-medium italic bg-slate-50/50">
                        {categoryName ? `Press Save to permanently create "${categoryName}"` : "No categories found."}
                      </div>
