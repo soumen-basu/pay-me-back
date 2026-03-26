@@ -32,7 +32,17 @@ async function handleResponse<T>(response: Response): Promise<T> {
     let detail = `HTTP ${response.status}`;
     try {
       const errorBody = await response.json();
-      detail = errorBody.detail || detail;
+      if (typeof errorBody.detail === 'string') {
+        detail = errorBody.detail;
+      } else if (Array.isArray(errorBody.detail)) {
+        // FastAPI validation errors (422) return an array of objects
+        detail = errorBody.detail.map((err: any) => {
+          const loc = err.loc ? err.loc.join('.') : 'unknown';
+          return `${loc}: ${err.msg}`;
+        }).join(', ');
+      } else if (errorBody.detail) {
+        detail = JSON.stringify(errorBody.detail);
+      }
     } catch {
       // ignore JSON parse error
     }

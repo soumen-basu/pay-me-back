@@ -52,7 +52,7 @@ export function ClaimReview() {
 
   const fetchClaimData = useCallback(async () => {
     try {
-      const claims = await api.get<Claim[]>('/api/v1/claims?role=all');
+      const claims = await api.get<Claim[]>('/api/v1/claims/?role=all');
       const foundClaim = claims.find(c => c.id === id);
       
       if (!foundClaim) {
@@ -60,7 +60,7 @@ export function ClaimReview() {
       }
       setClaim(foundClaim);
 
-      const allExpenses = await api.get<Expense[]>('/api/v1/expenses?role=all');
+      const allExpenses = await api.get<Expense[]>('/api/v1/expenses/?role=all');
       setExpenses(allExpenses.filter(e => e.claim_id === id));
     } catch (err) {
       console.error(err);

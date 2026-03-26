@@ -11,6 +11,12 @@ interface NavItem {
 
 interface SidebarProps {
   items?: NavItem[];
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+  isMobile?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+  className?: string;
 }
 
 const defaultNavItems: NavItem[] = [
@@ -27,7 +33,7 @@ const defaultAccountItems: NavItem[] = [
   { label: 'Help Center', icon: 'help', path: '/help' },
 ];
 
-export function Sidebar({ items }: SidebarProps) {
+export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen, onClose, className = '' }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -39,84 +45,143 @@ export function Sidebar({ items }: SidebarProps) {
     navigate('/');
   };
 
+  const handleNavClick = (path: string) => {
+    navigate(path);
+    if (isMobile && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <aside className="w-60 min-h-screen flex flex-col bg-white border-r border-primary/10 py-6 px-4">
+    <aside
+      className={`fixed lg:sticky top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out flex flex-col bg-white border-r border-primary/10 py-6 px-4 
+        ${isCollapsed ? 'w-20' : 'w-64'} 
+        ${isMobile ? (isOpen ? 'translate-x-0 overflow-y-auto' : '-translate-x-full') : 'translate-x-0'}
+        ${className}`}
+    >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-3 mb-8">
-        <div className="size-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">
+      <div className={`flex items-center gap-3 px-3 mb-8 transition-all duration-300 ${isCollapsed ? 'justify-center' : ''}`}>
+        <div className="size-10 min-w-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">
           <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
         </div>
-        <span className="text-slate-900 text-lg font-extrabold tracking-tight">Pay Me Back!</span>
+        {!isCollapsed && <span className="text-slate-900 text-lg font-extrabold tracking-tight whitespace-nowrap">Pay Me Back!</span>}
       </div>
 
-      {/* Menu */}
-      <nav className="flex-1 flex flex-col gap-1">
+      {/* Quick Action Buttons */}
+      <div className={`flex flex-col gap-2 mb-6 ${isCollapsed ? 'items-center' : ''}`}>
         <button
-          onClick={() => setIsAddExpenseModalOpen(true)}
-          className="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl text-sm font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-all cursor-pointer shadow-sm"
+          onClick={() => {
+            setIsAddExpenseModalOpen(true);
+            if (isMobile && onClose) onClose();
+          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-all cursor-pointer shadow-sm border border-emerald-200/50 ${
+            isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+          }`}
+          title={isCollapsed ? 'New Expense' : undefined}
         >
           <span className="material-symbols-outlined text-xl">add_circle</span>
-          New Expense
+          {!isCollapsed && <span>New Expense</span>}
         </button>
 
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Menu</p>
+        <button
+          onClick={() => {
+            if (isMobile && onClose) onClose();
+            navigate('/claims/new');
+          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-primary text-slate-900 border border-slate-900/5 hover:bg-primary/90 transition-all cursor-pointer shadow-sm ${
+            isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+          }`}
+          title={isCollapsed ? 'New Claim' : undefined}
+        >
+          <span className="material-symbols-outlined text-xl">assignment_add</span>
+          {!isCollapsed && <span>New Claim</span>}
+        </button>
+      </div>
+
+      {/* Menu scroll area */}
+      <nav className="flex-1 flex flex-col gap-1 overflow-x-hidden overflow-y-auto custom-scrollbar pr-1">
+        {!isCollapsed && <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-3 mb-2">Navigation</p>}
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavClick(item.path)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                 isActive
                   ? 'bg-primary text-slate-900 shadow-lg shadow-primary/20'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
+              } ${isCollapsed ? 'justify-center' : ''}`}
+              title={isCollapsed ? item.label : undefined}
             >
               <span className="material-symbols-outlined text-xl">{item.icon}</span>
-              {item.label}
+              {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
             </button>
           );
         })}
 
         {/* Account section */}
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest px-3 mt-6 mb-2">Account</p>
-        {defaultAccountItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-primary text-slate-900 shadow-lg shadow-primary/20'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <span className="material-symbols-outlined text-xl">{item.icon}</span>
-              {item.label}
-            </button>
-          );
-        })}
+        <div className="mt-6">
+          {!isCollapsed && <p className="text-xs font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Account</p>}
+          {defaultAccountItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.path}
+                onClick={() => handleNavClick(item.path)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-primary text-slate-900 shadow-lg shadow-primary/20'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                } ${isCollapsed ? 'justify-center' : ''}`}
+                title={isCollapsed ? item.label : undefined}
+              >
+                <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+              </button>
+            );
+          })}
+        </div>
       </nav>
 
       {/* User footer */}
-      {user && (
-        <div className="flex items-center gap-3 px-3 py-3 border-t border-slate-100 mt-4">
-          <div className="size-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
-            {(user.display_name || user.email || '?').charAt(0).toUpperCase()}
+      <div className="mt-auto pt-4 border-t border-slate-100">
+        {user && (
+          <div className={`flex items-center gap-3 px-3 py-3 ${isCollapsed ? 'justify-center' : ''}`}>
+            <div className="size-10 min-w-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+              {(user.display_name || user.email || '?').charAt(0).toUpperCase()}
+            </div>
+            {!isCollapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-900 truncate">{user.display_name || user.email}</p>
+              </div>
+            )}
+            {!isCollapsed && (
+              <button
+                onClick={handleLogout}
+                className="text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                title="Logout"
+              >
+                <span className="material-symbols-outlined text-xl">logout</span>
+              </button>
+            )}
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-slate-900 truncate">{user.display_name || user.email}</p>
-          </div>
+        )}
+
+        {/* Collapse toggle (Desktop only) */}
+        {!isMobile && onToggleCollapse && (
           <button
-            onClick={handleLogout}
-            className="text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
-            title="Logout"
+            onClick={onToggleCollapse}
+            className="w-full flex items-center gap-3 px-3 py-3 mt-1 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all cursor-pointer"
+            title={isCollapsed ? 'Expand menu' : 'Collapse menu'}
           >
-            <span className="material-symbols-outlined text-xl">logout</span>
+            <span className={`material-symbols-outlined text-xl transition-transform duration-300 ${isCollapsed ? 'rotate-180 mx-auto' : ''}`}>
+              first_page
+            </span>
+            {!isCollapsed && <span className="text-sm font-bold">Collapse</span>}
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {isAddExpenseModalOpen && (
         <AddExpenseModal

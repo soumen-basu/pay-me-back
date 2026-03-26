@@ -42,8 +42,8 @@ export function ClaimsPage() {
   const fetchData = useCallback(async () => {
     try {
       const [claimData, expData] = await Promise.all([
-        api.get<Claim[]>('/api/v1/claims?role=submitter'),
-        api.get<Expense[]>('/api/v1/expenses'),
+        api.get<Claim[]>('/api/v1/claims/?role=submitter'),
+        api.get<Expense[]>('/api/v1/expenses/'),
       ]);
       setClaims(claimData);
       setExpenses(expData);
@@ -73,16 +73,7 @@ export function ClaimsPage() {
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  // TopNav right-side actions
-  const topNavActions = (
-    <button
-      onClick={() => navigate('/claims/new')}
-      className="flex items-center gap-2 bg-primary text-slate-900 font-bold px-5 py-2.5 rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform cursor-pointer"
-    >
-      <span className="material-symbols-outlined text-xl">add</span>
-      New Claim
-    </button>
-  );
+  const topNavActions = undefined;
 
   return (
     <PageLayout variant="app" topNavActions={topNavActions}>

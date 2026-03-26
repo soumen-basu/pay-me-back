@@ -36,14 +36,14 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
 
   useEffect(() => {
     if (!initialCategories) {
-      api.get<Category[]>('/api/v1/categories')
+      api.get<Category[]>('/api/v1/categories/')
         .then(data => {
           setCategories(data);
-          if (!initialExpense && data.length > 0) {
+          if (!initialExpense && data && data.length > 0) {
             setCategoryName((prev: string) => prev || data[0].name);
           }
         })
-        .catch(console.error);
+        .catch(err => console.error("Failed to load categories", err));
     }
   }, [initialCategories, initialExpense]);
 
@@ -58,17 +58,21 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
     setError(null);
 
     try {
-      // 1a. Automatically create the category for the user if it's new
       const trimmedCategory = categoryName.trim();
       const categoryExists = categories.some(
-        (c) => (c.name || '').toLowerCase() === (trimmedCategory || '').toLowerCase()
+        (c) => (c.name || '').toLowerCase() === trimmedCategory.toLowerCase()
       );
       
       if (!categoryExists && trimmedCategory) {
+        console.log(`Creating new category: ${trimmedCategory}`);
         try {
-          await api.post('/api/v1/categories', { name: trimmedCategory });
+          const newCat = await api.post<Category>('/api/v1/categories/', { name: trimmedCategory });
+          if (newCat && newCat.name) {
+             setCategories(prev => [...prev, newCat]);
+          }
         } catch (catErr) {
           console.error("Failed to auto-create category", catErr);
+          // We continue anyway, as the expense creation might still work if the backend handles it
         }
       }
 
@@ -76,20 +80,24 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
         description,
         amount: parseFloat(amount),
         date,
-        category_name: categoryName,
+        category_name: trimmedCategory,
       };
+
+      console.log("Submitting expense payload:", payload);
 
       if (initialExpense) {
         await api.patch(`/api/v1/expenses/${initialExpense.id}`, payload);
       } else {
-        await api.post('/api/v1/expenses', payload);
+        await api.post('/api/v1/expenses/', payload);
       }
       
-      // Fire a custom event so other components (like ExpensesPage) can refresh automatically
       window.dispatchEvent(new Event('expense_added'));
       onSuccess();
     } catch (err: any) {
-      setError(err.detail || 'Failed to create expense');
+      console.error("Expense operation failed:", err);
+      // Defensive check to avoid crashing if err is null or missing detail
+      const errorMsg = err?.detail || (typeof err === 'string' ? err : 'Failed to save expense');
+      setError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }

@@ -48,8 +48,8 @@ export function ExpensesPage() {
   const fetchData = useCallback(async () => {
     try {
       const [expData, catData] = await Promise.all([
-        api.get<Expense[]>('/api/v1/expenses'),
-        api.get<Category[]>('/api/v1/categories'),
+        api.get<Expense[]>('/api/v1/expenses/'),
+        api.get<Category[]>('/api/v1/categories/'),
       ]);
       setExpenses(expData);
       setCategories(catData);

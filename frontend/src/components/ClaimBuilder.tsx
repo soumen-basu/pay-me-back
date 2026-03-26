@@ -61,7 +61,7 @@ export function ClaimBuilder() {
 
   const fetchExpenses = useCallback(async () => {
     try {
-      const data = await api.get<Expense[]>('/api/v1/expenses');
+      const data = await api.get<Expense[]>('/api/v1/expenses/');
       // Only show OPEN expenses not already assigned to a claim
       setExpenses(data.filter((e) => e.status === 'OPEN' && !e.claim_id));
     } catch {
@@ -130,7 +130,7 @@ export function ClaimBuilder() {
 
     try {
       // 1. Create the claim
-      const claim = await api.post<any>('/api/v1/claims', {
+      const claim = await api.post<any>('/api/v1/claims/', {
         title: claimTitle,
         description: claimDescription || undefined,
         approver_emails: approverEmail.trim() ? [approverEmail.trim()] : undefined,

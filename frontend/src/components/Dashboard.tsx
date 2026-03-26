@@ -79,8 +79,8 @@ export function Dashboard() {
   const fetchData = useCallback(async () => {
     try {
       const [expData, claimData] = await Promise.all([
-        api.get<Expense[]>('/api/v1/expenses'),
-        api.get<Claim[]>('/api/v1/claims?role=submitter'),
+        api.get<Expense[]>('/api/v1/expenses/'),
+        api.get<Claim[]>('/api/v1/claims/?role=submitter'),
       ]);
       setExpenses(expData);
       setClaims(claimData);
@@ -179,13 +179,6 @@ export function Dashboard() {
           />
         </div>
       </label>
-      <button
-        onClick={() => navigate('/claims/new')}
-        className="flex items-center gap-2 bg-primary text-slate-900 font-bold px-5 py-2.5 rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform cursor-pointer"
-      >
-        <span className="material-symbols-outlined text-xl">add</span>
-        New Claim
-      </button>
     </div>
   );
 

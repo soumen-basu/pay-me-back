@@ -42,8 +42,8 @@ export function ApprovalsPage() {
   const fetchData = useCallback(async () => {
     try {
       const [claimData, expData] = await Promise.all([
-        api.get<Claim[]>('/api/v1/claims?role=approver'),
-        api.get<Expense[]>('/api/v1/expenses?role=approver'), // Let backend handle expense filtering if supported, or fetch all that the user can see. Let's just fetch all accessible to approver.
+        api.get<Claim[]>('/api/v1/claims/?role=approver'),
+        api.get<Expense[]>('/api/v1/expenses/?role=approver'), // Let backend handle expense filtering if supported, or fetch all that the user can see. Let's just fetch all accessible to approver.
       ]);
       setClaims(claimData);
       setExpenses(expData);

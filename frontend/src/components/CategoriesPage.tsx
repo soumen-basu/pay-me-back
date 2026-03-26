@@ -41,8 +41,8 @@ export function CategoriesPage() {
   const fetchData = useCallback(async () => {
     try {
       const [catData, expData] = await Promise.all([
-        api.get<Category[]>('/api/v1/categories'),
-        api.get<Expense[]>('/api/v1/expenses')
+        api.get<Category[]>('/api/v1/categories/'),
+        api.get<Expense[]>('/api/v1/expenses/')
       ]);
       setCategories(catData);
       setExpenses(expData);
@@ -60,7 +60,7 @@ export function CategoriesPage() {
   const handleDelete = async (name: string) => {
     if (!window.confirm(`Are you sure you want to remove the "${name}" category?`)) return;
     try {
-      await api.delete(`/api/v1/categories/${encodeURIComponent(name)}`);
+      await api.delete(`/api/v1/categories/${encodeURIComponent(name)}/`);
       fetchData();
     } catch (err) {
       console.error(err);
@@ -71,7 +71,7 @@ export function CategoriesPage() {
   const handleAdd = async () => {
     if (!newCatName.trim()) return;
     try {
-      await api.post('/api/v1/categories', { name: newCatName.trim() });
+      await api.post('/api/v1/categories/', { name: newCatName.trim() });
       setNewCatName('');
       setIsAdding(false);
       fetchData();
