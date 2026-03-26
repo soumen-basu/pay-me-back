@@ -19,6 +19,15 @@ interface Expense {
   created_at: string;
 }
 
+interface Claim {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  approver_emails?: string[];
+}
+
 // ── Steps ──
 const STEPS = [
   { label: 'Claim Details', icon: 'edit_note' },
@@ -45,6 +54,9 @@ export function ClaimBuilder() {
   const [step, setStep] = useState(0);
 
   // ── Step 1: Claim details ──
+  const [isNewClaim, setIsNewClaim] = useState(true);
+  const [existingClaims, setExistingClaims] = useState<Claim[]>([]);
+  const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null);
   const [claimTitle, setClaimTitle] = useState('');
   const [claimDescription, setClaimDescription] = useState('');
   const [approverEmail, setApproverEmail] = useState('');
@@ -54,6 +66,7 @@ export function ClaimBuilder() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(selectedExpenseIds));
   const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [isLoadingClaims, setIsLoadingClaims] = useState(false);
 
   // ── Step 3: Submission ──
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,9 +84,23 @@ export function ClaimBuilder() {
     }
   }, []);
 
+  const fetchExistingClaims = useCallback(async () => {
+    setIsLoadingClaims(true);
+    try {
+      const data = await api.get<Claim[]>('/api/v1/claims/?role=submitter');
+      // Only show OPEN claims that the user can add to
+      setExistingClaims(data.filter(c => c.status === 'OPEN'));
+    } catch (err) {
+      console.error('Failed to fetch claims', err);
+    } finally {
+      setIsLoadingClaims(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchExpenses();
-  }, [fetchExpenses]);
+    fetchExistingClaims();
+  }, [fetchExpenses, fetchExistingClaims]);
 
   // ── Derived data ──
   const categories = useMemo(() => {
@@ -118,7 +145,10 @@ export function ClaimBuilder() {
 
   // ── Validation ──
   const canProceed = () => {
-    if (step === 0) return claimTitle.trim().length > 0;
+    if (step === 0) {
+      if (isNewClaim) return claimTitle.trim().length > 0;
+      return selectedClaimId !== null;
+    }
     if (step === 1) return selectedIds.size > 0;
     return true;
   };
@@ -129,15 +159,22 @@ export function ClaimBuilder() {
     setSubmitError(null);
 
     try {
-      // 1. Create the claim
-      const claim = await api.post<any>('/api/v1/claims/', {
-        title: claimTitle,
-        description: claimDescription || undefined,
-        approver_emails: approverEmail.trim() ? [approverEmail.trim()] : undefined,
-      });
+      let claimId = selectedClaimId;
+
+      if (isNewClaim) {
+        // 1. Create the claim
+        const claim = await api.post<any>('/api/v1/claims/', {
+          title: claimTitle,
+          description: claimDescription || undefined,
+          approver_emails: approverEmail.trim() ? [approverEmail.trim()] : undefined,
+        });
+        claimId = claim.id;
+      }
+
+      if (!claimId) throw new Error("No claim selected");
 
       // 2. Assign selected expenses to the claim using the new bulk API
-      await api.post(`/api/v1/claims/${claim.id}/expenses`, { 
+      await api.post(`/api/v1/claims/${claimId}/expenses`, { 
         expense_ids: Array.from(selectedIds) 
       });
 
@@ -209,52 +246,130 @@ export function ClaimBuilder() {
 
           {/* ── Step Content ── */}
           {step === 0 && (
-            <div className="space-y-6 max-w-lg">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="claim-title">
-                  Claim Title *
-                </label>
-                <input
-                  id="claim-title"
-                  type="text"
-                  value={claimTitle}
-                  onChange={(e) => setClaimTitle(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder:text-slate-400 text-sm font-medium focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  placeholder="e.g. Medical Expenses — October 2023"
-                  autoFocus
-                />
+            <div className="space-y-8 max-w-lg">
+              {/* Type Selector */}
+              <div className="flex p-1 bg-slate-100 rounded-2xl">
+                <button
+                  onClick={() => setIsNewClaim(true)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
+                    isNewClaim ? 'bg-white shadow-md text-primary' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">add_circle</span>
+                  New Claim
+                </button>
+                <button
+                  onClick={() => setIsNewClaim(false)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
+                    !isNewClaim ? 'bg-white shadow-md text-primary' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">library_add</span>
+                  Add to Existing
+                </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="claim-desc">
-                  Description
-                </label>
-                <textarea
-                  id="claim-desc"
-                  value={claimDescription}
-                  onChange={(e) => setClaimDescription(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder:text-slate-400 text-sm font-medium focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-24 resize-y"
-                  placeholder="Optional notes about this claim..."
-                />
-              </div>
+              {isNewClaim ? (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="claim-title">
+                      Claim Title *
+                    </label>
+                    <input
+                      id="claim-title"
+                      type="text"
+                      value={claimTitle}
+                      onChange={(e) => setClaimTitle(e.target.value)}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder:text-slate-400 text-sm font-medium focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                      placeholder="e.g. Medical Expenses — October 2023"
+                      autoFocus
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="claim-approver">
-                  Approver Email
-                </label>
-                <div className="flex items-center bg-white border border-slate-200 rounded-xl px-4 py-3 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                  <span className="material-symbols-outlined text-slate-400 text-xl mr-3">person_search</span>
-                  <input
-                    id="claim-approver"
-                    type="email"
-                    value={approverEmail}
-                    onChange={(e) => setApproverEmail(e.target.value)}
-                    className="flex-1 bg-transparent border-none outline-none text-slate-900 placeholder:text-slate-400 text-sm font-medium"
-                    placeholder="approver@example.com"
-                  />
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="claim-desc">
+                      Description
+                    </label>
+                    <textarea
+                      id="claim-desc"
+                      value={claimDescription}
+                      onChange={(e) => setClaimDescription(e.target.value)}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder:text-slate-400 text-sm font-medium focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-24 resize-y"
+                      placeholder="Optional notes about this claim..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="claim-approver">
+                      Approver Email
+                    </label>
+                    <div className="flex items-center bg-white border border-slate-200 rounded-xl px-4 py-3 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                      <span className="material-symbols-outlined text-slate-400 text-xl mr-3">person_search</span>
+                      <input
+                        id="claim-approver"
+                        type="email"
+                        value={approverEmail}
+                        onChange={(e) => setApproverEmail(e.target.value)}
+                        className="flex-1 bg-transparent border-none outline-none text-slate-900 placeholder:text-slate-400 text-sm font-medium"
+                        placeholder="approver@example.com"
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1.5">This person will review and approve your expenses.</p>
+                  </div>
                 </div>
-                <p className="text-xs text-slate-400 mt-1.5">This person will review and approve your expenses.</p>
-              </div>
+              ) : (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  {isLoadingClaims ? (
+                    <div className="py-12 flex justify-center">
+                      <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+                    </div>
+                  ) : existingClaims.length === 0 ? (
+                    <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 text-center">
+                      <span className="material-symbols-outlined text-4xl text-slate-300 mb-4">folder_off</span>
+                      <p className="text-slate-600 font-bold mb-1">No open claims available</p>
+                      <p className="text-slate-400 text-sm mb-6">You don't have any claims waiting for expenses.</p>
+                      <button
+                        onClick={() => setIsNewClaim(true)}
+                        className="text-primary font-bold text-sm hover:underline"
+                      >
+                        Create a new claim instead
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Select an Existing Claim *
+                      </label>
+                      <div className="grid gap-3">
+                        {existingClaims.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => setSelectedClaimId(c.id)}
+                            className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${
+                              selectedClaimId === c.id
+                                ? 'bg-primary/5 border-primary shadow-sm'
+                                : 'bg-white border-slate-100 hover:border-primary/30'
+                            }`}
+                          >
+                            <div className={`p-2 rounded-xl ${
+                              selectedClaimId === c.id ? 'bg-primary text-slate-900' : 'bg-slate-100 text-slate-400'
+                            }`}>
+                              <span className="material-symbols-outlined">folder_open</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-slate-900 truncate">{c.title}</p>
+                              <p className="text-xs text-slate-500">Created {formatDate(c.created_at)}</p>
+                            </div>
+                            {selectedClaimId === c.id && (
+                              <span className="material-symbols-outlined text-primary font-black">check_circle</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -337,13 +452,19 @@ export function ClaimBuilder() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Title</p>
-                    <p className="text-sm font-bold text-slate-900 mt-1">{claimTitle}</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                      {isNewClaim ? 'Title' : 'Existing Claim'}
+                    </p>
+                    <p className="text-sm font-bold text-slate-900 mt-1">
+                      {isNewClaim ? claimTitle : existingClaims.find(c => c.id === selectedClaimId)?.title || 'Selected Claim'}
+                    </p>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Approver</p>
-                    <p className="text-sm font-bold text-slate-900 mt-1">{approverEmail || 'None'}</p>
-                  </div>
+                  {isNewClaim && (
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Approver</p>
+                      <p className="text-sm font-bold text-slate-900 mt-1">{approverEmail || 'None'}</p>
+                    </div>
+                  )}
                   <div>
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Expenses</p>
                     <p className="text-sm font-bold text-slate-900 mt-1">{selectedIds.size} items</p>
@@ -354,7 +475,7 @@ export function ClaimBuilder() {
                   </div>
                 </div>
 
-                {claimDescription && (
+                {isNewClaim && claimDescription && (
                   <div>
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Description</p>
                     <p className="text-sm text-slate-600 mt-1">{claimDescription}</p>
@@ -460,12 +581,19 @@ export function ClaimBuilder() {
                 </div>
 
                 {/* Claim info */}
-                {claimTitle && (
+                {(isNewClaim ? claimTitle : selectedClaimId) && (
                   <div className="pt-6 border-t border-slate-100">
-                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Claim Details</h5>
-                    <p className="text-sm font-bold text-slate-800">{claimTitle}</p>
-                    {approverEmail && (
+                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+                      {isNewClaim ? 'New Claim Details' : 'Target Claim'}
+                    </h5>
+                    <p className="text-sm font-bold text-slate-800">
+                      {isNewClaim ? claimTitle : existingClaims.find(c => c.id === selectedClaimId)?.title}
+                    </p>
+                    {isNewClaim && approverEmail && (
                       <p className="text-xs text-slate-500 mt-1">Approver: {approverEmail}</p>
+                    )}
+                    {!isNewClaim && (
+                      <p className="text-xs text-slate-500 mt-1 uppercase tracking-tighter font-bold">Adding to existing</p>
                     )}
                   </div>
                 )}

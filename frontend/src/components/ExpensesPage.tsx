@@ -153,17 +153,21 @@ export function ExpensesPage() {
               <tbody>
                 {filteredExpenses.map((exp) => {
                   const isAssigned = !!exp.claim_id;
+                  const isEditable = !isAssigned && exp.status === 'OPEN';
                   const isSelected = selectedExpenseIds.includes(exp.id);
                   return (
                   <tr 
                     key={exp.id} 
-                    className={`border-b border-slate-50 transition-colors group ${isSelected ? 'bg-primary/5' : 'hover:bg-slate-50/50'} ${!isAssigned ? 'cursor-pointer' : ''}`}
+                    className={`border-b border-slate-50 transition-colors group ${
+                      isSelected ? 'bg-primary/5' : 
+                      !isEditable ? 'bg-slate-50/30 opacity-70' : 'hover:bg-slate-50/50'
+                    } ${isEditable ? 'cursor-pointer' : 'cursor-default'}`}
                     onClick={() => {
-                      if (!isAssigned) setEditingExpense(exp);
+                      if (isEditable) setEditingExpense(exp);
                     }}
                   >
                     <td className="px-6 py-4">
-                      {!isAssigned && (
+                      {isEditable && (
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -178,25 +182,26 @@ export function ExpensesPage() {
                       )}
                     </td>
                     <td className="px-2 py-4">
-                      <p className="font-bold text-slate-900 text-sm">{exp.description}</p>
+                      <p className={`font-bold text-sm ${isEditable ? 'text-slate-900' : 'text-slate-600'}`}>{exp.description}</p>
                     </td>
                     <td className="px-4 py-4 text-sm text-slate-500">{formatDate(exp.date)}</td>
                     <td className="px-4 py-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-600">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${isEditable ? 'bg-slate-100 text-slate-600' : 'bg-slate-100/50 text-slate-400'}`}>
                         <span className="material-symbols-outlined text-xs">{getCategoryIcon(exp.category_name)}</span>
                         {exp.category_name}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
                         exp.status === 'OPEN' ? 'bg-yellow-100 text-yellow-700' : 
                         exp.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 
                         'bg-slate-100 text-slate-500'
                       }`}>
+                        {!isEditable && <span className="material-symbols-outlined text-[12px]">lock</span>}
                         {exp.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right font-bold text-slate-900 text-sm">
+                    <td className={`px-6 py-4 text-right font-bold text-sm ${isEditable ? 'text-slate-900' : 'text-slate-600'}`}>
                       {formatCurrency(exp.amount)}
                     </td>
                   </tr>

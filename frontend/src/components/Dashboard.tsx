@@ -366,11 +366,18 @@ export function Dashboard() {
                   <tbody>
                     {recentExpenses.map((exp) => {
                       const isAssigned = !!exp.claim_id;
+                      const isEditable = !isAssigned && exp.status === 'OPEN';
                       const isSelected = selectedExpenseIds.includes(exp.id);
                       return (
-                      <tr key={exp.id} className={`border-b border-slate-50 transition-colors ${isSelected ? 'bg-primary/5' : 'hover:bg-slate-50/50'}`}>
+                      <tr 
+                        key={exp.id} 
+                        className={`border-b border-slate-50 transition-colors ${
+                          isSelected ? 'bg-primary/5' : 
+                          !isEditable ? 'bg-slate-50/30 opacity-70' : 'hover:bg-slate-50/50'
+                        }`}
+                      >
                         <td className="px-6 py-4">
-                          {!isAssigned && (
+                          {isEditable && (
                             <button 
                               onClick={() => toggleExpense(exp.id)}
                               className={`size-5 rounded border flex items-center justify-center transition-colors cursor-pointer ${
@@ -380,18 +387,25 @@ export function Dashboard() {
                               <span className="material-symbols-outlined text-[16px] font-bold">check</span>
                             </button>
                           )}
+                          {!isEditable && (
+                            <div className="size-5 flex items-center justify-center text-slate-300">
+                              <span className="material-symbols-outlined text-sm">lock</span>
+                            </div>
+                          )}
                         </td>
                         <td className="px-2 py-4">
-                          <p className="font-bold text-slate-900 text-sm">{exp.description}</p>
+                          <div className="flex items-center gap-2">
+                            <p className={`font-bold text-sm ${isEditable ? 'text-slate-900' : 'text-slate-600'}`}>{exp.description}</p>
+                          </div>
                         </td>
                         <td className="px-4 py-4 text-sm text-slate-500">{formatDate(exp.date)}</td>
                         <td className="px-4 py-4">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-600">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${isEditable ? 'bg-slate-100 text-slate-600' : 'bg-slate-100/50 text-slate-400'}`}>
                             <span className="material-symbols-outlined text-xs">{getCategoryIcon(exp.category_name)}</span>
                             {exp.category_name}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-right font-bold text-slate-900 text-sm">
+                        <td className={`px-6 py-4 text-right font-bold text-sm ${isEditable ? 'text-slate-900' : 'text-slate-600'}`}>
                           {formatCurrency(exp.amount)}
                         </td>
                       </tr>
