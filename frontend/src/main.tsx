@@ -17,11 +17,15 @@ import { ClaimsPage } from './components/ClaimsPage.tsx'
 import { ApprovalsPage } from './components/ApprovalsPage.tsx'
 import { ClaimReview } from './components/ClaimReview.tsx'
 import { CategoriesPage } from './components/CategoriesPage.tsx'
+import { AdminModeProvider } from './contexts/AdminModeContext.tsx'
+import { AdminDashboard } from './components/AdminDashboard.tsx'
+import { UserManagement } from './components/UserManagement.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
+        <AdminModeProvider>
         <NotificationProvider>
         <ExpenseSelectionProvider>
         <Routes>
@@ -78,11 +82,23 @@ createRoot(document.getElementById('root')!).render(
               <Profile />
             </ProtectedRoute>
           } />
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedRoute>
+              <UserManagement />
+            </ProtectedRoute>
+          } />
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         </ExpenseSelectionProvider>
         </NotificationProvider>
+        </AdminModeProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

@@ -15,6 +15,23 @@
   --font-family-body: 'Nunito', 'Spline Sans', sans-serif;
 }
 
+/* ── Admin Mode Theme Override ── */
+.admin-mode {
+  --color-primary: #24389c;
+  --color-primary-dark: #1a2a7a;
+  --color-bg-light: #f8f9ff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #e6eeff;
+  
+  /* Additional Admin specific colors */
+  --color-secondary: #006c4a;
+  --color-tertiary: #683600;
+  --color-primary-container: #3f51b5;
+  --color-on-primary: #ffffff;
+  --color-on-surface: #0d1c2f;
+  --color-outline: #757684;
+}
+
 /* ── Base Styles ── */
 body {
   font-family: var(--font-family-body);
