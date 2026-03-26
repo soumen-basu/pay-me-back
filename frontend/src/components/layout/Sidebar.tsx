@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
 import { AddExpenseModal } from '../AddExpenseModal';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 interface NavItem {
   label: string;
@@ -37,7 +38,9 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { unreadCount, notifications, markAsRead } = useNotifications();
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const navItems = items ?? defaultNavItems;
 
   const handleLogout = () => {
@@ -60,12 +63,62 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
         ${className}`}
     >
       {/* Logo */}
-      <div className={`flex items-center gap-3 px-3 mb-8 transition-all duration-300 ${isCollapsed ? 'justify-center' : ''}`}>
-        <div className="size-10 min-w-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">
-          <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
+      <div className={`flex items-center gap-3 px-3 mb-8 transition-all duration-300 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className="flex items-center gap-3">
+          <div className="size-10 min-w-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">
+            <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
+          </div>
+          {!isCollapsed && <span className="text-slate-900 text-lg font-extrabold tracking-tight whitespace-nowrap">Pay Me Back!</span>}
         </div>
-        {!isCollapsed && <span className="text-slate-900 text-lg font-extrabold tracking-tight whitespace-nowrap">Pay Me Back!</span>}
+        
+        {!isCollapsed && (
+          <button 
+            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            className="relative p-2 text-slate-400 hover:text-primary transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-2xl">notifications</span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 size-4 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+        )}
       </div>
+
+      {/* Notifications Dropdown (Simple implementation) */}
+      {!isCollapsed && isNotificationsOpen && (
+        <div className="absolute top-16 left-4 right-4 bg-white border border-slate-100 shadow-xl rounded-2xl z-50 max-h-[300px] overflow-y-auto custom-scrollbar p-2 mb-4 animate-in fade-in slide-in-from-top-2">
+          <div className="flex justify-between items-center p-2 mb-2 border-b border-slate-50">
+            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Notifications</p>
+            <button onClick={() => setIsNotificationsOpen(false)} className="text-slate-300 hover:text-slate-600">
+              <span className="material-symbols-outlined text-sm">close</span>
+            </button>
+          </div>
+          {notifications.length === 0 ? (
+            <p className="text-center py-4 text-xs text-slate-400 italic">No notifications yet</p>
+          ) : (
+            <div className="space-y-1">
+              {notifications.map(n => (
+                <div 
+                  key={n.id} 
+                  className={`p-3 rounded-xl transition-colors cursor-pointer ${n.is_read ? 'opacity-60 hover:bg-slate-50' : 'bg-primary/5 hover:bg-primary/10 border-l-4 border-primary'}`}
+                  onClick={() => {
+                    markAsRead(n.id);
+                    // Navigate if it's a claim notification? For now just mark read
+                  }}
+                >
+                  <p className="text-xs font-bold text-slate-900">{n.title}</p>
+                  <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{n.content}</p>
+                  <p className="text-[8px] text-slate-400 mt-1 uppercase font-bold">
+                    {new Date(n.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Quick Action Buttons */}
       <div className={`flex flex-col gap-2 mb-6 ${isCollapsed ? 'items-center' : ''}`}>

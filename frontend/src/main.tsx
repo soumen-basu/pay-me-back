@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './components/AuthProvider.tsx'
 import { ExpenseSelectionProvider } from './contexts/ExpenseSelectionContext.tsx'
+import { NotificationProvider } from './contexts/NotificationContext.tsx'
 import { ProtectedRoute } from './components/ProtectedRoute.tsx'
 import { Login } from './components/Login.tsx'
 import { Verify } from './components/Verify.tsx'
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
+        <NotificationProvider>
         <ExpenseSelectionProvider>
         <Routes>
           <Route path="/" element={<App />} />
@@ -61,6 +63,11 @@ createRoot(document.getElementById('root')!).render(
               <ApprovalsPage />
             </ProtectedRoute>
           } />
+          <Route path="/claims/:id" element={
+            <ProtectedRoute>
+              <ClaimReview />
+            </ProtectedRoute>
+          } />
           <Route path="/claims/:id/review" element={
             <ProtectedRoute>
               <ClaimReview />
@@ -75,6 +82,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         </ExpenseSelectionProvider>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

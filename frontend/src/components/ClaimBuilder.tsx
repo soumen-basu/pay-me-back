@@ -28,6 +28,11 @@ interface Claim {
   approver_emails?: string[];
 }
 
+interface Contact {
+  id: number;
+  contact_email: string;
+}
+
 // ── Steps ──
 const STEPS = [
   { label: 'Claim Details', icon: 'edit_note' },
@@ -60,6 +65,7 @@ export function ClaimBuilder() {
   const [claimTitle, setClaimTitle] = useState('');
   const [claimDescription, setClaimDescription] = useState('');
   const [approverEmail, setApproverEmail] = useState('');
+  const [contacts, setContacts] = useState<Contact[]>([]);
 
   // ── Step 2: Expense selection ──
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -97,10 +103,20 @@ export function ClaimBuilder() {
     }
   }, []);
 
+  const fetchContacts = useCallback(async () => {
+    try {
+      const data = await api.get<Contact[]>('/api/v1/users/me/contacts');
+      setContacts(data);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   useEffect(() => {
     fetchExpenses();
     fetchExistingClaims();
-  }, [fetchExpenses, fetchExistingClaims]);
+    fetchContacts();
+  }, [fetchExpenses, fetchExistingClaims, fetchContacts]);
 
   // ── Derived data ──
   const categories = useMemo(() => {
@@ -260,9 +276,11 @@ export function ClaimBuilder() {
                 </button>
                 <button
                   onClick={() => setIsNewClaim(false)}
+                  disabled={!isLoadingClaims && existingClaims.length === 0}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-                    !isNewClaim ? 'bg-white shadow-md text-primary' : 'text-slate-500 hover:text-slate-700'
-                  }`}
+                    !isNewClaim && (!(!isLoadingClaims && existingClaims.length === 0)) ? 'bg-white shadow-md text-primary' : 'text-slate-500 hover:text-slate-700'
+                  } ${!isLoadingClaims && existingClaims.length === 0 ? 'opacity-40 cursor-not-allowed hover:text-slate-500' : ''}`}
+                  title={!isLoadingClaims && existingClaims.length === 0 ? "No open claims available" : "Add to an existing claim"}
                 >
                   <span className="material-symbols-outlined text-xl">library_add</span>
                   Add to Existing
@@ -308,11 +326,17 @@ export function ClaimBuilder() {
                       <input
                         id="claim-approver"
                         type="email"
+                        list="contacts-list"
                         value={approverEmail}
                         onChange={(e) => setApproverEmail(e.target.value)}
                         className="flex-1 bg-transparent border-none outline-none text-slate-900 placeholder:text-slate-400 text-sm font-medium"
                         placeholder="approver@example.com"
                       />
+                      <datalist id="contacts-list">
+                        {contacts.map(c => (
+                          <option key={c.id} value={c.contact_email} />
+                        ))}
+                      </datalist>
                     </div>
                     <p className="text-xs text-slate-400 mt-1.5">This person will review and approve your expenses.</p>
                   </div>

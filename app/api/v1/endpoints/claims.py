@@ -3,13 +3,14 @@ from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from sqlalchemy import or_
 
 from app.api import deps
 from app.models.user import User
 from app.models.claim import Claim, ClaimCreate, ClaimRead, ClaimUpdate, ClaimExpensesUpdate, ClaimReviewSubmit
 from app.models.expense import Expense
 from app.models.comment import Comment, CommentCreate, CommentRead
+from app.crud import crud_notification
+from app.schemas.notification import NotificationCreate
 
 router = APIRouter()
 
@@ -148,6 +149,31 @@ def close_claim(
     db.commit()
     return {"msg": "Claim closed successfully"}
 
+@router.get("/{id}/comments", response_model=List[CommentRead])
+def read_claim_comments(
+    id: uuid.UUID,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """Retrieve comments for a specific claim."""
+    claim = db.get(Claim, id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    is_approver = claim.approver_emails and current_user.email in claim.approver_emails
+    is_viewer = claim.viewer_emails and current_user.email in claim.viewer_emails
+    if claim.submitter_id != current_user.id and not (is_approver or is_viewer):
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+        
+    comments = db.exec(
+        select(Comment)
+        .where(Comment.claim_id == id)
+        .where(Comment.expense_id == None)
+        .order_by(Comment.created_at)
+    ).all()
+    
+    return comments
+
 @router.post("/{id}/comments", response_model=CommentRead)
 def add_claim_comment(
     id: uuid.UUID,
@@ -173,6 +199,18 @@ def add_claim_comment(
     db.add(comment)
     db.commit()
     db.refresh(comment)
+    
+    # Notify the submitter if the commenter is NOT the submitter
+    if current_user.id != claim.submitter_id:
+        crud_notification.create_notification(
+            db,
+            obj_in=NotificationCreate(
+                user_id=claim.submitter_id,
+                title=f"New Comment on Claim: {claim.title}",
+                content=f"{current_user.email} added a comment to your claim."
+            )
+        )
+        
     return comment
 
 @router.post("/{id}/expenses")
@@ -247,6 +285,83 @@ def review_claim(
     if review_data.claim_status in ["APPROVED", "PARTIALLY_APPROVED", "REJECTED"]:
         claim.status = review_data.claim_status
         db.add(claim)
+        
+        # Send status update notification
+        msg_body = f"Your claim '{claim.title}' has been {claim.status.replace('_', ' ')}."
+        if review_data.comment:
+            msg_body += f" Review note: {review_data.comment}"
+            
+        crud_notification.create_notification(
+            db,
+            obj_in=NotificationCreate(
+                user_id=claim.submitter_id,
+                title=f"Claim Update: {claim.status.replace('_', ' ')}",
+                content=msg_body
+            )
+        )
 
     db.commit()
     return {"msg": f"Claim reviewed and set to {review_data.claim_status}"}
+
+@router.post("/{id}/expenses/{expense_id}/detach")
+def detach_expense_from_claim(
+    id: uuid.UUID,
+    expense_id: uuid.UUID,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """Submitter can detach a rejected expense from a claim."""
+    claim = db.get(Claim, id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    if claim.submitter_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+        
+    expense = db.get(Expense, expense_id)
+    if not expense or expense.claim_id != id:
+        raise HTTPException(status_code=404, detail="Expense not found in this claim")
+        
+    if expense.status != "REJECTED":
+        raise HTTPException(status_code=400, detail="Only rejected expenses can be detached")
+        
+    expense.claim_id = None
+    expense.status = "OPEN"
+    db.add(expense)
+    db.commit()
+    return {"msg": "Expense detached successfully"}
+
+@router.delete("/{id}")
+def delete_claim(
+    id: uuid.UUID,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """Delete a claim. Only allowed if it has no expenses or all expenses are REJECTED."""
+    claim = db.get(Claim, id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    if claim.submitter_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+        
+    expenses = db.exec(select(Expense).where(Expense.claim_id == id)).all()
+    
+    # Check if any expense is NOT REJECTED
+    if any(e.status != "REJECTED" for e in expenses):
+        raise HTTPException(status_code=400, detail="Cannot delete claim: contains expenses that are not REJECTED")
+    
+    # Detach all rejected expenses back to OPEN
+    for exp in expenses:
+        exp.claim_id = None
+        exp.status = "OPEN"
+        db.add(exp)
+        
+    # Delete comments associated directly with the claim
+    comments = db.exec(select(Comment).where(Comment.claim_id == id)).all()
+    for comment in comments:
+        db.delete(comment)
+        
+    db.delete(claim)
+    db.commit()
+    return {"msg": "Claim deleted successfully"}

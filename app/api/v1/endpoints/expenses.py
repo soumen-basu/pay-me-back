@@ -8,6 +8,8 @@ from app.api import deps
 from app.models.user import User
 from app.models.expense import Expense, ExpenseCreate, ExpenseRead, ExpenseUpdate
 from app.models.claim import Claim
+from app.crud import crud_notification
+from app.schemas.notification import NotificationCreate
 
 router = APIRouter()
 
@@ -150,6 +152,18 @@ def add_expense_comment(
     db.add(comment)
     db.commit()
     db.refresh(comment)
+    
+    # Notify the owner if the commenter is NOT the owner
+    if current_user.id != expense.owner_id:
+        crud_notification.create_notification(
+            db,
+            obj_in=NotificationCreate(
+                user_id=expense.owner_id,
+                title=f"New Comment on Item: {expense.description}",
+                content=f"{current_user.email} commented on an item in your claim."
+            )
+        )
+        
     return comment
 
 @router.get("/{id}/comments", response_model=List[CommentRead])

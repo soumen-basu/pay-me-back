@@ -45,8 +45,9 @@ export function ClaimReview() {
   const [loading, setLoading] = useState(true);
 
   // Communication / Comments State
-  const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(null);
-  const [expenseComments, setExpenseComments] = useState<Comment[]>([]);
+  // Communication / Comments State
+  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
+  const [entityComments, setEntityComments] = useState<Comment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
 
@@ -64,7 +65,8 @@ export function ClaimReview() {
       setExpenses(allExpenses.filter(e => e.claim_id === id));
     } catch (err) {
       console.error(err);
-      navigate('/approvals');
+      // If access denied or error, go back to a safe place
+      navigate('/dashboard');
     } finally {
       setLoading(false);
     }
@@ -74,17 +76,20 @@ export function ClaimReview() {
     fetchClaimData();
   }, [fetchClaimData]);
 
-  // Fetch comments when an expense is selected
+  // Fetch comments when an entity is selected
   useEffect(() => {
-    if (!selectedExpenseId) {
-      setExpenseComments([]);
+    if (!selectedEntityId) {
+      setEntityComments([]);
       return;
     }
     const fetchComments = async () => {
       setCommentsLoading(true);
       try {
-        const data = await api.get<Comment[]>(`/api/v1/expenses/${selectedExpenseId}/comments`);
-        setExpenseComments(data);
+        const url = selectedEntityId === id 
+            ? `/api/v1/claims/${id}/comments` 
+            : `/api/v1/expenses/${selectedEntityId}/comments`;
+        const data = await api.get<Comment[]>(url);
+        setEntityComments(data);
       } catch (err) {
         console.error('Failed to load comments', err);
       } finally {
@@ -92,15 +97,18 @@ export function ClaimReview() {
       }
     };
     fetchComments();
-  }, [selectedExpenseId]);
+  }, [selectedEntityId, id]);
 
   const handleSendComment = async () => {
-    if (!selectedExpenseId || !newComment.trim()) return;
+    if (!selectedEntityId || !newComment.trim()) return;
     try {
-      const addedComment = await api.post<Comment>(`/api/v1/expenses/${selectedExpenseId}/comments`, {
+      const url = selectedEntityId === id 
+          ? `/api/v1/claims/${id}/comments` 
+          : `/api/v1/expenses/${selectedEntityId}/comments`;
+      const addedComment = await api.post<Comment>(url, {
         text: newComment.trim()
       });
-      setExpenseComments(prev => [...prev, addedComment]);
+      setEntityComments(prev => [...prev, addedComment]);
       setNewComment('');
     } catch (err) {
       console.error('Failed to post comment', err);
@@ -128,13 +136,35 @@ export function ClaimReview() {
 
       await api.post(`/api/v1/claims/${id}/review`, {
         expense_statuses,
-        final_status,
+        claim_status: final_status,
         comment: comment.trim() || undefined
       });
       navigate('/approvals');
     } catch (err) {
       console.error('Failed to submit claim review', err);
       alert('Failed to submit claim review. Ensure all items are reviewed.');
+    }
+  };
+
+  const handleDetachExpense = async (expenseId: string) => {
+    if (!window.confirm("Are you sure you want to detach this rejected expense and return it to your open expenses?")) return;
+    try {
+      await api.post(`/api/v1/claims/${id}/expenses/${expenseId}/detach`);
+      setExpenses(prev => prev.filter(e => e.id !== expenseId));
+    } catch (err) {
+      console.error('Failed to detach expense', err);
+      alert('Failed to detach expense.');
+    }
+  };
+
+  const handleDeleteClaim = async () => {
+    if (!window.confirm("Are you sure you want to delete this claim? Any detached expenses will return to your open pool.")) return;
+    try {
+      await api.delete(`/api/v1/claims/${id}`);
+      navigate('/claims');
+    } catch (err) {
+      console.error('Failed to delete claim', err);
+      alert('Failed to delete claim. Only claims with no expenses or entirely rejected expenses can be deleted.');
     }
   };
 
@@ -160,8 +190,11 @@ export function ClaimReview() {
 
   if (!claim) return null;
 
+  const isSubmitter = claim.submitter_id === user?.id;
   const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
   const allReviewed = expenses.every(e => e.status !== 'OPEN');
+  
+  const canDeleteClaim = isSubmitter && claim.status !== 'CLOSED' && (expenses.length === 0 || expenses.every(e => e.status === 'REJECTED'));
   
   return (
     <PageLayout variant="app">
@@ -174,8 +207,24 @@ export function ClaimReview() {
             Back
           </button>
 
-          <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm mb-8">
-            <div className="flex justify-between items-start mb-6">
+          <div 
+            className={`bg-white rounded-3xl p-8 border shadow-sm mb-8 relative transition-all cursor-pointer ${
+              selectedEntityId === id ? 'border-primary ring-2 ring-primary/20 bg-primary/5' : 'border-slate-100 hover:border-slate-300'
+            }`}
+            onClick={() => { if (id) setSelectedEntityId(id); }}
+          >
+            {canDeleteClaim && (
+              <button 
+                onClick={handleDeleteClaim}
+                className="absolute top-6 right-6 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-2"
+                title="Delete Claim"
+              >
+                <span className="material-symbols-outlined text-[18px]">delete</span>
+                Delete Claim
+              </button>
+            )}
+
+            <div className={`flex justify-between items-start mb-6 ${canDeleteClaim ? 'pr-32' : ''}`}>
               <div>
                 <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{claim.title}</h1>
                 <p className="text-slate-500 mt-2 text-sm">{claim.description || 'No description provided.'}</p>
@@ -208,7 +257,7 @@ export function ClaimReview() {
             {expenses.length === 0 ? (
                <p className="text-slate-500 italic">No expenses attached to this claim.</p>
             ) : expenses.map(e => {
-              const isActive = selectedExpenseId === e.id;
+              const isActive = selectedEntityId === e.id;
               
               return (
               <div 
@@ -216,7 +265,7 @@ export function ClaimReview() {
                 className={`bg-white p-6 rounded-2xl border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all cursor-pointer ${
                   isActive ? 'border-primary ring-2 ring-primary/20 bg-primary/5' : 'border-slate-100 hover:border-slate-300'
                 }`}
-                onClick={() => setSelectedExpenseId(e.id)}
+                onClick={() => setSelectedEntityId(e.id)}
               >
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
@@ -240,7 +289,7 @@ export function ClaimReview() {
                 </div>
 
                 {/* Approver Actions */}
-                {claim.status === 'OPEN' && (
+                {claim.status === 'OPEN' && !isSubmitter && (
                   <div className="flex flex-row md:flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6" onClick={ev => ev.stopPropagation()}>
                     <button 
                       onClick={() => handleUpdateExpenseStatus(e.id, 'APPROVED')}
@@ -263,37 +312,54 @@ export function ClaimReview() {
                     </button>
                   </div>
                 )}
+                
+                {/* Submitter Actions */}
+                {isSubmitter && claim.status !== 'CLOSED' && e.status === 'REJECTED' && (
+                  <div className="flex flex-row md:flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6" onClick={ev => ev.stopPropagation()}>
+                    <button 
+                      onClick={() => handleDetachExpense(e.id)}
+                      className="text-xs font-bold text-slate-500 hover:text-red-600 bg-slate-50 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors flex items-center gap-1 border border-slate-200 hover:border-red-200"
+                      title="Detach Expense"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">link_off</span>
+                      Detach
+                    </button>
+                  </div>
+                )}
+
               </div>
             )})}
           </div>
         </div>
 
         {/* RIGHT PANE: Communication chat */}
-        <div className="w-full lg:w-1/3 sticky top-8 flex flex-col h-[600px] bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className={`w-full lg:w-1/3 sticky top-8 flex flex-col bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden ${
+          !isSubmitter && claim.status === 'OPEN' ? 'h-[calc(100vh-280px)] min-h-[400px]' : 'h-[calc(100vh-120px)] min-h-[500px]'
+        }`}>
           <div className="p-6 border-b border-slate-100 shrink-0">
             <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Communication</h2>
             <p className="text-xs text-slate-500 mt-1">
-              {selectedExpenseId ? 'Chatting about selected item' : 'Select an item to view messages'}
+              {selectedEntityId ? `Chatting about ${selectedEntityId === id ? 'overarching claim' : 'selected item'}` : 'Select the claim or an item to view messages'}
             </p>
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 flex flex-col gap-4">
-            {!selectedExpenseId ? (
+            {!selectedEntityId ? (
               <div className="m-auto text-center text-slate-400">
                 <span className="material-symbols-outlined text-4xl mb-2">forum</span>
-                <p className="text-sm">Click an expense item to start chatting</p>
+                <p className="text-sm">Click the claim card or an expense item to start chatting</p>
               </div>
             ) : commentsLoading ? (
                <div className="m-auto text-center text-primary animate-pulse">
                  Loading messages...
                </div>
-            ) : expenseComments.length === 0 ? (
+            ) : entityComments.length === 0 ? (
                <div className="m-auto text-center text-slate-400">
                  <p className="text-sm">No messages yet.</p>
                  <p className="text-xs mt-1">Send a message to ask for receipts or clarification.</p>
                </div>
             ) : (
-              expenseComments.map(c => {
+              entityComments.map(c => {
                 const isMine = c.user_id === user?.id;
                 return (
                   <div key={c.id} className={`flex flex-col max-w-[85%] ${isMine ? 'self-end' : 'self-start'}`}>
@@ -317,16 +383,16 @@ export function ClaimReview() {
             <div className="flex bg-slate-50 rounded-full border border-slate-200 overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
               <input 
                 type="text"
-                placeholder={selectedExpenseId ? "Type a message..." : "Select an item first"}
+                placeholder={selectedEntityId ? "Type a message..." : "Select an item first"}
                 value={newComment}
                 onChange={e => setNewComment(e.target.value)}
-                disabled={!selectedExpenseId}
+                disabled={!selectedEntityId}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSendComment() }}
                 className="flex-1 bg-transparent px-4 py-3 text-sm outline-none disabled:opacity-50"
               />
               <button 
                 onClick={handleSendComment}
-                disabled={!selectedExpenseId || !newComment.trim()}
+                disabled={!selectedEntityId || !newComment.trim()}
                 className="flex items-center justify-center px-4 text-primary hover:text-slate-900 disabled:opacity-30 disabled:hover:text-primary transition-colors cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[20px] font-bold">send</span>
@@ -338,7 +404,7 @@ export function ClaimReview() {
       </div>
 
       {/* Global Action / Finalize Bar */}
-      {claim.status === 'OPEN' && (
+      {claim.status === 'OPEN' && !isSubmitter && (
         <div className="fixed bottom-0 left-0 md:left-60 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] flex flex-col items-stretch z-10 gap-4">
           <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
             <div>
