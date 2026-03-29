@@ -35,31 +35,36 @@ export function AdminDashboard() {
   const [performance, setPerformance] = useState<PerformanceData | null>(null);
   const [stats, setStats] = useState<TotalStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = async (isManual = false) => {
+    if (isManual) setRefreshing(true);
+    else setLoading(true);
+    
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [perfRes, statsRes] = await Promise.all([
+        fetch(`${apiUrl}/api/v1/admin/performance`, { headers }),
+        fetch(`${apiUrl}/api/v1/admin/stats`, { headers })
+      ]);
+
+      if (perfRes.ok && statsRes.ok) {
+        const perfData = await perfRes.json();
+        const statsData = await statsRes.json();
+        setPerformance(perfData);
+        setStats(statsData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch admin dashboard data', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        const headers = { Authorization: `Bearer ${token}` };
-
-        const [perfRes, statsRes] = await Promise.all([
-          fetch(`${apiUrl}/api/v1/admin/performance`, { headers }),
-          fetch(`${apiUrl}/api/v1/admin/stats`, { headers })
-        ]);
-
-        if (perfRes.ok && statsRes.ok) {
-          const perfData = await perfRes.json();
-          const statsData = await statsRes.json();
-          setPerformance(perfData);
-          setStats(statsData);
-        }
-      } catch (error) {
-        console.error('Failed to fetch admin dashboard data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (token) {
       fetchData();
     }
@@ -83,10 +88,20 @@ export function AdminDashboard() {
             <h2 className="text-3xl font-extrabold tracking-tight text-on-surface mb-1">Ecosystem Performance</h2>
             <p className="text-slate-500">Real-time health metrics and user behavior analysis.</p>
           </div>
-          <div className="flex p-1 bg-slate-100 rounded-xl">
-            <button className="px-5 py-2 text-xs font-semibold rounded-lg bg-white shadow-sm text-primary">All Time</button>
-            <button className="px-5 py-2 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-colors">Last Month</button>
-            <button className="px-5 py-2 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-colors">Last Week</button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => fetchData(true)}
+              className={`flex items-center gap-2 p-2 px-4 rounded-xl text-xs font-bold transition-all ${refreshing ? 'bg-slate-50 text-slate-300' : 'bg-white text-slate-500 hover:text-primary hover:bg-primary/5 border border-slate-100 shadow-sm'}`}
+              disabled={refreshing}
+            >
+              <span className={`material-symbols-outlined text-sm ${refreshing ? 'animate-spin' : ''}`}>sync</span>
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+            <div className="flex p-1 bg-slate-100 rounded-xl">
+              <button className="px-5 py-2 text-xs font-semibold rounded-lg bg-white shadow-sm text-primary">All Time</button>
+              <button className="px-5 py-2 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-colors">Last Month</button>
+              <button className="px-5 py-2 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-colors">Last Week</button>
+            </div>
           </div>
         </header>
 

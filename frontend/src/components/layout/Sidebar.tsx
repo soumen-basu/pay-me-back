@@ -71,13 +71,15 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
         ${isMobile ? (isOpen ? 'translate-x-0 overflow-y-auto' : '-translate-x-full') : 'translate-x-0'}
         ${className}`}
     >
-      {/* Logo */}
       <div className={`flex items-center gap-3 px-3 mb-8 transition-all duration-300 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
         <div className="flex items-center gap-3">
-          <div className="size-10 min-w-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
+          <div 
+            className="size-10 min-w-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform drop-shadow-sm"
+            onClick={() => navigate(isAdminMode ? '/admin/dashboard' : '/dashboard')}
+          >
+            <img src="/LogoWithoutSymbols.svg" alt="Logo" className="w-full h-full object-contain" />
           </div>
-          {!isCollapsed && <span className="text-slate-900 text-lg font-extrabold tracking-tight whitespace-nowrap">Pay Me Back!</span>}
+          {!isCollapsed && <span className="text-slate-900 text-lg font-extrabold tracking-tight whitespace-nowrap cursor-pointer hover:text-primary transition-colors" onClick={() => navigate(isAdminMode ? '/admin/dashboard' : '/dashboard')}>Pay Me Back!</span>}
         </div>
         
         {!isCollapsed && (
@@ -131,33 +133,51 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
 
       {/* Quick Action Buttons */}
       <div className={`flex flex-col gap-2 mb-6 ${isCollapsed ? 'items-center' : ''}`}>
-        <button
-          onClick={() => {
-            setIsAddExpenseModalOpen(true);
-            if (isMobile && onClose) onClose();
-          }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-all cursor-pointer shadow-sm border border-emerald-200/50 ${
-            isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
-          }`}
-          title={isCollapsed ? 'New Expense' : undefined}
-        >
-          <span className="material-symbols-outlined text-xl">add_circle</span>
-          {!isCollapsed && <span>New Expense</span>}
-        </button>
+        {!isAdminMode ? (
+          <>
+            <button
+              onClick={() => {
+                setIsAddExpenseModalOpen(true);
+                if (isMobile && onClose) onClose();
+              }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-all cursor-pointer shadow-sm border border-emerald-200/50 ${
+                isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+              }`}
+              title={isCollapsed ? 'New Expense' : undefined}
+            >
+              <span className="material-symbols-outlined text-xl">add_circle</span>
+              {!isCollapsed && <span>New Expense</span>}
+            </button>
 
-        <button
-          onClick={() => {
-            if (isMobile && onClose) onClose();
-            navigate('/claims/new');
-          }}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-primary text-slate-900 border border-slate-900/5 hover:bg-primary/90 transition-all cursor-pointer shadow-sm ${
-            isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
-          }`}
-          title={isCollapsed ? 'New Claim' : undefined}
-        >
-          <span className="material-symbols-outlined text-xl">assignment_add</span>
-          {!isCollapsed && <span>New Claim</span>}
-        </button>
+            <button
+              onClick={() => {
+                if (isMobile && onClose) onClose();
+                navigate('/claims/new');
+              }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-primary text-slate-900 border border-slate-900/5 hover:bg-primary/90 transition-all cursor-pointer shadow-sm ${
+                isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+              }`}
+              title={isCollapsed ? 'New Claim' : undefined}
+            >
+              <span className="material-symbols-outlined text-xl">assignment_add</span>
+              {!isCollapsed && <span>New Claim</span>}
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => {
+              if (isMobile && onClose) onClose();
+              navigate('/admin/users'); // Or a "new user" specific path if it exists
+            }}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition-all cursor-pointer shadow-md ${
+              isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+            }`}
+            title={isCollapsed ? 'Add New User' : undefined}
+          >
+            <span className="material-symbols-outlined text-xl">person_add</span>
+            {!isCollapsed && <span>Add New User</span>}
+          </button>
+        )}
       </div>
 
       {/* Menu scroll area */}
@@ -210,7 +230,7 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
       {user?.role === 'admin' && (
         <div className={`mt-auto px-4 py-3 border-t border-slate-100/50 ${isCollapsed ? 'flex justify-center' : ''}`}>
            <button
-            onClick={toggleAdminMode}
+            onClick={() => toggleAdminMode(navigate)}
             className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
               isAdminMode 
                 ? 'bg-primary text-white shadow-md' 

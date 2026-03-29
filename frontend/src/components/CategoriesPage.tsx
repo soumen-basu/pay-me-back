@@ -96,6 +96,11 @@ export function CategoriesPage() {
 
   return (
     <PageLayout variant="app">
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center p-12 mt-12">
+          <span className="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
+        </div>
+      ) : (
       <div className="max-w-7xl mx-auto px-8 py-8">
         
         {/* Header */}
@@ -213,6 +218,7 @@ export function CategoriesPage() {
         </div>
 
       </div>
+      )}
     </PageLayout>
   );
 }

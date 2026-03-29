@@ -94,8 +94,8 @@ export function Login() {
           <div className="bg-white rounded-xl shadow-sm p-8 border border-primary/5 flex flex-col items-center">
             {/* Logo */}
             <div className="flex flex-col items-center mb-8 w-full">
-              <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-float border-4 border-primary/20 shadow-lg">
-                <span className="material-symbols-outlined text-5xl text-primary">account_balance_wallet</span>
+              <div className="w-56 flex items-center justify-center mb-6 animate-float drop-shadow-xl">
+                <img src="/LogoWithSymbols.svg" alt="Pay Me Back!" className="w-full h-auto object-contain" />
               </div>
               <h1 className="text-3xl font-bold text-slate-900 tracking-tight text-center" style={{ fontFamily: "'Quicksand', sans-serif" }}>Welcome back!</h1>
               <p className="text-slate-500 text-center mt-2">

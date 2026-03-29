@@ -12,8 +12,8 @@ export function TopNav({ actions, subtitle }: TopNavProps) {
     <header className="w-full border-b border-primary/10 py-4 bg-white/80 backdrop-blur-md sticky top-0 z-50 flex justify-center">
       <div className="max-w-[320px] w-full flex items-center justify-between whitespace-nowrap">
         <div className="flex items-center gap-4">
-          <div className="size-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-3xl">account_balance_wallet</span>
+          <div className="size-10 flex items-center justify-center drop-shadow-sm">
+            <img src="/LogoWithoutSymbols.svg" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <h2 className="text-slate-900 text-xl font-extrabold tracking-tight">Pay Me Back!</h2>

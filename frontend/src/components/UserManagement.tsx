@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
+import { AddUserModal } from './AddUserModal';
 
 interface UserAdminView {
   id: number;
@@ -17,10 +18,16 @@ export function UserManagement() {
   const { token } = useAuth();
   const [activeUsers, setActiveUsers] = useState<UserAdminView[]>([]);
   const [magicLinks, setMagicLinks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'active' | 'all' | 'magic'>('active');
   const [filterName, setFilterName] = useState('');
   const [filterEmail, setFilterEmail] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // Quick Registration State
+  const [quickName, setQuickName] = useState('');
+  const [quickEmail, setQuickEmail] = useState('');
+  const [quickPassword, setQuickPassword] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -39,7 +46,7 @@ export function UserManagement() {
     } catch (error) {
       console.error('Failed to fetch user management data', error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -54,6 +61,57 @@ export function UserManagement() {
     u.email.toLowerCase().includes(filterEmail.toLowerCase())
   );
 
+  const handleQuickRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsRegistering(true);
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${apiUrl}/api/v1/admin/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: quickEmail,
+          display_name: quickName || null,
+          password: quickPassword,
+          role: 'user',
+          is_active: true,
+        }),
+      });
+
+      if (response.ok) {
+        setQuickName('');
+        setQuickEmail('');
+        setQuickPassword('');
+        fetchData();
+      }
+    } catch (error) {
+      console.error('Failed to register user', error);
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    if (!confirm('Are you sure you want to deactivate this user?')) return;
+    
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${apiUrl}/api/v1/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        fetchData();
+      }
+    } catch (error) {
+      console.error('Failed to deactivate user', error);
+    }
+  };
+
   return (
     <PageLayout variant="app">
       <div className="p-10 space-y-8 animate-in fade-in duration-500">
@@ -62,7 +120,10 @@ export function UserManagement() {
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">User Management</h2>
             <p className="text-slate-500 mt-1">Audit, authorize, and manage system-wide access.</p>
           </div>
-          <button className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl text-sm font-bold tracking-widest uppercase shadow-md hover:scale-[1.02] transition-transform active:scale-95">
+          <button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2 bg-primary text-slate-900 px-6 py-3 rounded-xl text-sm font-bold tracking-widest uppercase shadow-md hover:scale-[1.02] transition-transform active:scale-95"
+          >
             <span className="material-symbols-outlined text-lg">person_add</span>
             Add New User
           </button>
@@ -131,8 +192,19 @@ export function UserManagement() {
                          </div>
                       </td>
                       <td className="px-5 py-4 text-right">
-                        <p className="text-xs font-bold text-slate-900">{u.session_count > 0 ? 'Logged In' : 'Idle'}</p>
-                        <p className="text-[10px] text-slate-400 font-medium">{u.last_active_time ? new Date(u.last_active_time).toLocaleDateString() : 'Never'}</p>
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="text-right mr-4">
+                            <p className="text-xs font-bold text-slate-900">{u.session_count > 0 ? 'Logged In' : 'Idle'}</p>
+                            <p className="text-[10px] text-slate-400 font-medium">{u.last_active_time ? new Date(u.last_active_time).toLocaleDateString() : 'Never'}</p>
+                          </div>
+                          <button 
+                            onClick={() => handleDeleteUser(u.id)}
+                            className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                            title="Deactivate User"
+                          >
+                            <span className="material-symbols-outlined text-lg">person_remove</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -156,12 +228,46 @@ export function UserManagement() {
               </div>
               <h3 className="text-lg font-bold text-slate-900">Quick Registration</h3>
             </div>
-            <form className="space-y-4">
-              <FormField label="Display Name" placeholder="e.g. Jean-Luc Picard" />
-              <FormField label="Email Address" placeholder="captain@starfleet.edu" type="email" />
-              <FormField label="Initial Password" placeholder="••••••••••••" type="password" />
+            <form onSubmit={handleQuickRegister} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Display Name</label>
+                <input 
+                  value={quickName}
+                  onChange={(e) => setQuickName(e.target.value)}
+                  className="w-full bg-slate-50 border-transparent rounded-xl p-4 text-sm focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:text-slate-300" 
+                  placeholder="e.g. Jean-Luc Picard" 
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Email Address</label>
+                <input 
+                  required
+                  type="email"
+                  value={quickEmail}
+                  onChange={(e) => setQuickEmail(e.target.value)}
+                  className="w-full bg-slate-50 border-transparent rounded-xl p-4 text-sm focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:text-slate-300" 
+                  placeholder="captain@starfleet.edu" 
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Initial Password</label>
+                <input 
+                  required
+                  type="password"
+                  value={quickPassword}
+                  onChange={(e) => setQuickPassword(e.target.value)}
+                  className="w-full bg-slate-50 border-transparent rounded-xl p-4 text-sm focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:text-slate-300" 
+                  placeholder="••••••••••••" 
+                />
+              </div>
               <div className="pt-2">
-                <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition-all">Create User</button>
+                <button 
+                  type="submit" 
+                  disabled={isRegistering}
+                  className="w-full bg-slate-900 text-white py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition-all disabled:opacity-50"
+                >
+                  {isRegistering ? 'Creating...' : 'Create User'}
+                </button>
               </div>
             </form>
           </section>
@@ -205,6 +311,16 @@ export function UserManagement() {
             </div>
           </section>
         </div>
+
+        {isAddModalOpen && (
+          <AddUserModal 
+            onClose={() => setIsAddModalOpen(false)}
+            onSuccess={() => {
+              setIsAddModalOpen(false);
+              fetchData();
+            }}
+          />
+        )}
       </div>
     </PageLayout>
   );
@@ -265,15 +381,4 @@ function FilterField({ label, value, onChange, icon, placeholder }: any) {
   );
 }
 
-function FormField({ label, placeholder, type = 'text' }: any) {
-  return (
-    <div className="space-y-1.5">
-      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{label}</label>
-      <input 
-        className="w-full bg-slate-50 border-transparent rounded-xl p-4 text-sm focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:text-slate-300" 
-        placeholder={placeholder} 
-        type={type} 
-      />
-    </div>
-  );
-}
+
