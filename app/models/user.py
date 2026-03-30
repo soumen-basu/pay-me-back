@@ -2,13 +2,16 @@ import uuid
 from datetime import datetime
 from typing import Optional
 from sqlmodel import Field, SQLModel, UniqueConstraint
+from pydantic import field_validator
+
+from app.core.currencies import VALID_CURRENCY_CODES
 
 class UserBase(SQLModel):
     email: str = Field(unique=True, index=True)
     display_name: Optional[str] = None
     role: str = Field(default="user")
     is_active: bool = Field(default=True)
-    preferred_currency: str = Field(default="₹")
+    preferred_currency: str = Field(default="INR")  # ISO 4217 code
 
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -53,6 +56,13 @@ class UserUpdate(SQLModel):
     display_name: Optional[str] = None
     password: Optional[str] = None
     preferred_currency: Optional[str] = None
+
+    @field_validator("preferred_currency")
+    @classmethod
+    def validate_currency(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in VALID_CURRENCY_CODES:
+            raise ValueError(f"Invalid currency code '{v}'. Must be one of: {sorted(VALID_CURRENCY_CODES)}")
+        return v
 
 class UserUpdateAdmin(UserUpdate):
     role: Optional[str] = None

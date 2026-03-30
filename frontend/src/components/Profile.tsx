@@ -2,17 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
-
-// Supported currencies
-const CURRENCIES = [
-  { symbol: '₹', name: 'Indian Rupee', code: 'INR' },
-  { symbol: '$', name: 'US Dollar', code: 'USD' },
-  { symbol: '€', name: 'Euro', code: 'EUR' },
-  { symbol: '£', name: 'British Pound', code: 'GBP' },
-  { symbol: '¥', name: 'Japanese Yen', code: 'JPY' },
-  { symbol: 'A$', name: 'Australian Dollar', code: 'AUD' },
-  { symbol: 'C$', name: 'Canadian Dollar', code: 'CAD' },
-];
+import { fetchCurrencies } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 interface Contact {
   id: number;
@@ -27,7 +18,8 @@ const MAX_CONTACTS = 5;
 export function Profile() {
   const { user, refreshToken } = useAuth();
   const [displayName, setDisplayName] = useState(user?.display_name || '');
-  const [preferredCurrency, setPreferredCurrency] = useState(user?.preferred_currency || '₹');
+  const [preferredCurrency, setPreferredCurrency] = useState(user?.preferred_currency || 'INR');
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -52,6 +44,7 @@ export function Profile() {
 
   useEffect(() => {
     fetchContacts();
+    fetchCurrencies().then(setCurrencies);
   }, [fetchContacts]);
 
   if (!user) return null;
@@ -63,7 +56,7 @@ export function Profile() {
     try {
       const payload: Record<string, string> = {};
       if (displayName !== (user.display_name || '')) payload.display_name = displayName;
-      if (preferredCurrency !== (user.preferred_currency || '₹')) payload.preferred_currency = preferredCurrency;
+      if (preferredCurrency !== (user.preferred_currency || 'INR')) payload.preferred_currency = preferredCurrency;
 
       if (Object.keys(payload).length === 0) {
         setMessage({ text: 'No changes to save', type: 'success' });
@@ -207,9 +200,9 @@ export function Profile() {
                     onChange={(e) => setPreferredCurrency(e.target.value)}
                     className="w-full bg-yellow-50/50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer"
                   >
-                    {CURRENCIES.map((c) => (
-                      <option key={c.code} value={c.symbol}>
-                        {c.symbol} - {c.name}
+                    {currencies.map((c: CurrencyInfo) => (
+                      <option key={c.code} value={c.code}>
+                        {c.symbol} - {c.name} ({c.code})
                       </option>
                     ))}
                   </select>
@@ -378,7 +371,7 @@ export function Profile() {
               type="button"
               onClick={() => {
                 setDisplayName(user.display_name || '');
-                setPreferredCurrency(user.preferred_currency || '₹');
+                setPreferredCurrency(user.preferred_currency || 'INR');
                 setMessage(null);
               }}
               className="px-6 py-3 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all cursor-pointer"

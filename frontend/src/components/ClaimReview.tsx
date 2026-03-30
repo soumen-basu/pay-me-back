@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
+import { fetchCurrencies, formatAmount, groupByCurrency, formatCurrencyTotals } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 interface Claim {
   id: string;
@@ -21,6 +23,7 @@ interface Expense {
   description: string;
   date: string | null;
   category_name: string | null;
+  currency_code: string;
   claim_id: string | null;
   status: string;
 }
@@ -43,6 +46,7 @@ export function ClaimReview() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
 
   // Communication / Comments State
   // Communication / Comments State
@@ -74,6 +78,7 @@ export function ClaimReview() {
 
   useEffect(() => {
     fetchClaimData();
+    fetchCurrencies().then(setCurrencies);
   }, [fetchClaimData]);
 
   // Fetch comments when an entity is selected
@@ -168,10 +173,7 @@ export function ClaimReview() {
     }
   };
 
-  const formatCurrency = (amount: number): string => {
-    const symbol = user?.preferred_currency || '₹';
-    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+  // Use the shared currency utility — no local formatCurrency needed
 
   const formatDate = (dateStr: string | null): string => {
     if (!dateStr) return 'N/A';
@@ -191,7 +193,7 @@ export function ClaimReview() {
   if (!claim) return null;
 
   const isSubmitter = claim.submitter_id === user?.id;
-  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalAmountByCurrency = groupByCurrency(expenses);
   const allReviewed = expenses.every(e => e.status !== 'OPEN');
   
   const canDeleteClaim = isSubmitter && claim.status !== 'CLOSED' && (expenses.length === 0 || expenses.every(e => e.status === 'REJECTED'));
@@ -231,7 +233,7 @@ export function ClaimReview() {
               </div>
               <div className="text-right">
                 <p className="text-slate-500 text-sm font-bold uppercase tracking-widest mb-1">Total Claimed</p>
-                <p className="text-4xl font-black text-slate-900 tracking-tighter">{formatCurrency(totalAmount)}</p>
+                <p className="text-4xl font-black text-slate-900 tracking-tighter">{formatCurrencyTotals(totalAmountByCurrency, currencies)}</p>
                 <span className="inline-block bg-yellow-100 text-yellow-700 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-widest mt-2">{claim.status}</span>
               </div>
             </div>
@@ -273,7 +275,7 @@ export function ClaimReview() {
                       <h3 className="font-bold text-lg text-slate-900">{e.description}</h3>
                       <p className="text-sm text-slate-500">{e.category_name || 'Uncategorized'} • {formatDate(e.date)}</p>
                     </div>
-                    <p className="font-black text-xl text-slate-900">{formatCurrency(e.amount)}</p>
+                    <p className="font-black text-xl text-slate-900">{formatAmount(e.amount, e.currency_code || 'INR', currencies)}</p>
                   </div>
                   
                   {/* Status Indicator */}

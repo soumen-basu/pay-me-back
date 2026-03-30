@@ -1,5 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../services/api';
+import { useAuth } from './AuthProvider';
+import { fetchCurrencies, getSymbol } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 interface Category {
   id: string;
@@ -11,9 +15,12 @@ interface AddExpenseModalProps {
   onSuccess: () => void;
   initialCategories?: Category[];
   initialExpense?: any;
+  /** Pass loaded expenses so we can derive "last currency used". */
+  expenses?: { currency_code?: string }[];
 }
 
-export function AddExpenseModal({ onClose, onSuccess, initialCategories, initialExpense }: AddExpenseModalProps) {
+export function AddExpenseModal({ onClose, onSuccess, initialCategories, initialExpense, expenses }: AddExpenseModalProps) {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
   const [description, setDescription] = useState(initialExpense?.description || '');
   const [amount, setAmount] = useState(initialExpense?.amount?.toString() || '');
@@ -25,6 +32,25 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
+
+  // Currency state
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
+  const [currencyCode, setCurrencyCode] = useState<string>(() => {
+    if (initialExpense?.currency_code) return initialExpense.currency_code;
+    // Derive last-used currency from loaded expenses
+    if (expenses && expenses.length > 0) {
+      const last = expenses[expenses.length - 1];
+      if (last.currency_code) return last.currency_code;
+    }
+    return user?.preferred_currency || 'INR';
+  });
+  const isClaimedExpense = !!(initialExpense?.claim_id);
+
+  // Description autocomplete state
+  const [pastDescriptions, setPastDescriptions] = useState<string[]>([]);
+  const [isDescDropdownOpen, setIsDescDropdownOpen] = useState(false);
+  const [descActiveIndex, setDescActiveIndex] = useState(-1);
+  const descInputRef = useRef<HTMLInputElement>(null);
 
   // Close modal on escape key
   useEffect(() => {
@@ -47,6 +73,14 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
         .catch(err => console.error("Failed to load categories", err));
     }
   }, [initialCategories, initialExpense]);
+
+  // Fetch currencies and past descriptions on mount
+  useEffect(() => {
+    fetchCurrencies().then(setCurrencies);
+    api.get<string[]>('/api/v1/expenses/descriptions')
+      .then(setPastDescriptions)
+      .catch(() => { /* silently fail */ });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,20 +107,24 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
           }
         } catch (catErr) {
           console.error("Failed to auto-create category", catErr);
-          // We continue anyway, as the expense creation might still work if the backend handles it
         }
       }
 
-      const payload = {
+      const payload: Record<string, any> = {
         description,
         amount: parseFloat(amount),
         date,
         category_name: trimmedCategory,
+        currency_code: currencyCode,
       };
 
       console.log("Submitting expense payload:", payload);
 
       if (initialExpense) {
+        // Don't send currency_code if the expense is claimed (backend will reject)
+        if (isClaimedExpense) {
+          delete payload.currency_code;
+        }
         await api.patch(`/api/v1/expenses/${initialExpense.id}`, payload);
       } else {
         await api.post('/api/v1/expenses/', payload);
@@ -96,7 +134,6 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
       onSuccess();
     } catch (err: any) {
       console.error("Expense operation failed:", err);
-      // Defensive check to avoid crashing if err is null or missing detail
       const errorMsg = err?.detail || (typeof err === 'string' ? err : 'Failed to save expense');
       setError(errorMsg);
     } finally {
@@ -104,9 +141,10 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
     }
   };
 
+  // ── Category dropdown logic ──────────────────────────────────────────
   const filteredCategories = categories.filter(c => (c.name || '').toLowerCase().includes((categoryName || '').toLowerCase()));
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleCategoryKeyDown = (e: React.KeyboardEvent) => {
     if (!isCategoryDropdownOpen) {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         setIsCategoryDropdownOpen(true);
@@ -133,7 +171,43 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
     }
   };
 
-  return (
+  // ── Description autocomplete logic ───────────────────────────────────
+  const filteredDescriptions = pastDescriptions.filter(
+    d => d.toLowerCase().includes((description || '').toLowerCase()) && d.toLowerCase() !== (description || '').toLowerCase()
+  );
+
+  const handleDescKeyDown = (e: React.KeyboardEvent) => {
+    if (!isDescDropdownOpen || filteredDescriptions.length === 0) {
+      if (e.key === 'ArrowDown' && filteredDescriptions.length > 0) {
+        setIsDescDropdownOpen(true);
+        setDescActiveIndex(0);
+        e.preventDefault();
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setDescActiveIndex(prev => (prev < filteredDescriptions.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setDescActiveIndex(prev => (prev > 0 ? prev - 1 : prev));
+    } else if (e.key === 'Enter') {
+      if (descActiveIndex >= 0 && descActiveIndex < filteredDescriptions.length) {
+        e.preventDefault();
+        setDescription(filteredDescriptions[descActiveIndex]);
+        setIsDescDropdownOpen(false);
+        setDescActiveIndex(-1);
+      }
+    } else if (e.key === 'Escape') {
+      setIsDescDropdownOpen(false);
+      setDescActiveIndex(-1);
+    }
+  };
+
+  const currentSymbol = getSymbol(currencyCode, currencies);
+
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg animate-in zoom-in-95 duration-200 relative border border-slate-100">
         <div className="p-8 sm:p-10 w-full flex flex-col" style={{ padding: '32px' }}>
@@ -146,23 +220,72 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
         </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
+            {/* Description with autocomplete */}
+            <div className="relative">
               <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">What did you buy?</label>
               <input
+                ref={descInputRef}
                 type="text"
                 className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-slate-900 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium"
                 placeholder="e.g. Starbucks Latte"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  setIsDescDropdownOpen(true);
+                  setDescActiveIndex(-1);
+                }}
+                onKeyDown={handleDescKeyDown}
+                onFocus={() => {
+                  if (description && filteredDescriptions.length > 0) setIsDescDropdownOpen(true);
+                }}
+                onBlur={() => setTimeout(() => setIsDescDropdownOpen(false), 200)}
                 autoFocus
               />
+              {isDescDropdownOpen && filteredDescriptions.length > 0 && (
+                <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 max-h-40 overflow-y-auto custom-scrollbar">
+                  {filteredDescriptions.slice(0, 8).map((desc: string, index: number) => (
+                    <div
+                      key={desc}
+                      className={`px-5 py-3 cursor-pointer text-slate-700 font-medium transition-colors border-b border-slate-50 last:border-b-0 ${descActiveIndex === index ? 'bg-slate-100' : 'hover:bg-slate-50'}`}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setDescription(desc);
+                        setIsDescDropdownOpen(false);
+                        setDescActiveIndex(-1);
+                      }}
+                      onMouseEnter={() => setDescActiveIndex(index)}
+                    >
+                      {desc}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Amount + Currency + Date row */}
+            <div className="grid grid-cols-[auto_1fr_1fr] gap-3">
+              {/* Currency selector */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Cur.</label>
+                <select
+                  value={currencyCode}
+                  onChange={(e) => setCurrencyCode(e.target.value)}
+                  disabled={isClaimedExpense}
+                  className="h-[52px] bg-slate-50 border border-slate-200 rounded-2xl px-3 py-3.5 text-slate-900 font-bold text-sm focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={isClaimedExpense ? 'Currency cannot be changed on claimed expenses' : 'Select currency'}
+                >
+                  {currencies.map((c: CurrencyInfo) => (
+                    <option key={c.code} value={c.code}>
+                      {c.symbol} {c.code}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Amount */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">How much?</label>
                 <div className="relative">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">{currentSymbol}</span>
                   <input
                     type="number"
                     step="0.01"
@@ -173,6 +296,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
                   />
                 </div>
               </div>
+              {/* Date */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">When?</label>
                 <input
@@ -184,6 +308,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
               </div>
             </div>
 
+            {/* Category */}
             <div className="relative">
               <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Category</label>
               <div className="relative">
@@ -196,7 +321,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
                     setIsCategoryDropdownOpen(true);
                     setActiveIndex(-1);
                   }}
-                  onKeyDown={handleKeyDown}
+                  onKeyDown={handleCategoryKeyDown}
                   onFocus={() => setIsCategoryDropdownOpen(true)}
                   onBlur={() => setTimeout(() => setIsCategoryDropdownOpen(false), 200)}
                   placeholder="Type or select a category"
@@ -256,6 +381,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
           </form>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

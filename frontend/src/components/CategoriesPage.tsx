@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
-import { useAuth } from './AuthProvider';
+import { fetchCurrencies, formatAmount } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 interface Category {
   id: string;
@@ -16,6 +17,7 @@ interface Expense {
   description: string;
   date: string | null;
   category_name: string;
+  currency_code: string;
   status: string;
 }
 
@@ -31,12 +33,12 @@ function getCategoryIcon(name: string): string {
 
 export function CategoriesPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -55,6 +57,7 @@ export function CategoriesPage() {
 
   useEffect(() => {
     fetchData();
+    fetchCurrencies().then(setCurrencies);
   }, [fetchData]);
 
   const handleDelete = async (name: string) => {
@@ -84,10 +87,7 @@ export function CategoriesPage() {
     }
   };
 
-  const formatCurrency = (amount: number): string => {
-    const symbol = user?.preferred_currency || '₹';
-    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+  // Use the shared currency utility — no local formatCurrency needed
 
   const formatDate = (dateStr: string | null): string => {
     if (!dateStr) return '';
@@ -164,7 +164,7 @@ export function CategoriesPage() {
                           <p className="text-sm font-bold text-slate-800">{e.description}</p>
                           <p className="text-[11px] text-slate-400">{formatDate(e.date)}</p>
                         </div>
-                        <p className="text-sm font-bold text-slate-900">{formatCurrency(e.amount)}</p>
+                        <p className="text-sm font-bold text-slate-900">{formatAmount(e.amount, e.currency_code || 'INR', currencies)}</p>
                       </div>
                     ))
                   )}

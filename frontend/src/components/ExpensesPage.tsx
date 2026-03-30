@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
 import { AddExpenseModal } from './AddExpenseModal';
 import { useExpenseSelection } from '../contexts/ExpenseSelectionContext';
+import { fetchCurrencies, formatAmount } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 // ── Interfaces ──
 
@@ -13,6 +14,7 @@ interface Expense {
   description: string;
   date: string;
   category_name: string;
+  currency_code: string;
   status: string;
   owner_id: number;
   claim_id: string | null;
@@ -35,7 +37,6 @@ function getCategoryIcon(name: string): string {
 }
 
 export function ExpensesPage() {
-  const { user } = useAuth();
   const { selectedExpenseIds, toggleExpense, clearSelection } = useExpenseSelection();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -43,6 +44,7 @@ export function ExpensesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
 
   // ── Fetch Data ──
   const fetchData = useCallback(async () => {
@@ -62,6 +64,7 @@ export function ExpensesPage() {
 
   useEffect(() => {
     fetchData();
+    fetchCurrencies().then(setCurrencies);
     
     // Listen for global expense additions (from sidebar or anywhere)
     const handleExpenseAdded = () => fetchData();
@@ -77,10 +80,7 @@ export function ExpensesPage() {
     ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [expenses, searchQuery]);
 
-  const formatCurrency = (amount: number): string => {
-    const symbol = user?.preferred_currency || '₹';
-    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+  // Use the shared currency utility — no local formatCurrency needed
 
   const formatDate = (dateStr: string): string => {
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -202,7 +202,7 @@ export function ExpensesPage() {
                       </span>
                     </td>
                     <td className={`px-6 py-4 text-right font-bold text-sm ${isEditable ? 'text-slate-900' : 'text-slate-600'}`}>
-                      {formatCurrency(exp.amount)}
+                      {formatAmount(exp.amount, exp.currency_code || 'INR', currencies)}
                     </td>
                   </tr>
                 )})}
@@ -243,7 +243,8 @@ export function ExpensesPage() {
 
       {isModalOpen && (
         <AddExpenseModal 
-          initialCategories={categories} 
+          initialCategories={categories}
+          expenses={expenses}
           onClose={() => setIsModalOpen(false)} 
           onSuccess={() => {
             setIsModalOpen(false);
@@ -256,6 +257,7 @@ export function ExpensesPage() {
         <AddExpenseModal
           initialCategories={categories}
           initialExpense={editingExpense}
+          expenses={expenses}
           onClose={() => setEditingExpense(null)}
           onSuccess={() => {
             setEditingExpense(null);

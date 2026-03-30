@@ -2,7 +2,7 @@ import uuid
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 
 from app.api import deps
 from app.models.user import User
@@ -88,8 +88,15 @@ def update_expense(
         raise HTTPException(status_code=404, detail="Expense not found")
     if expense.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not enough permissions")
-        
+
+    # Disallow currency change if expense is attached to a claim
     update_data = expense_in.model_dump(exclude_unset=True)
+    if "currency_code" in update_data and expense.claim_id is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot change currency on an expense attached to a claim. Detach it first."
+        )
+
     for field, value in update_data.items():
         setattr(expense, field, value)
         
@@ -118,6 +125,24 @@ def delete_expense(
     return {"msg": "Expense deleted"}
 
 from app.models.comment import Comment, CommentCreate, CommentRead
+
+
+@router.get("/descriptions", response_model=List[str])
+def get_expense_descriptions(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Return distinct expense descriptions for the current user.
+    Used for autocomplete in the frontend.
+    """
+    results = db.exec(
+        select(col(Expense.description))
+        .where(Expense.owner_id == current_user.id)
+        .distinct()
+        .order_by(col(Expense.description))
+    ).all()
+    return list(results)
 
 @router.post("/{id}/comments", response_model=CommentRead)
 def add_expense_comment(

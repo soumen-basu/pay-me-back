@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
 import { useExpenseSelection } from '../contexts/ExpenseSelectionContext';
+import { fetchCurrencies, formatAmount, groupByCurrency, formatCurrencyTotals } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 // ── Interfaces ──
 
@@ -13,6 +14,7 @@ interface Expense {
   description: string;
   date: string;
   category_name: string;
+  currency_code: string;
   status: string;
   owner_id: number;
   claim_id: string | null;
@@ -51,7 +53,6 @@ function getCategoryIcon(name: string): string {
 }
 
 export function ClaimBuilder() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const { selectedExpenseIds, clearSelection } = useExpenseSelection();
 
@@ -77,6 +78,7 @@ export function ClaimBuilder() {
   // ── Step 3: Submission ──
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
 
   const fetchExpenses = useCallback(async () => {
     try {
@@ -116,6 +118,7 @@ export function ClaimBuilder() {
     fetchExpenses();
     fetchExistingClaims();
     fetchContacts();
+    fetchCurrencies().then(setCurrencies);
   }, [fetchExpenses, fetchExistingClaims, fetchContacts]);
 
   // ── Derived data ──
@@ -134,15 +137,12 @@ export function ClaimBuilder() {
     [expenses, selectedIds]
   );
 
-  const totalAmount = useMemo(
-    () => selectedExpenses.reduce((sum, e) => sum + e.amount, 0),
+  const totalAmountByCurrency = useMemo(
+    () => groupByCurrency(selectedExpenses),
     [selectedExpenses]
   );
 
-  const formatCurrency = (amount: number): string => {
-    const symbol = user?.preferred_currency || '₹';
-    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+  // Use the shared currency utility — no local formatCurrency needed
 
   const formatDate = (dateStr: string): string => {
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -447,7 +447,7 @@ export function ClaimBuilder() {
                         </p>
                       </div>
                       <div className="text-right mr-4">
-                        <p className="font-bold text-slate-900">{formatCurrency(exp.amount)}</p>
+                        <p className="font-bold text-slate-900">{formatAmount(exp.amount, exp.currency_code || 'INR', currencies)}</p>
                         <p className="text-xs text-slate-400">Reimbursable</p>
                       </div>
                       {/* Checkbox */}
@@ -495,7 +495,7 @@ export function ClaimBuilder() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total</p>
-                    <p className="text-sm font-bold text-primary mt-1">{formatCurrency(totalAmount)}</p>
+                    <p className="text-sm font-bold text-primary mt-1">{formatCurrencyTotals(totalAmountByCurrency, currencies)}</p>
                   </div>
                 </div>
 
@@ -572,7 +572,7 @@ export function ClaimBuilder() {
                   <span className="material-symbols-outlined text-4xl">payments</span>
                 </div>
                 <p className="text-slate-500 text-sm font-medium">Total Reimbursement</p>
-                <h2 className="text-4xl font-black text-slate-900 mt-1">{formatCurrency(totalAmount)}</h2>
+                <h2 className="text-4xl font-black text-slate-900 mt-1">{formatCurrencyTotals(totalAmountByCurrency, currencies)}</h2>
               </div>
 
               {/* Included Items */}
@@ -597,7 +597,7 @@ export function ClaimBuilder() {
                               <p className="text-xs text-slate-500">{formatDate(exp.date)} • {exp.category_name}</p>
                             </div>
                           </div>
-                          <p className="text-sm font-bold">{formatCurrency(exp.amount)}</p>
+                          <p className="text-sm font-bold">{formatAmount(exp.amount, exp.currency_code || 'INR', currencies)}</p>
                         </div>
                       ))}
                     </div>

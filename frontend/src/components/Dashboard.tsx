@@ -5,6 +5,8 @@ import { PageLayout } from './layout/PageLayout';
 import { DonutChart } from './charts/DonutChart';
 import { api } from '../services/api';
 import { useExpenseSelection } from '../contexts/ExpenseSelectionContext';
+import { fetchCurrencies, formatAmount, groupByCurrency, formatCurrencyTotals } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 // ── TypeScript interfaces matching backend models ──
 
@@ -14,6 +16,7 @@ interface Expense {
   description: string;
   date: string;
   category_name: string;
+  currency_code: string;
   status: string;
   owner_id: number;
   claim_id: string | null;
@@ -75,6 +78,7 @@ export function Dashboard() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -93,6 +97,7 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchData();
+    fetchCurrencies().then(setCurrencies);
 
     const handleExpenseAdded = () => fetchData();
     window.addEventListener('expense_added', handleExpenseAdded);
@@ -100,8 +105,8 @@ export function Dashboard() {
   }, [fetchData]);
 
   // ── Computed stats ──
-  const totalSpent = useMemo(
-    () => expenses.reduce((sum, e) => sum + e.amount, 0),
+  const totalSpentByCurrency = useMemo(
+    () => groupByCurrency(expenses),
     [expenses]
   );
 
@@ -110,12 +115,12 @@ export function Dashboard() {
     [claims]
   );
 
-  const approvedThisMonth = useMemo(() => {
+  const approvedThisMonthByCurrency = useMemo(() => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    return expenses
-      .filter((e) => e.status === 'APPROVED' && new Date(e.created_at) >= monthStart)
-      .reduce((sum, e) => sum + e.amount, 0);
+    const approved = expenses
+      .filter((e) => e.status === 'APPROVED' && new Date(e.created_at) >= monthStart);
+    return groupByCurrency(approved);
   }, [expenses]);
 
   // ── Active claims (OPEN only, latest first, max 5) ──
@@ -153,10 +158,7 @@ export function Dashboard() {
     [expenses]
   );
 
-  const formatCurrency = (amount: number): string => {
-    const symbol = user?.preferred_currency || '₹';
-    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+  // Use the shared currency utility — no local formatCurrency needed
 
   const formatDate = (dateStr: string): string => {
     const d = new Date(dateStr);
@@ -213,7 +215,7 @@ export function Dashboard() {
                 <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-slate-900">{formatCurrency(totalSpent)}</p>
+            <p className="text-3xl font-extrabold text-slate-900">{formatCurrencyTotals(totalSpentByCurrency, currencies)}</p>
             <div className="flex items-center gap-1">
               <span className="material-symbols-outlined text-primary text-sm">trending_up</span>
               <span className="text-primary text-sm font-bold">{expenses.length} expenses</span>
@@ -246,7 +248,7 @@ export function Dashboard() {
                 <span className="material-symbols-outlined text-green-500">check_circle</span>
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-slate-900">{formatCurrency(approvedThisMonth)}</p>
+            <p className="text-3xl font-extrabold text-slate-900">{formatCurrencyTotals(approvedThisMonthByCurrency, currencies)}</p>
             <div className="flex items-center gap-1">
               <span className="material-symbols-outlined text-green-500 text-sm">trending_down</span>
               <span className="text-green-500 text-sm font-bold">
@@ -281,7 +283,7 @@ export function Dashboard() {
               {activeClaims.map((claim) => {
                 // Find expenses linked to this claim
                 const claimExpenses = expenses.filter((e) => e.claim_id === claim.id);
-                const claimTotal = claimExpenses.reduce((sum, e) => sum + e.amount, 0);
+                const claimTotalByCurrency = groupByCurrency(claimExpenses);
                 const statusStyle = STATUS_COLORS[claim.status] || STATUS_COLORS.OPEN;
 
                 return (
@@ -300,7 +302,7 @@ export function Dashboard() {
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="font-bold text-slate-900">{formatCurrency(claimTotal)}</p>
+                      <p className="font-bold text-slate-900">{formatCurrencyTotals(claimTotalByCurrency, currencies)}</p>
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-tight ${statusStyle.bg} ${statusStyle.text}`}
                       >
@@ -325,7 +327,7 @@ export function Dashboard() {
               ) : (
                 <DonutChart
                   segments={categorySpending}
-                  total={formatCurrency(totalSpent)}
+                  total={formatCurrencyTotals(totalSpentByCurrency, currencies)}
                   size={180}
                 />
               )}
@@ -406,7 +408,7 @@ export function Dashboard() {
                           </span>
                         </td>
                         <td className={`px-6 py-4 text-right font-bold text-sm ${isEditable ? 'text-slate-900' : 'text-slate-600'}`}>
-                          {formatCurrency(exp.amount)}
+                          {formatAmount(exp.amount, exp.currency_code || 'INR', currencies)}
                         </td>
                       </tr>
                     )})}

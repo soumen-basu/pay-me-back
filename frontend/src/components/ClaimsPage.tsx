@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
+import { fetchCurrencies, groupByCurrency, formatCurrencyTotals } from '../utils/currency';
+import type { CurrencyInfo } from '../utils/currency';
 
 // ── Interfaces ──
 
@@ -20,6 +21,7 @@ interface Claim {
 interface Expense {
   id: string;
   amount: number;
+  currency_code: string;
   claim_id: string | null;
 }
 
@@ -31,12 +33,12 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
 };
 
 export function ClaimsPage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [claims, setClaims] = useState<Claim[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'ALL' | 'OPEN' | 'APPROVED' | 'REJECTED'>('ALL');
+  const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
 
   // ── Fetch Data ──
   const fetchData = useCallback(async () => {
@@ -56,6 +58,7 @@ export function ClaimsPage() {
 
   useEffect(() => {
     fetchData();
+    fetchCurrencies().then(setCurrencies);
   }, [fetchData]);
 
   // ── Filtering ──
@@ -64,10 +67,7 @@ export function ClaimsPage() {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [claims, activeTab]);
 
-  const formatCurrency = (amount: number): string => {
-    const symbol = user?.preferred_currency || '₹';
-    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
+  // Use the shared currency utility — no local formatCurrency needed
 
   const formatDate = (dateStr: string): string => {
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -126,7 +126,7 @@ export function ClaimsPage() {
           ) : (
             filteredClaims.map((claim) => {
               const claimExpenses = expenses.filter((e) => e.claim_id === claim.id);
-              const claimTotal = claimExpenses.reduce((sum, e) => sum + e.amount, 0);
+              const claimTotalByCurrency = groupByCurrency(claimExpenses);
               const status = STATUS_COLORS[claim.status] || STATUS_COLORS.OPEN;
 
               return (
@@ -148,7 +148,7 @@ export function ClaimsPage() {
                   </div>
                   <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                     <div className="text-right">
-                      <p className="text-slate-900 font-black text-2xl tracking-tight">{formatCurrency(claimTotal)}</p>
+                      <p className="text-slate-900 font-black text-2xl tracking-tight">{formatCurrencyTotals(claimTotalByCurrency, currencies)}</p>
                       <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mt-1 ${status.bg} ${status.text}`}>
                         {status.label}
                       </span>
