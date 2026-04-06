@@ -5,6 +5,7 @@ from pydantic import AnyHttpUrl, validator
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "PayMeBack"
+    FRONTEND_BASE_URL: str = "http://localhost:3000"
     
     # Database Config
     DB_HOST: str = "localhost"

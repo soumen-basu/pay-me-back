@@ -74,7 +74,7 @@ def request_magic_link(
     user.magic_token_expires_at = datetime.utcnow() + timedelta(minutes=config.settings.MAGIC_LINK_EXPIRE_MINUTES)
     db.commit()
     
-    magic_link = f"http://localhost:8000/verify?email={user.email}&token={token}"
+    magic_link = f"{config.settings.FRONTEND_BASE_URL}/verify?email={user.email}&token={token}"
     # Dump link and token to console for easy testing during dev
     print(f"\n[DEBUG] Magic Link Generated: {magic_link}")
     print(f"[DEBUG] Raw Token: {token}\n")
