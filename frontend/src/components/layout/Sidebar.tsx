@@ -49,7 +49,7 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
   const { unreadCount, notifications, markAsRead } = useNotifications();
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  
+
   const navItems = items ?? (isAdminMode ? adminNavItems : defaultNavItems);
 
   const handleLogout = () => {
@@ -73,7 +73,7 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
     >
       <div className={`flex items-center gap-3 px-3 mb-8 transition-all duration-300 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
         <div className="flex items-center gap-3">
-          <div 
+          <div
             className="size-10 min-w-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform drop-shadow-sm"
             onClick={() => navigate(isAdminMode ? '/admin/dashboard' : '/dashboard')}
           >
@@ -81,9 +81,9 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
           </div>
           {!isCollapsed && <span className="text-slate-900 text-lg font-extrabold tracking-tight whitespace-nowrap cursor-pointer hover:text-primary transition-colors" onClick={() => navigate(isAdminMode ? '/admin/dashboard' : '/dashboard')}>Pay Me Back!</span>}
         </div>
-        
+
         {!isCollapsed && (
-          <button 
+          <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
             className="relative p-2 text-slate-400 hover:text-primary transition-colors cursor-pointer"
           >
@@ -111,8 +111,8 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
           ) : (
             <div className="space-y-1">
               {notifications.map(n => (
-                <div 
-                  key={n.id} 
+                <div
+                  key={n.id}
                   className={`p-3 rounded-xl transition-colors cursor-pointer ${n.is_read ? 'opacity-60 hover:bg-slate-50' : 'bg-primary/5 hover:bg-primary/10 border-l-4 border-primary'}`}
                   onClick={() => {
                     markAsRead(n.id);
@@ -140,9 +140,8 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
                 setIsAddExpenseModalOpen(true);
                 if (isMobile && onClose) onClose();
               }}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-all cursor-pointer shadow-sm border border-emerald-200/50 ${
-                isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-all cursor-pointer shadow-sm border border-emerald-200/50 ${isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+                }`}
               title={isCollapsed ? 'New Expense' : undefined}
             >
               <span className="material-symbols-outlined text-xl">add_circle</span>
@@ -154,9 +153,8 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
                 if (isMobile && onClose) onClose();
                 navigate('/claims/new');
               }}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-primary text-slate-900 border border-slate-900/5 hover:bg-primary/90 transition-all cursor-pointer shadow-sm ${
-                isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-primary text-slate-900 border border-slate-900/5 hover:bg-primary/90 transition-all cursor-pointer shadow-sm ${isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+                }`}
               title={isCollapsed ? 'New Claim' : undefined}
             >
               <span className="material-symbols-outlined text-xl">assignment_add</span>
@@ -169,9 +167,8 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
               if (isMobile && onClose) onClose();
               navigate('/admin/users'); // Or a "new user" specific path if it exists
             }}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition-all cursor-pointer shadow-md ${
-              isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition-all cursor-pointer shadow-md ${isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
+              }`}
             title={isCollapsed ? 'Add New User' : undefined}
           >
             <span className="material-symbols-outlined text-xl">person_add</span>
@@ -189,11 +186,10 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
             <button
               key={item.path}
               onClick={() => handleNavClick(item.path)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                isActive
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${isActive
                   ? 'bg-primary text-slate-900 shadow-lg shadow-primary/20'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              } ${isCollapsed ? 'justify-center' : ''}`}
+                } ${isCollapsed ? 'justify-center' : ''}`}
               title={isCollapsed ? item.label : undefined}
             >
               <span className="material-symbols-outlined text-xl">{item.icon}</span>
@@ -211,11 +207,10 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
               <button
                 key={item.path}
                 onClick={() => handleNavClick(item.path)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${isActive
                     ? 'bg-primary text-slate-900 shadow-lg shadow-primary/20'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                } ${isCollapsed ? 'justify-center' : ''}`}
+                  } ${isCollapsed ? 'justify-center' : ''}`}
                 title={isCollapsed ? item.label : undefined}
               >
                 <span className="material-symbols-outlined text-xl">{item.icon}</span>
@@ -226,27 +221,25 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
         </div>
       </nav>
 
-      {/* Admin Mode Toggle */}
       {user?.role === 'admin' && (
-        <div className={`mt-auto px-4 py-3 border-t border-slate-100/50 ${isCollapsed ? 'flex justify-center' : ''}`}>
-           <button
+        <div className={`mt-auto py-3 border-t border-slate-100/50 ${isCollapsed ? 'flex justify-center px-4' : ''}`}>
+          <button
             onClick={() => toggleAdminMode(navigate)}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-              isAdminMode 
-                ? 'bg-primary text-white shadow-md' 
+            className={`flex items-center gap-3 pl-3 pr-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${isAdminMode
+                ? 'bg-primary text-white shadow-md'
                 : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-            } ${isCollapsed ? 'size-10 justify-center min-w-10' : 'w-full'}`}
+              } ${isCollapsed ? 'size-10 justify-center min-w-10' : 'w-full'}`}
             title={isAdminMode ? 'Switch to User Mode' : 'Switch to Admin Mode'}
           >
             <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
             {!isCollapsed && (
-              <span className="flex-1 text-left uppercase tracking-widest whitespace-nowrap">
+              <span className="flex-1 text-left uppercase tracking-wide whitespace-nowrap">
                 {isAdminMode ? 'Admin Mode' : 'User Mode'}
               </span>
             )}
             {!isCollapsed && (
-              <div className={`w-8 h-4 rounded-full relative transition-colors ${isAdminMode ? 'bg-white/30' : 'bg-slate-300'}`}>
-                <div className={`absolute top-1 size-2 rounded-full bg-white transition-all ${isAdminMode ? 'left-5' : 'left-1'}`} />
+              <div className={`w-10 h-5 rounded-full relative transition-colors shrink-0 ${isAdminMode ? 'bg-white/30' : 'bg-slate-300'}`}>
+                <div className={`absolute top-1 size-3 rounded-full bg-white transition-all ${isAdminMode ? 'left-6' : 'left-1'}`} />
               </div>
             )}
           </button>
