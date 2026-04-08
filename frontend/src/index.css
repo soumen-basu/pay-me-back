@@ -101,3 +101,20 @@ body {
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+/* ── Responsive Table Wrapper ── */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-container table {
+  min-width: 640px; /* Force minimum width to prevent squashing on tiny screens */
+}
+
+@media (max-width: 640px) {
+  .table-container table {
+    min-width: 500px;
+  }
+}

@@ -208,10 +208,10 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
   const currentSymbol = getSymbol(currencyCode, currencies);
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg animate-in zoom-in-95 duration-200 relative border border-slate-100">
-        <div className="p-8 sm:p-10 w-full flex flex-col" style={{ padding: '32px' }}>
-          <button onClick={onClose} className="absolute top-6 right-6 size-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-colors cursor-pointer z-10">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-none md:rounded-3xl shadow-2xl w-full h-full md:h-auto md:max-w-lg animate-in zoom-in-95 duration-200 relative border border-slate-100 overflow-y-auto custom-scrollbar">
+        <div className="p-6 md:p-10 w-full flex flex-col">
+          <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 size-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-colors cursor-pointer z-10">
             <span className="material-symbols-outlined">close</span>
           </button>
 
@@ -263,7 +263,7 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
             </div>
 
             {/* Amount + Currency + Date row */}
-            <div className="grid grid-cols-[auto_1fr_1fr] gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr] gap-3">
               {/* Currency selector */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Cur.</label>

@@ -200,7 +200,7 @@ export function ClaimReview() {
   
   return (
     <PageLayout variant="app">
-      <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto px-8 py-8 items-start mb-24">
+      <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto px-4 py-6 md:px-8 md:py-8 items-start mb-24">
         
         {/* LEFT PANE: Claim Overview and Line Items */}
         <div className="flex-1 w-full lg:w-2/3">
@@ -407,7 +407,7 @@ export function ClaimReview() {
 
       {/* Global Action / Finalize Bar */}
       {claim.status === 'OPEN' && !isSubmitter && (
-        <div className="fixed bottom-0 left-0 md:left-60 right-0 p-6 bg-white border-t border-slate-100 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] flex flex-col items-stretch z-10 gap-4">
+        <div className="fixed bottom-0 left-0 md:left-20 lg:left-64 right-0 p-4 md:p-6 bg-white border-t border-slate-100 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] flex flex-col items-stretch z-10 gap-3 md:gap-4 transition-all">
           <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
             <div>
               <p className="font-bold text-slate-900 tracking-tight">Finalize Claim</p>

@@ -77,10 +77,10 @@ export function ClaimsPage() {
 
   return (
     <PageLayout variant="app" topNavActions={topNavActions}>
-      <div className="max-w-6xl mx-auto px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Your Claims</h1>
-          <p className="text-slate-500 mt-1">Manage and track your reimbursement requests.</p>
+      <div className="max-w-6xl mx-auto px-4 py-6 md:px-8 md:py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Your Claims</h1>
+          <p className="text-sm md:text-base text-slate-500 mt-1">Manage and track your reimbursement requests.</p>
         </div>
 
         {/* Tab Navigation */}

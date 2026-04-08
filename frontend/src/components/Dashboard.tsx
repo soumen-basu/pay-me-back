@@ -169,15 +169,15 @@ export function Dashboard() {
 
   // TopNav right-side actions
   const topNavActions = (
-    <div className="flex items-center gap-3">
-      <label className="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+    <div className="flex items-center gap-2">
+      <label className="flex flex-col min-w-40 h-9 md:h-10 max-w-64">
         <div className="flex w-full flex-1 items-stretch rounded-full h-full bg-slate-100 border border-transparent focus-within:border-primary/50 transition-all">
-          <div className="text-slate-500 flex items-center justify-center pl-4">
-            <span className="material-symbols-outlined text-xl">search</span>
+          <div className="text-slate-500 flex items-center justify-center pl-3 md:pl-4">
+            <span className="material-symbols-outlined text-lg">search</span>
           </div>
           <input
-            className="flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 h-full placeholder:text-slate-400 text-sm font-medium px-2 outline-none"
-            placeholder="Search claims..."
+            className="flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 h-full placeholder:text-slate-400 text-xs md:text-sm font-medium px-2 outline-none"
+            placeholder="Search..."
           />
         </div>
       </label>
@@ -196,17 +196,17 @@ export function Dashboard() {
 
   return (
     <PageLayout variant="app" topNavActions={topNavActions}>
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-6 md:px-8 md:py-8">
         {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
             Welcome back, {displayName}! 👋
           </h1>
-          <p className="text-slate-500 mt-1">Check your spending and active claims.</p>
+          <p className="text-sm md:text-base text-slate-500 mt-1">Check your spending and active claims.</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-10">
           {/* Total Spent */}
           <div className="flex flex-col gap-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
             <div className="flex items-center justify-between">
@@ -336,7 +336,7 @@ export function Dashboard() {
         </div>
 
         {/* Recent Expenses + Referral CTA */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 mb-10">
           {/* Recent Expenses Table — 3 columns */}
           <div className="lg:col-span-3">
             <div className="flex items-center justify-between mb-4">
@@ -348,7 +348,7 @@ export function Dashboard() {
                 View All
               </button>
             </div>
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden table-container">
               {recentExpenses.length === 0 ? (
                 <div className="p-8 text-center">
                   <span className="material-symbols-outlined text-4xl text-slate-300">receipt_long</span>

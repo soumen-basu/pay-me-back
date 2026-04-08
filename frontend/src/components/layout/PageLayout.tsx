@@ -29,7 +29,7 @@ export function PageLayout({ variant, children, topNavActions, topNavSubtitle, s
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+      setIsMobile(window.innerWidth < 768); // md breakpoint
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -53,7 +53,7 @@ export function PageLayout({ variant, children, topNavActions, topNavSubtitle, s
       {/* Sidebar Overlay (Mobile only) */}
       {isMobile && isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 transition-opacity"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 transition-opacity"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -69,28 +69,34 @@ export function PageLayout({ variant, children, topNavActions, topNavSubtitle, s
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {/* Mobile Header */}
+        {/* Mobile Header: Visible when isMobile is true (window < 768px) */}
         {isMobile && (
-          <header className="h-16 flex items-center justify-between px-4 bg-white border-b border-primary/10 flex-shrink-0">
-            <div className="flex items-center gap-3">
+          <header className="h-14 flex items-center justify-between px-4 bg-white border-b border-primary/10 flex-shrink-0 z-20">
+            <div className="flex items-center gap-2">
               <button 
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+                className="p-1.5 -ml-1.5 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
               >
                 <span className="material-symbols-outlined text-2xl">menu</span>
               </button>
-              <div className="size-8 bg-primary/20 rounded-full flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined text-xl">account_balance_wallet</span>
+              <div 
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                <div className="size-7 bg-primary/20 rounded-lg flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-lg">account_balance_wallet</span>
+                </div>
+                <span className="text-slate-900 font-extrabold tracking-tight text-sm">PMB!</span>
               </div>
-              <span className="text-slate-900 font-extrabold tracking-tight">Pay Me Back!</span>
             </div>
-            <div className="flex items-center gap-2">
+            
+            <div className="flex items-center gap-1">
               {topNavActions}
             </div>
           </header>
         )}
 
-        {/* Top Desktop Nav (Optional, for actions/subtitle if needed) */}
+        {/* Desktop Header: Visible when not mobile AND (actions or subtitle exist) */}
         {!isMobile && (topNavActions || topNavSubtitle) && (
           <header className="h-16 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md border-b border-primary/10 flex-shrink-0">
             <div>
@@ -102,8 +108,11 @@ export function PageLayout({ variant, children, topNavActions, topNavSubtitle, s
           </header>
         )}
 
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-0 lg:p-0">
-          {children}
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar">
+          <div className="min-h-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -68,7 +68,7 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
 
   return (
     <aside
-      className={`fixed lg:sticky top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out flex flex-col bg-white border-r border-primary/10 py-6 px-4 
+      className={`fixed md:sticky top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out flex flex-col bg-white border-r border-primary/10 py-6 px-4 
         ${isCollapsed ? 'w-20' : 'w-64'} 
         ${isMobile ? (isOpen ? 'translate-x-0 overflow-y-auto' : '-translate-x-full') : 'translate-x-0'}
         ${className}`}

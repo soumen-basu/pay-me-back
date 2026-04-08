@@ -88,15 +88,15 @@ export function ExpensesPage() {
 
   // TopNav right-side actions
   const topNavActions = (
-    <div className="flex items-center gap-3">
-      <label className="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+    <div className="flex items-center gap-2">
+      <label className="flex flex-col min-w-40 h-9 md:h-10 max-w-64">
         <div className="flex w-full flex-1 items-stretch rounded-full h-full bg-slate-100 border border-transparent focus-within:border-primary/50 transition-all">
-          <div className="text-slate-500 flex items-center justify-center pl-4">
-            <span className="material-symbols-outlined text-xl">search</span>
+          <div className="text-slate-500 flex items-center justify-center pl-3 md:pl-4">
+            <span className="material-symbols-outlined text-lg">search</span>
           </div>
           <input
-            className="flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 h-full placeholder:text-slate-400 text-sm font-medium px-2 outline-none"
-            placeholder="Search expenses..."
+            className="flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 h-full placeholder:text-slate-400 text-xs md:text-sm font-medium px-2 outline-none"
+            placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -104,31 +104,32 @@ export function ExpensesPage() {
       </label>
       <button
         onClick={() => setIsModalOpen(true)}
-        className="flex items-center gap-2 bg-primary text-slate-900 font-bold px-5 py-2.5 rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform cursor-pointer"
+        className="flex items-center justify-center size-9 md:size-auto md:gap-2 bg-primary text-slate-900 font-bold md:px-5 md:py-2.5 rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform cursor-pointer"
+        title="Add Expense"
       >
         <span className="material-symbols-outlined text-xl">add</span>
-        Add Expense
+        <span className="hidden md:inline">Add Expense</span>
       </button>
     </div>
   );
 
   return (
     <PageLayout variant="app" topNavActions={topNavActions}>
-      <div className="max-w-6xl mx-auto px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Your Expenses</h1>
-          <p className="text-slate-500 mt-1">Track and manage your individual spending items.</p>
+      <div className="max-w-6xl mx-auto px-4 py-6 md:px-8 md:py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Your Expenses</h1>
+          <p className="text-sm md:text-base text-slate-500 mt-1">Track and manage your individual spending items.</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden table-container">
           {loading ? (
-            <div className="p-20 flex justify-center">
+            <div className="p-12 md:p-20 flex justify-center">
               <span className="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
             </div>
           ) : filteredExpenses.length === 0 ? (
-            <div className="p-20 text-center">
-              <div className="size-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-4xl text-slate-300">receipt_long</span>
+            <div className="p-12 md:p-20 text-center">
+              <div className="size-16 md:size-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-3xl md:text-4xl text-slate-300">receipt_long</span>
               </div>
               <p className="text-slate-400 font-medium italic">No expenses found.</p>
               <button 
