@@ -1,20 +1,24 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from './AuthProvider';
 
 interface AddUserModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  initialUser?: any;
 }
 
-export function AddUserModal({ onClose, onSuccess }: AddUserModalProps) {
+export function AddUserModal({ onClose, onSuccess, initialUser }: AddUserModalProps) {
   const { token } = useAuth();
-  const [email, setEmail] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState(initialUser?.email || '');
+  const [displayName, setDisplayName] = useState(initialUser?.display_name || '');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
-  const [isActive, setIsActive] = useState(true);
+  const [role, setRole] = useState(initialUser?.role || 'user');
+  const [isActive, setIsActive] = useState(initialUser?.is_active ?? true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isEditMode = !!initialUser;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,27 +27,44 @@ export function AddUserModal({ onClose, onSuccess }: AddUserModalProps) {
 
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const response = await fetch(`${apiUrl}/api/v1/admin/users`, {
-        method: 'POST',
+      const url = isEditMode 
+        ? `${apiUrl}/api/v1/admin/users/${initialUser.id}`
+        : `${apiUrl}/api/v1/admin/users`;
+      
+      const method = isEditMode ? 'PATCH' : 'POST';
+      
+      const body: any = {
+        display_name: displayName || null,
+        role,
+        is_active: isActive,
+      };
+
+      if (!isEditMode) {
+        body.email = email;
+      }
+
+      if (password) {
+        body.password = password;
+      }
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          email,
-          display_name: displayName || null,
-          password,
-          role,
-          is_active: isActive,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
+        window.dispatchEvent(new CustomEvent('user_changed', { 
+          detail: { type: isEditMode ? 'update' : 'create', user: await response.json() } 
+        }));
         onSuccess();
         onClose();
       } else {
         const data = await response.json();
-        setError(data.detail || 'Failed to create user');
+        setError(data.detail || `Failed to ${isEditMode ? 'update' : 'create'} user`);
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -52,15 +73,15 @@ export function AddUserModal({ onClose, onSuccess }: AddUserModalProps) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
       
       <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-8 border-b border-slate-100 flex justify-between items-center">
           <div>
-            <h3 className="text-2xl font-black text-slate-900">Provision New User</h3>
-            <p className="text-slate-500 text-sm font-medium mt-1">Grant access and define system roles.</p>
+            <h3 className="text-2xl font-black text-slate-900">{isEditMode ? 'Edit User' : 'Provision New User'}</h3>
+            <p className="text-slate-500 text-sm font-medium mt-1">{isEditMode ? 'Modify account details and permissions.' : 'Grant access and define system roles.'}</p>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-900 transition-colors p-2 hover:bg-slate-50 rounded-full">
             <span className="material-symbols-outlined">close</span>
@@ -84,7 +105,8 @@ export function AddUserModal({ onClose, onSuccess }: AddUserModalProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="user@example.com"
-                className="w-full bg-slate-50 border-slate-100 rounded-xl p-4 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all"
+                disabled={isEditMode}
+                className="w-full bg-slate-50 border-slate-100 rounded-xl p-4 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all disabled:opacity-50"
               />
             </div>
 
@@ -100,13 +122,13 @@ export function AddUserModal({ onClose, onSuccess }: AddUserModalProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Password</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{isEditMode ? 'Change Password (optional)' : 'Password'}</label>
               <input
-                required
+                required={!isEditMode}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
+                placeholder={isEditMode ? "Leave blank to keep current" : "••••••••••••"}
                 className="w-full bg-slate-50 border-slate-100 rounded-xl p-4 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all"
               />
             </div>
@@ -153,11 +175,12 @@ export function AddUserModal({ onClose, onSuccess }: AddUserModalProps) {
               type="submit"
               className="flex-[2] bg-primary text-slate-900 py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
             >
-              {loading ? 'Processing...' : 'Provision User'}
+              {loading ? 'Processing...' : (isEditMode ? 'Save Changes' : 'Provision User')}
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

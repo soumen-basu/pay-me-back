@@ -4,6 +4,7 @@ import { useAuth } from '../AuthProvider';
 import { AddExpenseModal } from '../AddExpenseModal';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { useAdminMode } from '../../contexts/AdminModeContext';
+import { AddUserModal } from '../AddUserModal';
 
 interface NavItem {
   label: string;
@@ -48,6 +49,7 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
   const { isAdminMode, toggleAdminMode } = useAdminMode();
   const { unreadCount, notifications, markAsRead } = useNotifications();
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const navItems = items ?? (isAdminMode ? adminNavItems : defaultNavItems);
@@ -165,7 +167,7 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
           <button
             onClick={() => {
               if (isMobile && onClose) onClose();
-              navigate('/admin/users'); // Or a "new user" specific path if it exists
+              setIsAddUserModalOpen(true);
             }}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition-all cursor-pointer shadow-md ${isCollapsed ? 'size-12 justify-center p-0' : 'w-full'
               }`}
@@ -289,6 +291,12 @@ export function Sidebar({ items, isCollapsed, onToggleCollapse, isMobile, isOpen
         <AddExpenseModal
           onClose={() => setIsAddExpenseModalOpen(false)}
           onSuccess={() => setIsAddExpenseModalOpen(false)}
+        />
+      )}
+      {isAddUserModalOpen && (
+        <AddUserModal
+          onClose={() => setIsAddUserModalOpen(false)}
+          onSuccess={() => setIsAddUserModalOpen(false)}
         />
       )}
     </aside>

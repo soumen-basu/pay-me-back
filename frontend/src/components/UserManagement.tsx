@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthProvider';
 import { PageLayout } from './layout/PageLayout';
 import { AddUserModal } from './AddUserModal';
@@ -22,6 +22,7 @@ export function UserManagement() {
   const [filterName, setFilterName] = useState('');
   const [filterEmail, setFilterEmail] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserAdminView | null>(null);
 
   // Quick Registration State
   const [quickName, setQuickName] = useState('');
@@ -29,7 +30,7 @@ export function UserManagement() {
   const [quickPassword, setQuickPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
       const headers = { Authorization: `Bearer ${token}` };
@@ -45,16 +46,18 @@ export function UserManagement() {
       }
     } catch (error) {
       console.error('Failed to fetch user management data', error);
-    } finally {
-      // setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (token) {
       fetchData();
     }
-  }, [token]);
+    
+    const handleUserChanged = () => fetchData();
+    window.addEventListener('user_changed', handleUserChanged);
+    return () => window.removeEventListener('user_changed', handleUserChanged);
+  }, [token, fetchData]);
 
   const filteredUsers = activeUsers.filter(u => 
     (u.display_name?.toLowerCase().includes(filterName.toLowerCase()) || u.email.toLowerCase().includes(filterName.toLowerCase())) &&
@@ -120,13 +123,6 @@ export function UserManagement() {
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">User Management</h2>
             <p className="text-slate-500 mt-1">Audit, authorize, and manage system-wide access.</p>
           </div>
-          <button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 bg-primary text-slate-900 px-6 py-3 rounded-xl text-sm font-bold tracking-widest uppercase shadow-md hover:scale-[1.02] transition-transform active:scale-95"
-          >
-            <span className="material-symbols-outlined text-lg">person_add</span>
-            Add New User
-          </button>
         </div>
 
         {/* Dashboard Stats Bento */}
@@ -197,6 +193,15 @@ export function UserManagement() {
                             <p className="text-xs font-bold text-slate-900">{u.session_count > 0 ? 'Logged In' : 'Idle'}</p>
                             <p className="text-[10px] text-slate-400 font-medium">{u.last_active_time ? new Date(u.last_active_time).toLocaleDateString() : 'Never'}</p>
                           </div>
+                          
+                          <button 
+                            onClick={() => setEditingUser(u)}
+                            className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                            title="Edit User"
+                          >
+                            <span className="material-symbols-outlined text-lg">edit</span>
+                          </button>
+
                           <button 
                             onClick={() => handleDeleteUser(u.id)}
                             className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
@@ -312,11 +317,16 @@ export function UserManagement() {
           </section>
         </div>
 
-        {isAddModalOpen && (
+        {(isAddModalOpen || editingUser) && (
           <AddUserModal 
-            onClose={() => setIsAddModalOpen(false)}
+            initialUser={editingUser}
+            onClose={() => {
+              setIsAddModalOpen(false);
+              setEditingUser(null);
+            }}
             onSuccess={() => {
               setIsAddModalOpen(false);
+              setEditingUser(null);
               fetchData();
             }}
           />
