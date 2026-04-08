@@ -1,3 +1,4 @@
+import os
 from typing import List, Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyHttpUrl, validator
@@ -6,6 +7,10 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "PayMeBack"
     FRONTEND_BASE_URL: str = "http://localhost:3000"
+    
+    # First Superuser
+    FIRST_SUPERUSER: str = "admin@smplfd.in"
+    FIRST_SUPERUSER_PASSWORD: str = "spinner"
     
     # Database Config
     DB_HOST: str = "localhost"
@@ -65,7 +70,11 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         case_sensitive=True, 
-        env_file=(".env", "env/local.env", "env/credentials.env"), 
+        env_file=(
+            "env/local.env", 
+            "env/credentials.env",
+            os.getenv("ENV_FILE", ".env")
+        ), 
         extra="ignore"
     )
 
