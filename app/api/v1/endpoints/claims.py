@@ -235,8 +235,8 @@ def add_expenses_to_claim(
         raise HTTPException(status_code=400, detail="Cannot assign expenses to a closed or approved claim")
     
     # Enforce multi-currency capability
-    capabilities = TierService.get_user_capabilities(current_user)
-    if not capabilities.can_create_multi_currency_claims:
+    summary = TierService.get_user_tiers_summary(db, current_user)
+    if not summary["capabilities"]["can_create_multi_currency_claims"]:
         existing_expenses = db.exec(select(Expense).where(Expense.claim_id == id)).all()
         new_expenses = [db.get(Expense, eid) for eid in claim_expenses.expense_ids]
         valid_new_expenses = [e for e in new_expenses if e and e.owner_id == current_user.id and e.status == "OPEN"]

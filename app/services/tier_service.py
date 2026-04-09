@@ -4,11 +4,7 @@ from app.models.user import User
 from app.models.expense import Expense
 from app.models.claim import Claim
 from app.core.tiers import get_tier_config
-
-class QuotaExceededException(Exception):
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(self.message)
+from fastapi import HTTPException, status
 
 class TierService:
     @staticmethod
@@ -29,7 +25,7 @@ class TierService:
         # Calculate current usage for claims
         claims_count = db.exec(
             select(func.count(Claim.id))
-            .where(Claim.owner_id == user.id)
+            .where(Claim.submitter_id == user.id)
             .where(func.extract('month', Claim.created_at) == current_month)
             .where(func.extract('year', Claim.created_at) == current_year)
         ).one()
@@ -62,11 +58,17 @@ class TierService:
         summary = TierService.get_user_tiers_summary(db, user)
         expenses_quota = summary["quotas"]["max_expenses_per_month"]
         if expenses_quota["current_usage"] >= expenses_quota["limit"]:
-            raise QuotaExceededException(f"Monthly expense limit reached ({expenses_quota['limit']}). Upgrade your tier to create more.")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail=f"Monthly expense limit reached ({expenses_quota['limit']}). Upgrade your tier to create more."
+            )
 
     @staticmethod
     def check_claim_quota(db: Session, user: User) -> None:
         summary = TierService.get_user_tiers_summary(db, user)
         claims_quota = summary["quotas"]["max_claims_per_month"]
         if claims_quota["current_usage"] >= claims_quota["limit"]:
-            raise QuotaExceededException(f"Monthly claim limit reached ({claims_quota['limit']}). Upgrade your tier to create more.")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail=f"Monthly claim limit reached ({claims_quota['limit']}). Upgrade your tier to create more."
+            )
