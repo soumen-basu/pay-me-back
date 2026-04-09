@@ -17,31 +17,30 @@ interface UserAdminView {
 export function UserManagement() {
   const { token } = useAuth();
   const [activeUsers, setActiveUsers] = useState<UserAdminView[]>([]);
-  const [magicLinks, setMagicLinks] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<UserAdminView[]>([]);
+  const [magicLinks, setMagicLinks] = useState<UserAdminView[]>([]);
   const [activeTab, setActiveTab] = useState<'active' | 'all' | 'magic'>('active');
   const [filterName, setFilterName] = useState('');
   const [filterEmail, setFilterEmail] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserAdminView | null>(null);
-
-  // Quick Registration State
-  const [quickName, setQuickName] = useState('');
-  const [quickEmail, setQuickEmail] = useState('');
-  const [quickPassword, setQuickPassword] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const [isLoggingOutModalOpen, setIsLoggingOutModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
       const headers = { Authorization: `Bearer ${token}` };
 
-      const [usersRes, magicRes] = await Promise.all([
+      const [activeRes, allRes, magicRes] = await Promise.all([
         fetch(`${apiUrl}/api/v1/admin/users/active`, { headers }),
+        fetch(`${apiUrl}/api/v1/admin/users`, { headers }),
         fetch(`${apiUrl}/api/v1/admin/magic-links`, { headers })
       ]);
 
-      if (usersRes.ok && magicRes.ok) {
-        setActiveUsers(await usersRes.json());
+      if (activeRes.ok && allRes.ok && magicRes.ok) {
+        setActiveUsers(await activeRes.json());
+        setAllUsers(await allRes.json());
         setMagicLinks(await magicRes.json());
       }
     } catch (error) {
@@ -59,43 +58,12 @@ export function UserManagement() {
     return () => window.removeEventListener('user_changed', handleUserChanged);
   }, [token, fetchData]);
 
-  const filteredUsers = activeUsers.filter(u => 
+  const baseUsers = activeTab === 'active' ? activeUsers : (activeTab === 'all' ? allUsers : magicLinks);
+  
+  const filteredUsers = baseUsers.filter(u => 
     (u.display_name?.toLowerCase().includes(filterName.toLowerCase()) || u.email.toLowerCase().includes(filterName.toLowerCase())) &&
     u.email.toLowerCase().includes(filterEmail.toLowerCase())
   );
-
-  const handleQuickRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsRegistering(true);
-    try {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const response = await fetch(`${apiUrl}/api/v1/admin/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: quickEmail,
-          display_name: quickName || null,
-          password: quickPassword,
-          role: 'user',
-          is_active: true,
-        }),
-      });
-
-      if (response.ok) {
-        setQuickName('');
-        setQuickEmail('');
-        setQuickPassword('');
-        fetchData();
-      }
-    } catch (error) {
-      console.error('Failed to register user', error);
-    } finally {
-      setIsRegistering(false);
-    }
-  };
 
   const handleDeleteUser = async (userId: number) => {
     if (!confirm('Are you sure you want to deactivate this user?')) return;
@@ -115,6 +83,23 @@ export function UserManagement() {
     }
   };
 
+  const handleBulkLogout = async () => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      await Promise.all(selectedUserIds.map(userId => 
+        fetch(`${apiUrl}/api/v1/admin/users/${userId}/sessions/invalidate`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ));
+      setSelectedUserIds([]);
+      setIsLoggingOutModalOpen(false);
+      fetchData();
+    } catch (error) {
+      console.error('Failed to logout users', error);
+    }
+  };
+
   return (
     <PageLayout variant="app">
       <div className="p-10 space-y-8 animate-in fade-in duration-500">
@@ -127,7 +112,7 @@ export function UserManagement() {
 
         {/* Dashboard Stats Bento */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <BentoTile label="Total Registered" value="1,248" trend="+12% this month" trendIcon="trending_up" color="primary" />
+          <BentoTile label="Total Registered" value={allUsers.length.toString()} trendIcon="person" color="primary" />
           <BentoTile label="Currently Active" value={activeUsers.length.toString()} subText="Real-time monitor" icon="bolt" color="emerald" />
           <BentoTile label="Pending Invites" value={magicLinks.length.toString()} subText="Action required" icon="schedule" color="amber" />
           <BentoTile label="Failed Logins" value="1.2%" subText="Security: Optimal" icon="security" color="slate" />
@@ -135,10 +120,30 @@ export function UserManagement() {
 
         {/* Tabbed Management Section */}
         <section className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
-          <div className="bg-slate-50 px-8 flex gap-8 border-b border-slate-100">
-            <TabButton active={activeTab === 'active'} label="Active Users" onClick={() => setActiveTab('active')} />
-            <TabButton active={activeTab === 'all'} label="All Registered Users" onClick={() => setActiveTab('all')} />
-            <TabButton active={activeTab === 'magic'} label="Pending Magic Links" onClick={() => setActiveTab('magic')} />
+          <div className="bg-slate-50 px-8 flex justify-between items-center border-b border-slate-100">
+            <div className="flex gap-8">
+              <TabButton active={activeTab === 'active'} label="Active Users" onClick={() => setActiveTab('active')} />
+              <TabButton active={activeTab === 'all'} label="All Registered Users" onClick={() => setActiveTab('all')} />
+              <TabButton active={activeTab === 'magic'} label="Pending Magic Links" onClick={() => setActiveTab('magic')} />
+            </div>
+            <button 
+              onClick={() => setIsLoggingOutModalOpen(true)}
+              disabled={selectedUserIds.length === 0}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                selectedUserIds.length > 0 
+                  ? 'bg-rose-100 text-rose-700 hover:bg-rose-200 cursor-pointer shadow-sm border border-rose-200/50' 
+                  : 'bg-slate-100 text-slate-400 opacity-50 cursor-not-allowed hidden md:flex'
+              }`}
+              title="Log out selected users from all devices"
+            >
+              <span className="material-symbols-outlined text-[16px]">logout</span>
+              Log out All Sessions
+              {selectedUserIds.length > 0 && (
+                <span className="bg-rose-700 text-white rounded-full px-2 py-0.5 text-[10px] ml-1">
+                  {selectedUserIds.length}
+                </span>
+              )}
+            </button>
           </div>
 
           <div className="p-0">
@@ -163,9 +168,20 @@ export function UserManagement() {
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {filteredUsers.map(u => (
-                    <tr key={u.id} className="hover:bg-slate-50 transition-colors group">
+                    <tr key={u.id} className={`hover:bg-slate-50 transition-colors group ${selectedUserIds.includes(u.id) ? 'bg-primary/5 hover:bg-primary/10' : ''}`}>
                       <td className="px-8 py-4">
-                        <input type="checkbox" className="rounded border-slate-200 text-primary focus:ring-primary" />
+                        <input 
+                          type="checkbox" 
+                          checked={selectedUserIds.includes(u.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedUserIds(prev => [...prev, u.id]);
+                            } else {
+                              setSelectedUserIds(prev => prev.filter(id => id !== u.id));
+                            }
+                          }}
+                          className="rounded border-slate-200 text-primary focus:ring-primary w-4 h-4 cursor-pointer" 
+                        />
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
@@ -224,99 +240,6 @@ export function UserManagement() {
           </div>
         </section>
 
-        {/* Bottom Section: Quick Registration and Magic Links */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <section className="lg:col-span-1 bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined">person_add_alt</span>
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Quick Registration</h3>
-            </div>
-            <form onSubmit={handleQuickRegister} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Display Name</label>
-                <input 
-                  value={quickName}
-                  onChange={(e) => setQuickName(e.target.value)}
-                  className="w-full bg-slate-50 border-transparent rounded-xl p-4 text-sm focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:text-slate-300" 
-                  placeholder="e.g. Jean-Luc Picard" 
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Email Address</label>
-                <input 
-                  required
-                  type="email"
-                  value={quickEmail}
-                  onChange={(e) => setQuickEmail(e.target.value)}
-                  className="w-full bg-slate-50 border-transparent rounded-xl p-4 text-sm focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:text-slate-300" 
-                  placeholder="captain@starfleet.edu" 
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Initial Password</label>
-                <input 
-                  required
-                  type="password"
-                  value={quickPassword}
-                  onChange={(e) => setQuickPassword(e.target.value)}
-                  className="w-full bg-slate-50 border-transparent rounded-xl p-4 text-sm focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:text-slate-300" 
-                  placeholder="••••••••••••" 
-                />
-              </div>
-              <div className="pt-2">
-                <button 
-                  type="submit" 
-                  disabled={isRegistering}
-                  className="w-full bg-slate-900 text-white py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition-all disabled:opacity-50"
-                >
-                  {isRegistering ? 'Creating...' : 'Create User'}
-                </button>
-              </div>
-            </form>
-          </section>
-
-          <section className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-            <div className="px-8 py-6 border-b border-slate-50 flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Pending Magic Links</h3>
-                <p className="text-xs text-slate-500 font-medium">Unclaimed authentication tokens currently active</p>
-              </div>
-              <button className="text-rose-500 text-xs font-bold hover:underline uppercase tracking-widest">Revoke All</button>
-            </div>
-            <div className="flex-1 overflow-y-auto max-h-[400px] custom-scrollbar">
-              <div className="divide-y divide-slate-50">
-                {magicLinks.map((ml, i) => (
-                  <div key={i} className="px-8 py-5 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                    <div className="flex gap-4 items-center">
-                      <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-sm">key</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900">{ml.email}</p>
-                        <p className="text-[10px] font-mono text-slate-400 truncate w-48">{ml.magic_token || 'pmb_tk_...'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-8">
-                      <div className="text-right">
-                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-400">Expires</p>
-                        <p className="text-xs font-bold text-amber-600">{ml.magic_token_expires_at ? new Date(ml.magic_token_expires_at).toLocaleTimeString() : 'Expired'}</p>
-                      </div>
-                      <button className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-all flex items-center justify-center">
-                        <span className="material-symbols-outlined text-sm">content_copy</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {magicLinks.length === 0 && (
-                  <div className="py-20 text-center text-slate-400 italic text-sm">No active magic links</div>
-                )}
-              </div>
-            </div>
-          </section>
-        </div>
-
         {(isAddModalOpen || editingUser) && (
           <AddUserModal 
             initialUser={editingUser}
@@ -330,6 +253,36 @@ export function UserManagement() {
               fetchData();
             }}
           />
+        )}
+
+        {isLoggingOutModalOpen && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="size-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+                  <span className="material-symbols-outlined">logout</span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">Logout Users</h3>
+              </div>
+              <p className="text-slate-600 text-sm mb-6 font-medium">
+                Are you sure you want to forcibly log out the <strong className="text-slate-900">{selectedUserIds.length} selected user(s)</strong> from all their active sessions and devices? They will need to sign in again.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button 
+                  onClick={() => setIsLoggingOutModalOpen(false)}
+                  className="px-5 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleBulkLogout}
+                  className="px-5 py-2.5 text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 shadow border border-rose-600 rounded-xl transition-all cursor-pointer"
+                >
+                  Confirm Logout
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </PageLayout>

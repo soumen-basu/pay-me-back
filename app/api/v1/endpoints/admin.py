@@ -80,6 +80,32 @@ def read_active_users(
         
     return result
 
+@router.get("/users", response_model=List[UserAdminView])
+def read_all_users(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(deps.get_current_active_superuser),
+) -> Any:
+    """
+    Retrieve all users.
+    """
+    users = db.query(User).offset(skip).limit(limit).all()
+    
+    result = []
+    for user in users:
+        sessions = db.query(UserSession).filter(UserSession.user_id == user.id).all()
+        session_count = len(sessions)
+        last_active = max(sessions, key=lambda s: s.created_at).created_at if sessions else None
+            
+        view = UserAdminView.model_validate(user, update={
+            "session_count": session_count,
+            "last_active_time": last_active
+        })
+        result.append(view)
+        
+    return result
+
 @router.get("/users/{user_ident}", response_model=UserRead)
 def read_user(
     user_ident: str,
@@ -278,7 +304,7 @@ def get_total_stats(
         "adoption_rate": 22.0
     }
 
-@router.get("/magic-links", response_model=List[UserRead])
+@router.get("/magic-links", response_model=List[UserAdminView])
 def get_pending_magic_links(
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_active_superuser),
@@ -291,4 +317,17 @@ def get_pending_magic_links(
         User.magic_token != None,
         User.magic_token_expires_at > now
     ).all()
-    return users
+    
+    result = []
+    for user in users:
+        sessions = db.query(UserSession).filter(UserSession.user_id == user.id).all()
+        session_count = len(sessions)
+        last_active = max(sessions, key=lambda s: s.created_at).created_at if sessions else None
+            
+        view = UserAdminView.model_validate(user, update={
+            "session_count": session_count,
+            "last_active_time": last_active
+        })
+        result.append(view)
+        
+    return result

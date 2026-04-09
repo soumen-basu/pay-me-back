@@ -34,7 +34,6 @@ const defaultNavItems: NavItem[] = [
 const adminNavItems: NavItem[] = [
   { label: 'Analytics', icon: 'monitoring', path: '/admin/dashboard' },
   { label: 'User Management', icon: 'group', path: '/admin/users' },
-  { label: 'Settings', icon: 'settings', path: '/settings' },
 ];
 
 const defaultAccountItems: NavItem[] = [

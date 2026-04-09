@@ -136,15 +136,8 @@ export function Profile() {
     return email.substring(0, 2).toUpperCase();
   };
 
-  const profileSidebarItems = [
-    { label: 'Home', icon: 'home', path: '/dashboard' },
-    { label: 'Debts', icon: 'receipt_long', path: '/debts' },
-    { label: 'Payments', icon: 'payments', path: '/payments' },
-    { label: 'Me', icon: 'person', path: '/me' },
-  ];
-
   return (
-    <PageLayout variant="app" sidebarItems={profileSidebarItems}>
+    <PageLayout variant="app">
       <div className="max-w-5xl mx-auto px-8 py-10">
         {/* Page Header */}
         <div className="mb-8">
@@ -361,10 +354,18 @@ export function Profile() {
         </div>
 
         {/* Bottom action bar */}
-        <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <span className="material-symbols-outlined text-sm text-primary">info</span>
-            Changes are saved automatically to your account.
+        <div className="sticky bottom-0 bg-slate-50/95 backdrop-blur-sm border-t border-slate-200 mt-8 -mb-10 -mx-8 px-8 py-6 z-20 flex items-center justify-between">
+          <div>
+            {/* Profile save message */}
+            {message && (
+              <div className={`px-4 py-2 rounded-xl text-sm font-medium animate-in fade-in ${
+                message.type === 'error'
+                  ? 'bg-red-50 text-red-600 border border-red-100'
+                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              }`}>
+                {message.text}
+              </div>
+            )}
           </div>
           <div className="flex gap-3">
             <button
@@ -374,7 +375,7 @@ export function Profile() {
                 setPreferredCurrency(user.preferred_currency || 'INR');
                 setMessage(null);
               }}
-              className="px-6 py-3 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all cursor-pointer"
+              className="px-6 py-3 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
             >
               Cancel
             </button>
@@ -388,17 +389,6 @@ export function Profile() {
             </button>
           </div>
         </div>
-
-        {/* Profile save message */}
-        {message && (
-          <div className={`mt-4 px-4 py-3 rounded-xl text-sm font-medium text-center max-w-md mx-auto ${
-            message.type === 'error'
-              ? 'bg-red-50 text-red-600 border border-red-100'
-              : 'bg-green-50 text-green-700 border border-green-100'
-          }`}>
-            {message.text}
-          </div>
-        )}
       </div>
     </PageLayout>
   );
