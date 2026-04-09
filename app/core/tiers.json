@@ -1,0 +1,30 @@
+{
+  "FREE": {
+    "name": "FREE",
+    "capabilities": {
+      "can_use_multiple_currencies": false,
+      "can_create_multi_currency_claims": false,
+      "has_receipt_extraction": false
+    },
+    "quotas": {
+      "max_expenses_per_month": 300,
+      "max_claims_per_month": 2,
+      "max_receipt_size_mb": 0,
+      "max_receipts_per_expense": 0
+    }
+  },
+  "PRO": {
+    "name": "PRO",
+    "capabilities": {
+      "can_use_multiple_currencies": true,
+      "can_create_multi_currency_claims": true,
+      "has_receipt_extraction": true
+    },
+    "quotas": {
+      "max_expenses_per_month": 1000,
+      "max_claims_per_month": 10,
+      "max_receipt_size_mb": 5,
+      "max_receipts_per_expense": 5
+    }
+  }
+}

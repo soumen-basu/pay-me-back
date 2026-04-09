@@ -77,3 +77,16 @@ def get_current_active_superuser(
             status_code=403, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+from app.core.tiers import get_tier_config
+
+def require_capability(capability_name: str):
+    def dependency(user: User = Depends(get_current_active_user)):
+        tier_config = get_tier_config(user.tier)
+        if not getattr(tier_config.capabilities, capability_name, False):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail=f"Your tier ({user.tier}) does not support the {capability_name} feature."
+            )
+        return user
+    return dependency

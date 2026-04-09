@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
 import { useExpenseSelection } from '../contexts/ExpenseSelectionContext';
+import { useTierFeatures } from '../contexts/TierContext';
 import { fetchCurrencies, formatAmount, groupByCurrency, formatCurrencyTotals } from '../utils/currency';
 import type { CurrencyInfo } from '../utils/currency';
 
@@ -55,6 +56,7 @@ function getCategoryIcon(name: string): string {
 export function ClaimBuilder() {
   const navigate = useNavigate();
   const { selectedExpenseIds, clearSelection } = useExpenseSelection();
+  const { features } = useTierFeatures();
 
   // ── Wizard state ──
   const [step, setStep] = useState(0);
@@ -165,7 +167,14 @@ export function ClaimBuilder() {
       if (isNewClaim) return claimTitle.trim().length > 0;
       return selectedClaimId !== null;
     }
-    if (step === 1) return selectedIds.size > 0;
+    if (step === 1) {
+      if (selectedIds.size === 0) return false;
+      const isMultiCurrency = Object.keys(totalAmountByCurrency).length > 1;
+      if (isMultiCurrency && !features?.capabilities.can_create_multi_currency_claims) {
+        return false;
+      }
+      return true;
+    }
     return true;
   };
 
@@ -461,6 +470,17 @@ export function ClaimBuilder() {
                     </div>
                   );
                 })}
+
+                {/* Multi-Currency Restriction Banner */}
+                {Object.keys(totalAmountByCurrency).length > 1 && !features?.capabilities.can_create_multi_currency_claims && (
+                   <div className="bg-amber-50 border border-amber-200 text-amber-800 px-5 py-4 rounded-2xl flex items-start gap-3 shadow-sm mt-4">
+                     <span className="material-symbols-outlined text-amber-500 shrink-0">warning</span>
+                     <div className="text-sm">
+                       <p className="font-bold">Multi-Currency Claim Not Allowed</p>
+                       <p className="mt-1">Your current plan (`{features?.tier}`) does not support claims mixing different currencies. Please group your expenses by a single currency, or upgrade to Pro.</p>
+                     </div>
+                   </div>
+                )}
               </div>
             </>
           )}

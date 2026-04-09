@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
+import { useTierFeatures } from '../contexts/TierContext';
 import { fetchCurrencies, groupByCurrency, formatCurrencyTotals } from '../utils/currency';
 import type { CurrencyInfo } from '../utils/currency';
 
@@ -39,6 +40,9 @@ export function ClaimsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'ALL' | 'OPEN' | 'APPROVED' | 'REJECTED'>('ALL');
   const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
+  const { features } = useTierFeatures();
+
+  const isQuotaExceeded = features && features.quotas.max_claims_per_month.current_usage >= features.quotas.max_claims_per_month.limit;
 
   // ── Fetch Data ──
   const fetchData = useCallback(async () => {
@@ -73,7 +77,23 @@ export function ClaimsPage() {
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const topNavActions = undefined;
+  const topNavActions = (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => !isQuotaExceeded && navigate('/claims/new')}
+        disabled={isQuotaExceeded}
+        className={`flex items-center justify-center size-9 md:size-auto md:gap-2 font-bold md:px-5 md:py-2.5 rounded-full shadow-lg transition-transform ${isQuotaExceeded ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-primary text-slate-900 hover:scale-105 cursor-pointer shadow-primary/20'}`}
+        title={isQuotaExceeded ? 'Monthly claim limit reached' : 'Create Claim'}
+      >
+        {isQuotaExceeded ? (
+          <span className="material-symbols-outlined text-xl">block</span>
+        ) : (
+          <span className="material-symbols-outlined text-xl">add</span>
+        )}
+        <span className="hidden md:inline">{isQuotaExceeded ? 'Limit Reached' : 'Create Claim'}</span>
+      </button>
+    </div>
+  );
 
   return (
     <PageLayout variant="app" topNavActions={topNavActions}>
@@ -81,6 +101,15 @@ export function ClaimsPage() {
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Your Claims</h1>
           <p className="text-sm md:text-base text-slate-500 mt-1">Manage and track your reimbursement requests.</p>
+          {isQuotaExceeded && (
+            <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm max-w-xl">
+              <span className="material-symbols-outlined text-amber-500">warning</span>
+              <div className="text-sm">
+                <p className="font-bold">Monthly Quota Exceeded</p>
+                <p>You have reached your limit of {features.quotas.max_claims_per_month.limit} claims this month. Upgrade to Pro to submit more.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tab Navigation */}
@@ -116,12 +145,14 @@ export function ClaimsPage() {
                 <span className="material-symbols-outlined text-4xl text-slate-300">assignment</span>
               </div>
               <p className="text-slate-400 font-medium italic">No claims found.</p>
-              <button 
-                onClick={() => navigate('/claims/new')}
-                className="mt-4 text-primary font-bold hover:underline"
-              >
-                Create your first claim
-              </button>
+              {!isQuotaExceeded && (
+                <button 
+                  onClick={() => navigate('/claims/new')}
+                  className="mt-4 text-primary font-bold hover:underline cursor-pointer"
+                >
+                  Create your first claim
+                </button>
+              )}
             </div>
           ) : (
             filteredClaims.map((claim) => {

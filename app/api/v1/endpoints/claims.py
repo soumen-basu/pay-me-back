@@ -11,6 +11,7 @@ from app.models.expense import Expense
 from app.models.comment import Comment, CommentCreate, CommentRead
 from app.crud import crud_notification
 from app.schemas.notification import NotificationCreate
+from app.services.tier_service import TierService
 
 router = APIRouter()
 
@@ -57,6 +58,8 @@ def create_claim(
     current_user: User = Depends(deps.get_current_active_user),
 ) -> Any:
     """Create new claim."""
+    TierService.check_claim_quota(db, current_user)
+    
     claim = Claim(
         **claim_in.model_dump(),
         submitter_id=current_user.id,
@@ -231,6 +234,20 @@ def add_expenses_to_claim(
     if claim.status != "OPEN":
         raise HTTPException(status_code=400, detail="Cannot assign expenses to a closed or approved claim")
     
+    # Enforce multi-currency capability
+    capabilities = TierService.get_user_capabilities(current_user)
+    if not capabilities.can_create_multi_currency_claims:
+        existing_expenses = db.exec(select(Expense).where(Expense.claim_id == id)).all()
+        new_expenses = [db.get(Expense, eid) for eid in claim_expenses.expense_ids]
+        valid_new_expenses = [e for e in new_expenses if e and e.owner_id == current_user.id and e.status == "OPEN"]
+        
+        currencies = {e.currency_code for e in existing_expenses + valid_new_expenses if e.currency_code}
+        if len(currencies) > 1:
+            raise HTTPException(
+                status_code=400, 
+                detail="Your tier does not support multi-currency claims. Please upgrade to Pro."
+            )
+
     assigned_count = 0
     for exp_id in claim_expenses.expense_ids:
         expense = db.get(Expense, exp_id)

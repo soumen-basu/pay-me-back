@@ -139,3 +139,15 @@ def get_recent_contacts(
     emails = [u.email for u in users if u.id != current_user.id]
     return emails
 
+from app.services.tier_service import TierService
+
+@router.get("/me/tier-features")
+def get_user_tier_features(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Retrieve tier features and quotas status for the current user.
+    """
+    summary = TierService.get_user_tiers_summary(db, current_user)
+    return summary

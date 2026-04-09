@@ -10,6 +10,7 @@ from app.models.expense import Expense, ExpenseCreate, ExpenseRead, ExpenseUpdat
 from app.models.claim import Claim
 from app.crud import crud_notification
 from app.schemas.notification import NotificationCreate
+from app.services.tier_service import TierService
 
 router = APIRouter()
 
@@ -63,6 +64,8 @@ def create_expense(
     """
     Create new expense.
     """
+    TierService.check_expense_quota(db, current_user)
+    
     expense = Expense(
         **expense_in.model_dump(),
         owner_id=current_user.id,

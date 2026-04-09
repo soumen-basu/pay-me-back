@@ -3,6 +3,7 @@ import { PageLayout } from './layout/PageLayout';
 import { api } from '../services/api';
 import { AddExpenseModal } from './AddExpenseModal';
 import { useExpenseSelection } from '../contexts/ExpenseSelectionContext';
+import { useTierFeatures } from '../contexts/TierContext';
 import { fetchCurrencies, formatAmount } from '../utils/currency';
 import type { CurrencyInfo } from '../utils/currency';
 
@@ -45,6 +46,9 @@ export function ExpensesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
+  const { features } = useTierFeatures();
+
+  const isQuotaExceeded = features && features.quotas.max_expenses_per_month.current_usage >= features.quotas.max_expenses_per_month.limit;
 
   // ── Fetch Data ──
   const fetchData = useCallback(async () => {
@@ -103,12 +107,17 @@ export function ExpensesPage() {
         </div>
       </label>
       <button
-        onClick={() => setIsModalOpen(true)}
-        className="flex items-center justify-center size-9 md:size-auto md:gap-2 bg-primary text-slate-900 font-bold md:px-5 md:py-2.5 rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform cursor-pointer"
-        title="Add Expense"
+        onClick={() => !isQuotaExceeded && setIsModalOpen(true)}
+        disabled={isQuotaExceeded}
+        className={`flex items-center justify-center size-9 md:size-auto md:gap-2 font-bold md:px-5 md:py-2.5 rounded-full shadow-lg transition-transform ${isQuotaExceeded ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-primary text-slate-900 hover:scale-105 cursor-pointer shadow-primary/20'}`}
+        title={isQuotaExceeded ? 'Monthly expense limit reached' : 'Add Expense'}
       >
-        <span className="material-symbols-outlined text-xl">add</span>
-        <span className="hidden md:inline">Add Expense</span>
+        {isQuotaExceeded ? (
+          <span className="material-symbols-outlined text-xl">block</span>
+        ) : (
+          <span className="material-symbols-outlined text-xl">add</span>
+        )}
+        <span className="hidden md:inline">{isQuotaExceeded ? 'Limit Reached' : 'Add Expense'}</span>
       </button>
     </div>
   );
@@ -119,6 +128,15 @@ export function ExpensesPage() {
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Your Expenses</h1>
           <p className="text-sm md:text-base text-slate-500 mt-1">Track and manage your individual spending items.</p>
+          {isQuotaExceeded && (
+            <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm max-w-xl">
+              <span className="material-symbols-outlined text-amber-500">warning</span>
+              <div className="text-sm">
+                <p className="font-bold">Monthly Quota Exceeded</p>
+                <p>You have reached your limit of {features.quotas.max_expenses_per_month.limit} expenses this month. Upgrade to Pro to add more.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden table-container">
@@ -132,12 +150,14 @@ export function ExpensesPage() {
                 <span className="material-symbols-outlined text-3xl md:text-4xl text-slate-300">receipt_long</span>
               </div>
               <p className="text-slate-400 font-medium italic">No expenses found.</p>
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="mt-4 text-primary font-bold hover:underline"
-              >
-                Add your first expense
-              </button>
+              {!isQuotaExceeded && (
+                <button 
+                  onClick={() => setIsModalOpen(true)}
+                  className="mt-4 text-primary font-bold hover:underline"
+                >
+                  Add your first expense
+                </button>
+              )}
             </div>
           ) : (
             <table className="w-full">

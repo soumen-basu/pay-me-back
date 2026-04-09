@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '../services/api';
 import { useAuth } from './AuthProvider';
+import { useTierFeatures } from '../contexts/TierContext';
 import { fetchCurrencies, getSymbol } from '../utils/currency';
 import type { CurrencyInfo } from '../utils/currency';
 
@@ -21,6 +22,7 @@ interface AddExpenseModalProps {
 
 export function AddExpenseModal({ onClose, onSuccess, initialCategories, initialExpense, expenses }: AddExpenseModalProps) {
   const { user } = useAuth();
+  const { features } = useTierFeatures();
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
   const [description, setDescription] = useState(initialExpense?.description || '');
   const [amount, setAmount] = useState(initialExpense?.amount?.toString() || '');
@@ -266,13 +268,18 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
             <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr] gap-3">
               {/* Currency selector */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">Cur.</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5 ml-1">
+                  Cur.
+                  {!features?.capabilities.can_use_multiple_currencies && (
+                    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 uppercase tracking-wide">Pro</span>
+                  )}
+                </label>
                 <select
                   value={currencyCode}
                   onChange={(e) => setCurrencyCode(e.target.value)}
-                  disabled={isClaimedExpense}
+                  disabled={isClaimedExpense || !features?.capabilities.can_use_multiple_currencies}
                   className="h-[52px] bg-slate-50 border border-slate-200 rounded-2xl px-3 py-3.5 text-slate-900 font-bold text-sm focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={isClaimedExpense ? 'Currency cannot be changed on claimed expenses' : 'Select currency'}
+                  title={isClaimedExpense ? 'Currency cannot be changed on claimed expenses' : (!features?.capabilities.can_use_multiple_currencies ? 'Upgrade to Pro to use multiple currencies' : 'Select currency')}
                 >
                   {currencies.map((c: CurrencyInfo) => (
                     <option key={c.code} value={c.code}>
@@ -280,6 +287,9 @@ export function AddExpenseModal({ onClose, onSuccess, initialCategories, initial
                     </option>
                   ))}
                 </select>
+                {!features?.capabilities.can_use_multiple_currencies && (
+                   <div className="mt-1.5 text-xs text-amber-600 font-medium px-1">Upgrade to unlock currencies</div>
+                )}
               </div>
               {/* Amount */}
               <div>
