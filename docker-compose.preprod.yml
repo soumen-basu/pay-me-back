@@ -1,0 +1,19 @@
+services:
+  api:
+    build: .
+    image: paymeback-api:preprod
+    restart: always
+    env_file:
+      - env/preprod.env
+      - env/credentials.env
+    ports:
+      - "8088:8000"  # Map host port 8088 to container port 8000
+    environment:
+      - ENV_FILE=env/preprod.env
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
