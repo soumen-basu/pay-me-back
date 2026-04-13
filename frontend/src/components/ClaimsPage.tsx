@@ -42,7 +42,7 @@ export function ClaimsPage() {
   const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
   const { features } = useTierFeatures();
 
-  const isQuotaExceeded = features && features.quotas.max_claims_per_month.current_usage >= features.quotas.max_claims_per_month.limit;
+  const isQuotaExceeded = !!(features && features.quotas.max_claims_per_month.current_usage >= features.quotas.max_claims_per_month.limit);
 
   // ── Fetch Data ──
   const fetchData = useCallback(async () => {
