@@ -108,6 +108,28 @@ docker compose -f docker-compose.preprod.yml up -d --build
 - **Cause**: Missing `BACKEND_CORS_ORIGINS` or incorrect `VITE_API_BASE_URL` in the frontend build.
 - **Fix**: Check browser console (F12) for "CORS Policy" errors. Re-build frontend with correct environment variables.
 
+### Frontend 404 Error on Direct Links (e.g. `/verify`)
+- **Cause**: The frontend is a Single Page Application (SPA) using React Router. Nginx doesn't know how to handle direct visits to deep links because actual files don't exist for them on the server.
+- **Fix**: Update the Nginx site configuration on your LightSail instance to route all unmatched frontend requests to `index.html`. 
+  
+  Locate your Nginx configuration block handling the frontend (usually in `/etc/nginx/sites-available/` or similar) and modify the `location /` block to include `try_files`:
+
+  ```nginx
+  server {
+      server_name paymeback.ignore.smplfd.in;
+      root /path/to/your/frontend/dist; # Replace with your actual path
+      index index.html;
+
+      location / {
+          # This is the critical line for SPAs
+          try_files $uri $uri/ /index.html;
+      }
+      
+      # ... other config (SSL, etc) ...
+  }
+  ```
+  After making the change, reload Nginx with: `sudo systemctl reload nginx`.
+
 ---
 
 > [!IMPORTANT]
