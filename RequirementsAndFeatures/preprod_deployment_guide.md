@@ -30,8 +30,9 @@ PROJECT_NAME="PayMeBack Pre-Prod"
 FRONTEND_BASE_URL="https://paymeback.ignore.smplfd.in"
 API_PORT=8088
 
-# CORS: Must be a JSON array string
-BACKEND_CORS_ORIGINS='["https://paymeback.ignore.smplfd.in"]'
+# CORS (Required for Browser Security)
+# Format: JSON array of strings
+BACKEND_CORS_ORIGINS=["https://paymeback.ignore.smplfd.in"]
 
 # DB host must match the container name on the shared network
 DB_HOST="postgres-master"
